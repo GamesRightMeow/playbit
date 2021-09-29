@@ -11,7 +11,7 @@
       "program":
       {
         "lua": "lua",
-        "file": "${workspaceFolder}\\build-example.lua"
+        "file": "${workspaceFolder}\\example\\build.lua"
       },
       "args": [
         "${workspaceFolder}"
