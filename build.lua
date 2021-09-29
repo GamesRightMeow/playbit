@@ -96,6 +96,10 @@ function Build.build(options)
   end
 
   perf.endSample()
+
+  if options.runOnSuccess then 
+    os.execute(options.runOnSuccess)
+  end
 end
 
 return Build
