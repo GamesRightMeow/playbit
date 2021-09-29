@@ -84,14 +84,14 @@ function Build.build(options)
   -- copy folders
   if options.copyFolders then
     for i = 1, #options.copyFolders, 1 do
-      Build.copyFolder(options.copyFolders[i])
+      Build.copyFolder(options.copyFolders[i][1], options.copyFolders[i][2])
     end
   end
 
   -- copy files
   if options.copyFiles then
     for i = 1, #options.copyFiles, 1 do
-      Build.copyFile(options.copyFiles[i])
+      Build.copyFile(options.copyFiles[i][1], options.copyFiles[i][2])
     end
   end
 
