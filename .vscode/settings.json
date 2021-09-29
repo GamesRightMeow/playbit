@@ -1,7 +1,7 @@
 {
     "Lua.diagnostics.globals": [
       "love",
-      "bit32"
+      "bit"
     ],
     "editor.tabSize": 2,
     "todo-tree.regex.regex": "$\\s*--\\s*($TAGS)",

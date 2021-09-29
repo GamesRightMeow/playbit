@@ -1,5 +1,8 @@
 -- caching this locally improves perf a bit
-local lshift = bit32.lshift
+local lshift = bit.lshift
+local bor = bit.bor
+local band = bit.band
+local bnot = bit.bnot
 
 local Bitfield = {}
 setmetatable(Bitfield, {})
@@ -24,34 +27,34 @@ end
 --- sets the specified flag (valid values are 0-31).
 function Bitfield:set(flag)
   local bit = lshift(1, flag)
-  self.value = self.value | bit
+  self.value = bor(self.value, bit)
 end
 
 --- sets the specified bit.
 function Bitfield:setBit(bit)
-  self.value = self.value | bit
+  self.value = bor(self.value, bit)
 end
 
 --- unsets the specified flag (valid values are 0-31).
 function Bitfield:unset(flag)
   local bit = lshift(1, flag)
-  self.value = self.value & ~bit
+  self.value = band(self.value, bnot(bit))
 end
 
 --- unsets the specified bit.
 function Bitfield:unsetBit(bit)
-  self.value = self.value & ~bit
+  self.value = band(self.value, bnot(bit))
 end
 
 --- returns true if the bitfield contains the specified flag (valid values are 0-31)
 function Bitfield:has(flag)
   local bit = lshift(1, flag)
-  return self.value & bit == bit
+  return band(self.value, bit) == bit
 end
 
 --- returns true if the bitfield contains the specified bit(s).
 function Bitfield:hasBit(bit)
-  return self.value & bit == bit
+  return band(self.value, bit) == bit
 end
 
 return Bitfield
