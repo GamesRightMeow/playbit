@@ -1,0 +1,46 @@
+--[[============================================================
+--=
+--=  LuaPreprocess example: Macros.
+--=
+--=  Here we define a better assert function using a macro.
+--=
+--============================================================]]
+
+!(
+local DEBUG = true
+
+function assert(conditionCode, messageCode)
+	if not DEBUG then
+		-- Make assert() calls do absolutely nothing if we're not in debug mode.
+		return ""
+	end
+	if not messageCode then
+		messageCode = string.format("%q", "Assertion failed: "..conditionCode)
+	end
+	return "if not ("..conditionCode..") then  error("..messageCode..")  end"
+end
+)
+
+local i = 4
+
+--
+-- A call to Lua's normal assert function might look something like this. A
+-- problem is that the message expression is evaluated even if the condition
+-- is true, which is completely unnecessary. (This example is very simple of
+-- course, but imagine more costly operations happening.)
+--
+assert(i > 1 and i < 7, "Invalid index. It must be 1<=i<=7 but is "..i)
+
+--
+-- By prepending @insert we actually call the assert function in the
+-- metaprogram which, as we defined above, separates the condition and the
+-- message arguments so that the message expression never evaluates as long as
+-- the condition is true.
+--
+@insert assert(i > 1 and i < 7, "Invalid index. It must be 1<=i<=7 but is "..i)
+
+-- We also made the default message better by including the condition code
+-- itself in the message.
+@insert assert(i > 1 and i < 7)
+
+print("'i' is all good!")

@@ -1,0 +1,228 @@
+--[[
+	Blah.
+]]
+-- Preprocessor line.
+!print("The beginning.")
+
+local a = "a" -- Comment A.
+print("a", a)
+
+-- More preprocessor lines.
+!local b = "b" -- Comment B.
+!print("b", b)
+
+a = a..!(b)..a -- Comment, string concat.
+
+!-- We be countin'! Also, this comment is so meta it's unbelievable.
+!for i = 1, 3 do
+	print("Aaaaand...")
+	print(!(i*2))
+!end
+
+!local bool = --[[ Just a multiline
+comment here...]] true
+
+!local function wrapped(concept)
+	print!("Get wrapped! Also, "..concept.."...")
+!end
+!wrapped("dogs")
+!wrapped("clouds")
+
+local data = !("a\n1Ü2\"\10\255\255\0003")
+
+
+
+!(
+-- Preprocessor block.
+local function sum(x, y)
+	return x+y
+end
+)
+
+local c   = !(100+sum(10, 5))
+local str = !(run("tests/quickTestInclude.lua", "what"))
+print(str)
+
+_G.!!("global"..math.random(5)) = 99
+
+
+
+-- Extended preprocessor line. (Balanced brackets.)
+!local arr = { -- Starts here.
+	10,
+}; local z = (
+	100+(3^3)
+)+arr[
+	1
+] -- Ends here.
+local z = !(z)
+
+!local justTheLetterD = "d"
+
+
+
+-- Dual code. (Outputs both both preprocessor code and normal Lua. Can only be used for assignment statements.)
+!!local alpha, alphanum = "[%a_]", "[%a%d_]"
+!!local num             = "%"..justTheLetterD -- The value expression is evaluated in the metaprogram before outputted to the final program.
+!!local ident           = alpha..alphanum.."*"
+local   funcCall        = !(ident.."%(.-%)")
+
+local s = [[:: 2 * hello5( foo ){ ... }]]
+print(s:match(ident))    -- "hello5"
+print(s:match(num))      -- "2"
+print(s:match(funcCall)) -- "hello5( foo )"
+
+
+
+-- File inserts.
+!(
+@insert "tests/quickTest.luapart"
+print("Metaprogram - someString: "..someString)
+)
+local uhh1 = !(@insert"tests/quickTest_expression.txt")
+local uhh2 = !(@@"tests/quickTest_expression.txt") -- @@ means the same as @insert.
+print("Final program - uhh: "..uhh1..", "..uhh2)
+
+
+
+-- Macros.
+!local function BLARGH()  return 'print("Blargh!")'  end
+@insert BLARGH()
+@insert BLARGH( @insert BLARGH() )
+-- !@insert BLARGH() -- Error: Macro inside metaprogram.
+
+!local function WHERE(filename, ln)  return "print(string.format('We are at %s:%d!', "..filename..", "..ln.."))"  end
+@insert WHERE(@file, @line)
+
+!(
+local DEBUG = 1==1
+
+local function ASSERT(cond, message)
+	if not DEBUG then  return ""  end
+
+	message = message or "'Asertion failed!'"
+
+	return "if not ("..cond..") then error("..message..") end"
+end
+)
+
+local ok = 1==1
+
+@insert ASSERT ( ok , "Oh "..tonumber("7",10).." noes!" )
+-- @insert ASSERT ( 1 1 ) -- Syntax error!
+-- @insert ASSERT ( ok , ) -- Syntax error!
+-- @insert ASSERT ( , ok ) -- Syntax error!
+-- @insert ASSERT ( --[[]] , ok ) -- Syntax error!
+
+!local function PASS_THROUGH(lua)  return lua  end
+local s = @insert PASS_THROUGH "foo"
+local t = @@      PASS_THROUGH { 496, b=true } -- @@ means the same as @insert.
+
+-- local s = @@PASS_THROUGH `foo`
+
+local f = @@PASS_THROUGH(function(a, b)
+	while true do
+		repeat until arePlanetsAligned("mars", "jupiter")
+		-- repeat until arePlanetsAligned(`mars`, `jupiter`)
+		break
+	end
+	return "", nil
+end)
+
+local a = @@PASS_THROUGH( @@"tests/quickTest_expression.txt" )
+local b = @@PASS_THROUGH( !!("2") )
+local c = @@PASS_THROUGH{ 1 + !(2) + 3 }
+local d = @@PASS_THROUGH(@@PASS_THROUGH{@@PASS_THROUGH( !!("1")!!("+")!!("2") )})
+
+!local t    = {field={object={method=function(obj, lua) return lua end}}}
+!local keys = {"object"}
+local  n    = @@t.field[keys[1]]:method(58)
+
+!local function ADD1(lua)  return lua.."+1"  end
+local n1 = @@ADD1!(43-2)
+local n2 = @@ADD1!!("43-2")
+
+
+
+-- Misc.
+print(!("dataFromCommandLine: "..tostring(dataFromCommandLine)))
+print(!(("This file and line: %s:%d"):format(@file, @line)))
+
+for i = 1, 3 do
+	do
+		!outputLua("break")
+	end
+	!outputLua("break") -- Hello, I'm just a comment.
+end
+
+local HUGE_POSITIVE = !(math.huge)
+local HUGE_NEGATIVE = !(-math.huge)
+local NAN           = !(0/0)
+
+print("The end.")
+
+
+
+!(
+--[==[ Test token stuff.
+for i, token in ipairs(assert(tokenize(assert(getFileContents"tests/quickTestInclude.lua")))) do
+	print(i, token.type, "", (token.representation:gsub("\n", "<NEWLINE>")))
+end
+
+for _, token in ipairs{
+	newToken("comment",     "foo"),
+	newToken("comment",     "foo", true),
+	newToken("comment",     "foo\nbar"),
+	newToken("comment",     "foo\nbar", true),
+	newToken("comment",     "foo\n12]]34"),
+	newToken("comment",     "foo\n12]]=]34"),
+	newToken("identifier",  "dog"),
+	-- newToken("identifier",  "bad!"), -- Error!
+	newToken("keyword",     "while"),
+	-- newToken("keyword",     "continue"), -- Error! :'(
+	newToken("number",      42),
+	newToken("number",      44,   "integer"),
+	newToken("number",      48,   "int"),
+	newToken("number",      5.7,  "float"),
+	newToken("number",      0,    "float"),
+	newToken("number",      5.7,  "scientific"),
+	newToken("number",      .031, "SCIENTIFIC"),
+	newToken("number",      5.7,  "e"),
+	newToken("number",      .031, "E"),
+	newToken("number",      42,   "hexadecimal"),
+	newToken("number",      42,   "HEX"),
+	newToken("number",      5.7,  "auto"),
+	newToken("number",      math.huge),
+	newToken("number",      -math.huge),
+	newToken("number",      0/0),
+	newToken("punctuation", "=="),
+	-- newToken("punctuation", "!="), -- Error!
+	newToken("string",      "Hello"),
+	newToken("string",      "Hello", true),
+	newToken("string",      "Hello\nworld"),
+	newToken("string",      "Hello\nworld", true),
+	newToken("string",      "Hello\n12]]34", true),
+	newToken("string",      "Hello\n12]]=]34", true),
+	newToken("whitespace",  " \t\n"),
+	-- newToken("whitespace",  "foo"), -- Error!
+	newToken("pp_entry",    false),
+	newToken("pp_entry",    true),
+	newToken("pp_keyword",  "insert"),
+	-- newToken("pp_keyword",  "foo"), -- Error!
+	-- newToken("nope",        nil), -- Error!
+} do
+	print("------------------------")
+	print("type  ", token.type)
+	print("value ", (tostring(token.value):gsub("\n", "<NEWLINE>")))
+	print("repr  ", (token.representation :gsub("\n", "<NEWLINE>")))
+	if token.long ~= nil then
+	print("long  ", token.long)
+	end
+	if token.double ~= nil then
+	print("double", token.double)
+	end
+end
+--]==]
+)
+
+

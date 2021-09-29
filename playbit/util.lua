@@ -1,0 +1,16 @@
+local Util = {}
+
+--- rounds a number to the specified number of decimal places
+function Util.round(num, numDecimalPlaces)
+  local mult = 10^(numDecimalPlaces or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
+--- returns a shallow copy of the given table
+function Util.shallowCopy(result, original)
+  for k,v in pairs(original) do
+    result[k] = v
+  end
+end
+
+return Util

@@ -1,0 +1,11 @@
+*.lnk
+local/
+
+/*.sublime-*
+/.run
+
+/tests/quickTest.lua
+/tests/quickTest.meta.lua
+
+/examples/*.lua
+!/examples/*.output.lua

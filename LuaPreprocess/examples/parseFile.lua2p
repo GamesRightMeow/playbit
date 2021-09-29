@@ -1,0 +1,204 @@
+--[[============================================================
+--=
+--=  LuaPreprocess example: Pre-parse a data file.
+--=
+--=  Here we convert a JSON data string to a more appropriate
+--=  data format in the metaprogram. The final program will not
+--=  contain anything related to JSON - just a nice Lua table
+--=  literal with all data.
+--=
+--============================================================]]
+
+-- Metaprogram.
+--==============================================================
+
+!(
+function eatWhitespace(str, pos)
+	local i1, i2 = str:find("^%s*", pos)
+	pos = i2+1
+	return pos
+end
+
+function parseNumber(json, pos)
+	-- We only support positive integers for now.
+	local i1, i2, n = json:find("^(%d+)", pos)
+
+	n   = tonumber(n)
+	pos = i2+1
+
+	return n, pos
+end
+
+function parseString(json, pos)
+	-- We assume strings don't contain escape sequences.
+	local i1, i2, s = json:find('^"(.-)"', pos)
+
+	if not s then
+		error("Invalid string: "..json:sub(pos))
+	end
+
+	pos = i2+1
+
+	return s, pos
+end
+
+function parseArray(json, pos)
+	pos = pos+1 -- Eat the initial '['.
+
+	local array = {}
+
+	for i = 1, math.huge do
+		pos = eatWhitespace(json, pos)
+
+		local char = json:sub(pos, pos)
+
+		if char == "" then
+			error("Unexpected end of array: "..json:sub(pos))
+		elseif char == "]" then
+			pos = pos+1 -- Eat the ']'.
+			break
+		end
+
+		-- Ensure there's a comma between items.
+		if i > 1 then
+			if char == "," then
+				pos = pos+1 -- Eat the ','.
+				pos = eatWhitespace(json, pos)
+			else
+				error("Expected a comma: "..json:sub(pos))
+			end
+		end
+
+		local item
+		item, pos = parseJson(json, pos)
+		array[i] = item
+	end
+
+	return array, pos
+end
+
+function parseObject(json, pos)
+	pos = pos+1 -- Eat the initial '{'.
+
+	local object = {}
+
+	for i = 1, math.huge do
+		pos = eatWhitespace(json, pos)
+
+		local char = json:sub(pos, pos)
+
+		if char == "" then
+			error("Unexpected end of object: "..json:sub(pos))
+		elseif char == "}" then
+			pos = pos+1 -- Eat the '}'.
+			break
+		end
+
+		-- Ensure there's a comma between items.
+		if i > 1 then
+			if char == "," then
+				pos  = pos+1 -- Eat the ','.
+				pos  = eatWhitespace(json, pos)
+				char = json:sub(pos, pos)
+
+			else
+				error("Expected a comma: "..json:sub(pos))
+			end
+		end
+
+		if char ~= '"' then
+			error("Invalid key: "..json:sub(pos))
+		end
+
+		local key
+		key, pos = parseString(json, pos)
+
+		pos  = eatWhitespace(json, pos)
+		char = json:sub(pos, pos)
+
+		if char == ":" then
+			pos = pos+1 -- Eat the ':'.
+			pos = eatWhitespace(json, pos)
+		else
+			error("Expected a colon: "..json:sub(pos))
+		end
+
+		local value
+		value, pos = parseJson(json, pos)
+
+		object[key] = value
+	end
+
+	return object, pos
+end
+
+function parseJson(json, pos)
+	pos = pos or 1
+	pos = eatWhitespace(json, pos)
+
+	local char = json:sub(pos, pos)
+
+	if char == '"' then
+		return parseString(json, pos)
+	elseif char == "[" then
+		return parseArray(json, pos)
+	elseif char == "{" then
+		return parseObject(json, pos)
+	elseif char:find"^%d" then
+		return parseNumber(json, pos)
+	else
+		error("Unexpected character: "..json:sub(pos))
+	end
+end
+
+local json = [[
+{
+	"characters": [
+		{
+			"id":   1,
+			"name": "Warrior",
+			"type": "melee",
+			"actions": [
+				{"slot":"left",  "title":"Slash"},
+				{"slot":"right", "title":"Block"}
+			]
+		},
+		{
+			"id":   2,
+			"name": "Spell Caster",
+			"type": "magic",
+			"actions": [
+				{"slot":"left",     "title":"Fireball"},
+				{"slot":"right",    "title":"Illuminate"},
+				{"slot":"familiar", "title":"Swoop"}
+			]
+		}
+	]
+}
+]]
+
+local data = parseJson(json)
+)
+
+-- The program.
+--==============================================================
+
+local characters = !(data.characters)
+
+function printAvailableCharacters()
+	print("Available characters:")
+
+	for i, character in ipairs(characters) do
+		print(string.format(
+			"%d. %s (type: %s, actions: x%d)",
+			i,
+			character.name,
+			character.type,
+			#character.actions
+		))
+	end
+end
+
+printAvailableCharacters()
+
+--==============================================================
