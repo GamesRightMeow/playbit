@@ -17,11 +17,11 @@ function Build.processLua(inputFolder, outputFolder, verbose)
   local dirOuput = dirCommand:read("*a")
 
   dirCommand = io.popen("cd")
-  local directoryOuput = dirCommand:read("*l")
+  local dirOutput = dirCommand:read("*l").."\\"..inputFolder
 
   for path in dirOuput:gmatch("(.-)\n") do 
-    local outputPath = path:gsub(directoryOuput, "")
-    outputPath = directoryOuput .. "\\" .. outputFolder .. outputPath
+    local outputPath = path:gsub(dirOutput, "")
+    outputPath = outputFolder .. outputPath
 
     -- read original source
     local file = io.open(path, "r")
@@ -76,7 +76,7 @@ function Build.build(options)
   -- process scripts
   if options.luaFolders then
     for i = 1, #options.luaFolders, 1 do
-      Build.processLua(options.luaFolders[i], outputFolder, enableVerbose)
+      Build.processLua(options.luaFolders[i][1], outputFolder..options.luaFolders[i][2], enableVerbose)
     end
   end
 
