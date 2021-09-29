@@ -1,7 +1,6 @@
 -- this build script was only designed to run on Windows!
-
-local perf = require("playbit.perf")
-local pp = require("LuaPreprocess.preprocess")
+local folderOfThisFile = (...):match("(.-)[^%.]+$")
+local pp = require(folderOfThisFile.."LuaPreprocess.preprocess")
 
 local Build = {}
 
@@ -59,7 +58,7 @@ function Build.processLua(inputFolder, outputFolder, verbose)
 end
 
 function Build.build(options)
-  perf.beginSample()
+  local timeStart = os.clock()
 
   local enableVerbose = options.verbose == true
 
@@ -95,7 +94,8 @@ function Build.build(options)
     end
   end
 
-  perf.endSample()
+  local timeEnd = os.clock()
+  print("Build completed in "..(timeEnd - timeStart).."ms")
 
   if options.runOnSuccess then 
     os.execute(options.runOnSuccess)
