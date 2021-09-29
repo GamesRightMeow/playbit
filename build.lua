@@ -13,7 +13,7 @@ function Build.copyFolder(src, dst)
   os.execute("xcopy /E /H /y " .. src .. " " .. dst)
 end
 
-function Build.processLua(inputFolder, verbose)
+function Build.processLua(inputFolder, outputFolder, verbose)
   local dirCommand = io.popen("dir /a-D /S /B \"" .. inputFolder .. "\"")
   local dirOuput = dirCommand:read("*a")
 
@@ -22,7 +22,7 @@ function Build.processLua(inputFolder, verbose)
 
   for path in dirOuput:gmatch("(.-)\n") do 
     local outputPath = path:gsub(directoryOuput, "")
-    outputPath = directoryOuput .. "\\_dist" .. outputPath
+    outputPath = directoryOuput .. "\\" .. outputFolder .. outputPath
 
     -- read original source
     local file = io.open(path, "r")
@@ -67,17 +67,17 @@ function Build.build(options)
   -- TODO: add variable for playdate sdk
 
   -- nuke old folder
-  os.execute("rmdir _dist /s /q")
-  os.execute("mkdir _dist")
-
-  -- process playbit scripts
-  
-  Build.processLua("playbit/", enableVerbose);
+  local outputFolder = "_dist"
+  if options.output then
+    outputFolder = options.output
+  end
+  os.execute("rmdir "..outputFolder.." /s /q")
+  os.execute("mkdir "..outputFolder)
 
   -- process scripts
   if options.luaFolders then
     for i = 1, #options.luaFolders, 1 do
-      Build.processLua(options.luaFolders[i], enableVerbose)
+      Build.processLua(options.luaFolders[i], outputFolder, enableVerbose)
     end
   end
 
