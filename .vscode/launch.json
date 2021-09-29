@@ -42,6 +42,22 @@
       "args": [
         "${workspaceFolder}"
       ]
+    },
+    {
+      "name": "LOVE",
+      "type": "lua-local",
+      "request": "launch",
+      "program":
+      {
+        "command": "lovec"
+      },
+      "args": 
+      [
+        "${workspaceFolder}/_dist"
+      ],
+      "scriptRoots": [
+        "${workspaceFolder}/_dist"
+      ]
     }
   ]
 }
