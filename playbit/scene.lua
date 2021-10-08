@@ -48,7 +48,7 @@ end
 
 --- retrieves a component from an entity
 function Scene:getComponent(entityId, componentName)
-  local componentId = self.app:getComponentId(k)
+  local componentId = self.app:getComponentId(componentName)
   return self:getComponentById(entityId, componentId)
 end
 
