@@ -119,6 +119,8 @@ end
 function App:registerComponent(name, template)
   local id = self.nextComponentId
   self.componentTemplates[id] = template
+  setmetatable(template, {})
+  template.__index = template
   self.componentNameToIdMap[name] = id
   self.nextComponentId = self.nextComponentId + 1
   return id;

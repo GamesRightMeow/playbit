@@ -3,9 +3,9 @@ local pb = require("playbit.pb")
 function SystemTests()
   local game = pb.app.new()
 
-  local componentAId = game:registerComponent("ComponentA")
-  local componentBId = game:registerComponent("ComponentB")
-  local componentCId = game:registerComponent("ComponentC")
+  local componentAId = game:registerComponent("ComponentA", {})
+  local componentBId = game:registerComponent("ComponentB", {})
+  local componentCId = game:registerComponent("ComponentC", {})
   assert(componentAId == 1)
   assert(componentBId == 2)
   assert(componentCId == 3)
@@ -20,10 +20,10 @@ function SystemTests()
   assert(systemBCId == 4)
   
   for i = 1, 24, 1 do
-    game:registerComponent(tostring(i))
+    game:registerComponent(tostring(i), {})
   end
 
-  local componentDId = game:registerComponent("ComponentD")
+  local componentDId = game:registerComponent("ComponentD", {})
   assert(componentDId == 28)
 
   local scene = pb.scene.new(game)
@@ -161,15 +161,20 @@ function EntityTests()
   local game = pb.app.new()
   game:load()
   
-  local componentAId = game:registerComponent("ComponentA")
-  local componentBId = game:registerComponent("ComponentB")
+  local componentAId = game:registerComponent("ComponentA", {})
+  local componentBId = game:registerComponent("ComponentB", {})
 
   local scene = pb.scene.new(game)
 
   local tempId = scene:addEntity({
-    [pb.components.Name.name] = { x=0, y=0 },
+    [pb.components.Name.name] = { },
+    [pb.components.Transform.name] = { x = 5 },
   })
   assert(scene.entityCount == 1)
+
+  local tranformComponent = scene:getComponent(tempId, pb.components.Transform.name)
+  assert(tranformComponent.x == 5)
+  assert(tranformComponent.y == 0)
 
   scene:removeEntity(tempId);
   assert(scene.entityCount == 0)

@@ -65,6 +65,10 @@ end
 
 --- adds a component to an entity
 function Scene:addComponentById(entityId, componentId, data)
+  -- make template the meta table of new data
+  local template = self.app:getComponentTemplate(componentId)
+  setmetatable(data, template)
+
   -- add component
   self.componentArrays[componentId]:add(entityId, data)
 
