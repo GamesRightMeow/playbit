@@ -1,3 +1,8 @@
+-- love uses bit but lua native 5.3 uses bit32
+if bit == nil then
+  bit = bit32
+end
+
 -- caching this locally improves perf a bit
 local lshift = bit.lshift
 local bor = bit.bor
