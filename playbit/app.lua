@@ -38,6 +38,10 @@ function App:load()
   for k,v in pairs(systems) do
     systems[k].id = self:registerSystem(v.name, v)
   end
+
+  if self["onLoad"] then
+    self:onLoad()
+  end
 end
 
 function App:keypressed(key)
