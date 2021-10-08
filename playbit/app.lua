@@ -31,7 +31,7 @@ end
 function App:load()
   -- register built in components
   for k,v in pairs(components) do
-    components[k].id = self:registerComponent(v.name, v.prototype)
+    components[k].id = self:registerComponent(v.name, v.template)
   end
 
   -- register built in systems

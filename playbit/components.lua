@@ -2,14 +2,14 @@ local Components = {}
 
 Components.Name = {
   name = "name",
-  prototype = {
+  template = {
     name = ""
   }
 }
 
 Components.Transform = {
   name = "transform",
-  prototype = {
+  template = {
     x = 0,
     y = 0,
   }
@@ -18,6 +18,7 @@ Components.Transform = {
 Components.Graphic = {
   name = "graphic",
   prototype = {
+  template = {
     texturePath = ""
   }
 }
