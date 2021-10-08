@@ -15,11 +15,22 @@ Components.Transform = {
   }
 }
 
-Components.Graphic = {
-  name = "graphic",
-  prototype = {
+Components.Texture = {
+  name = "texture",
   template = {
     texturePath = ""
+  }
+}
+
+Components.Shape = {
+  name = "shape",
+  template = {
+    type = "circle",
+    x = 0,
+    y = 0,
+    radius = 0,
+    width = 0,
+    height = 0,
   }
 }
 

@@ -134,7 +134,7 @@ end
 
 --- returns the id of the first entity found with the specified name, or '-1' if it doesnt exist.
 function Scene:findEntity(name)
-  local nameSystemId = self.app:getSystemId(systems.NameManager.name)
+  local nameSystemId = self.app:getSystemId(systems.Name.name)
   local nameComponentId = self.app:getComponentId(components.Name.name)
   local entityIds = self.systemEntityIds[nameSystemId].entities
   for i = 1, #entityIds, 1 do

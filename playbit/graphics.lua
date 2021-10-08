@@ -25,6 +25,14 @@ function Graphics.setColor(color)
 end
 
 --- draws a filled rectangle
+function Graphics.circle(color, x, y, radius)
+  --! if USE_LOVE then
+  Graphics.setColor(color)
+  love.graphics.circle("fill", x, y, radius)
+  --! end
+end
+
+--- draws a filled rectangle
 function Graphics.rectangle(color, x, y, width, height)
   --! if USE_LOVE then
   Graphics.setColor(color)

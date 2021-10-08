@@ -55,7 +55,11 @@ end
 function App:update()
   perf.beginFrameSample("update")
   
-  -- TODO: update systems
+  for i = 1, #self.updateSystems, 1 do
+    local systemId = self.updateSystems[i].id
+    local entities = self.scene.systemEntityIds[systemId].entities
+    self.updateSystems[i].update(self.scene, entities)
+  end
 
   if input.getButtonDown("debug_stats") then
     self.drawStats = not self.drawStats
@@ -69,7 +73,11 @@ end
 function App:draw()
   perf.beginFrameSample("render")
 
-  -- TODO: render systems
+  for i = 1, #self.renderSystems, 1 do
+    local systemId = self.renderSystems[i].id
+    local entities = self.scene.systemEntityIds[systemId].entities
+    self.renderSystems[i].render(self.scene, entities)
+  end
 
   perf.endFrameSample("render")
 
@@ -85,27 +93,27 @@ function App:getSystemId(name)
 end
 
 function App:registerSystem(name, system)
-  local id = self.nextSystemId
+  local systemId = self.nextSystemId
 
   local componentIds = {}
   for i = 1, #system.components, 1 do
     local componentName = system.components[i]
     table.insert(componentIds, self:getComponentId(componentName))
   end
-  self.systemComponentIds[id] = componentIds
+  self.systemComponentIds[systemId] = componentIds
 
-  self.systemNameToIdMap[name] = id
+  self.systemNameToIdMap[name] = systemId
 
   if system["update"] ~= nil then
-    self.updateSystems[id] = system.update
+    table.insert(self.updateSystems, { id = systemId, update = system.update });
   end
 
   if system["render"] ~= nil then
-    self.renderSystems[id] = system.render
+    table.insert(self.renderSystems, { id = systemId, render = system.render });
   end
   
   self.nextSystemId = self.nextSystemId + 1
-  return id
+  return systemId
 end
 
 function App:getComponentId(name)
