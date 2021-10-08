@@ -28,17 +28,17 @@ function SystemTests()
 
   local scene = pb.scene.new(game)
   scene:addEntity({
-    [componentAId] = {}
+    ["ComponentA"] = {}
   })
   scene:addEntity({
-    [componentBId] = {}
+    ["ComponentB"] = {}
   })
   scene:addEntity({
-    [componentCId] = {}
+    ["ComponentC"] = {}
   })
   scene:addEntity({
-    [componentBId] = {},
-    [componentCId] = {},
+    ["ComponentB"] = {},
+    ["ComponentC"] = {},
   })
   assert(#scene.systemEntityIds[systemAId].entities == 1)
   assert(#scene.systemEntityIds[systemBId].entities == 2)
@@ -161,13 +161,13 @@ function EntityTests()
   local game = pb.app.new()
   game:load()
   
-  local COMPONENT_A_ID = game:registerComponent("ComponentA")
-  local COMPONENT_B_ID = game:registerComponent("ComponentB")
+  local componentAId = game:registerComponent("ComponentA")
+  local componentBId = game:registerComponent("ComponentB")
 
   local scene = pb.scene.new(game)
 
   local tempId = scene:addEntity({
-    [pb.components.Name.id] = { x=0, y=0 },
+    [pb.components.Name.name] = { x=0, y=0 },
   })
   assert(scene.entityCount == 1)
 
@@ -176,8 +176,8 @@ function EntityTests()
 
   local playerName = "Player"
   local playerId = scene:addEntity({ 
-    [pb.components.Name.id] = { name=playerName },
-    [COMPONENT_A_ID] = { x=0, y=0 },
+    [pb.components.Name.name] = { name=playerName },
+    ["ComponentA"] = { x=0, y=0 },
   })
 
   local nameSystemId = game:getSystemId("name")
@@ -187,31 +187,31 @@ function EntityTests()
   assert(scene:findEntity(playerName) == playerId)
   assert(scene:findEntity("does not exist") == -1)
 
-  assert(scene:hasComponent(playerId, pb.components.Name.id))
-  assert(scene:hasComponent(playerId, COMPONENT_A_ID))
-  assert(not scene:hasComponent(playerId, COMPONENT_B_ID))
-  assert(not scene:hasComponent(playerId, pb.components.Transform.id))
+  assert(scene:hasComponentId(playerId, pb.components.Name.id))
+  assert(scene:hasComponentId(playerId, componentAId))
+  assert(not scene:hasComponentId(playerId, componentBId))
+  assert(not scene:hasComponentId(playerId, pb.components.Transform.id))
   
-  scene:addComponent(playerId, COMPONENT_B_ID, {})
-  assert(scene:hasComponent(playerId, pb.components.Name.id))
-  assert(scene:hasComponent(playerId, COMPONENT_A_ID))
-  assert(scene:hasComponent(playerId, COMPONENT_B_ID))
-  assert(not scene:hasComponent(playerId, pb.components.Transform.id))
+  scene:addComponent(playerId, "ComponentB", {})
+  assert(scene:hasComponentId(playerId, pb.components.Name.id))
+  assert(scene:hasComponentId(playerId, componentAId))
+  assert(scene:hasComponentId(playerId, componentBId))
+  assert(not scene:hasComponentId(playerId, pb.components.Transform.id))
 
-  scene:removeComponent(playerId, COMPONENT_A_ID)
-  assert(scene:hasComponent(playerId, pb.components.Name.id))
-  assert(not scene:hasComponent(playerId, COMPONENT_A_ID))
-  assert(scene:hasComponent(playerId, COMPONENT_B_ID))
-  assert(not scene:hasComponent(playerId, pb.components.Transform.id))
+  scene:removeComponent(playerId, "ComponentA")
+  assert(scene:hasComponentId(playerId, pb.components.Name.id))
+  assert(not scene:hasComponentId(playerId, componentAId))
+  assert(scene:hasComponentId(playerId, componentBId))
+  assert(not scene:hasComponentId(playerId, pb.components.Transform.id))
 
   local entityA = scene:addEntity({ 
-    [COMPONENT_A_ID] = { x=0, y=0 },
+    ["ComponentA"] = { x=0, y=0 },
   })
   assert(entityA == 1);
   assert(scene.entityCount == 2)
 
   local entityB = scene:addEntity({ 
-    [COMPONENT_A_ID] = { x=0, y=0 },
+    ["ComponentA"] = { x=0, y=0 },
   })
   assert(entityB == 2);
   assert(scene.entityCount == 3)
@@ -220,7 +220,7 @@ function EntityTests()
   assert(scene.entityCount == 2)
 
   local entityC = scene:addEntity({ 
-    [COMPONENT_A_ID] = { x=0, y=0 },
+    ["ComponentA"] = { x=0, y=0 },
   })
   assert(entityC == 1);
   assert(scene.entityCount == 3)
