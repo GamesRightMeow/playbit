@@ -24,10 +24,12 @@ System.ShapeRenderer = {
       local shape = scene:getComponent(entities[i], "shape")
       local transform = scene:getComponent(entities[i], "transform")
       graphics.setColor(shape.color)
+      local x = scene.camera.x + transform.x + shape.x
+      local y = scene.camera.y + transform.y + shape.y
       if shape.type == "circle" then
-        graphics.circle(transform.x + shape.x, transform.y + shape.y, shape.radius, shape.isFilled)
+        graphics.circle(x, y, shape.radius, shape.isFilled)
       elseif shape.type == "rectangle" then
-        graphics.rectangle(transform.x + shape.x, transform.y + shape.y, shape.width, shape.height, shape.isFilled)
+        graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled)
       end
     end
   end

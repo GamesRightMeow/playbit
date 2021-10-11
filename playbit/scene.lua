@@ -21,6 +21,7 @@ function Scene.new(app, maxEntities)
     componentArrays = {},
     availableEntityIds = {},
     systemEntityIds = {},
+    camera = { x = 0, y = 0 }
   }
   setmetatable(newScene, Scene)
 
