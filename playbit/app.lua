@@ -55,10 +55,18 @@ end
 function App:update()
   perf.beginFrameSample("update")
   
+  if self.scene["update"] then
+    self.scene.update()
+  end
+
   for i = 1, #self.updateSystems, 1 do
     local systemId = self.updateSystems[i].id
     local entities = self.scene.systemEntityIds[systemId].entities
     self.updateSystems[i].update(self.scene, entities)
+  end
+
+  if self.scene["lateUpdate"] then
+    self.scene.lateUpdate()
   end
 
   if input.getButtonDown("debug_stats") then
@@ -73,16 +81,26 @@ end
 function App:draw()
   perf.beginFrameSample("render")
 
+  if self.scene["render"] then
+    self.scene.render()
+  end
+
   for i = 1, #self.renderSystems, 1 do
     local systemId = self.renderSystems[i].id
     local entities = self.scene.systemEntityIds[systemId].entities
     self.renderSystems[i].render(self.scene, entities)
   end
 
+  if self.scene["lateRender"] then
+    self.scene.lateRender()
+  end
+
   perf.endFrameSample("render")
 
   if self.drawStats then
     graphics.setColor(1)
+    graphics.rectangle(350, 0, 50, 48, true)
+    graphics.setColor(0)
     graphics.text(perf.getFps(), 0, 0, "right")
     graphics.text(perf.getFrameSample("update"), 0, 16, "right")
     graphics.text(perf.getFrameSample("render"), 0, 32, "right")
@@ -141,13 +159,13 @@ function App:addScene(newScene)
 end
 
 function App:changeScene(newScene)
-  if self.scene ~= nil then
+  if self.scene ~= nil and self.scene["enter"] then
     self.scene:exit()
   end
 
   self.scene = newScene;
 
-  if self.scene ~= nil then
+  if self.scene ~= nil and self.scene["enter"] then
     self.scene:enter()
   end
 end

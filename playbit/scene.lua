@@ -42,14 +42,6 @@ function Scene.new(app, maxEntities)
   return newScene
 end
 
-function Scene:enter()
-  -- TODO
-end
-
-function Scene:exit()
-  -- TODO
-end
-
 --- retrieves a component from an entity
 function Scene:getComponent(entityId, componentName)
   local componentId = self.app:getComponentId(componentName)
