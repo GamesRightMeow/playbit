@@ -10,9 +10,25 @@ System.Name = {
 
 System.TextureRenderer = {
   name = "texture-renderer",
-  components = { components.Texture.name },
+  components = { components.Texture.name, components.Transform.name },
   render = function(scene, entities)
-    
+    for i = 1, #entities, 1 do
+      local texture = scene:getComponent(entities[i], "texture")
+      local transform = scene:getComponent(entities[i], "transform")
+      local x = scene.camera.x + transform.x + texture.x
+      local y = scene.camera.y + transform.y + texture.y
+      
+      if texture.drawable == nil then
+        texture.drawable = love.graphics.newImage(texture.path)
+      end
+      
+      graphics.draw(texture.drawable, 
+        x, y, 
+        texture.rotation, 
+        texture.scaleX, texture.scaleY,
+        texture.originX, texture.originY
+      )
+    end
   end
 }
 
