@@ -57,6 +57,7 @@ end
 --- adds a component to an entity
 function Scene:addComponent(entityId, componentName, data)
   local componentId = self.app:getComponentId(componentName)
+  assert(componentId, "Component '"..componentName.."' does not exist.")
   self:addComponentById(entityId, componentId, data)
 end
 
