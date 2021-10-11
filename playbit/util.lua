@@ -13,4 +13,20 @@ function Util.shallowCopy(result, original)
   end
 end
 
+function Util.random()
+  --! if USE_LOVE then
+  return love.math.random()
+  --! else
+  return 0
+  --! end
+end
+
+function Util.randomRange(min, max)
+  --! if USE_LOVE then
+  return min + (love.math.random() * (max - min))
+  --! else
+  return 0
+  --! end
+end
+
 return Util
