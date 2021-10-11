@@ -29,4 +29,23 @@ function Util.randomRange(min, max)
   --! end
 end
 
+function Util.deltaTime()
+  --! if USE_LOVE then
+  return love.timer.getDelta()
+  --! else
+  return 0
+  --! end
+end
+
+function Util.toDegree(rads)
+  return rads * -180 / math.pi
+end
+
+function Util.toRads(degrees)
+  while degrees > 360 do
+    degrees = degrees - 360
+  end
+  return degrees * math.pi / -180;
+end
+
 return Util
