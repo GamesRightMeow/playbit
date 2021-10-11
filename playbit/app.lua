@@ -82,9 +82,10 @@ function App:draw()
   perf.endFrameSample("render")
 
   if self.drawStats then
-    graphics.text(1, perf.getFps(), 0, 0, "right")
-    graphics.text(1, perf.getFrameSample("update"), 0, 16, "right")
-    graphics.text(1, perf.getFrameSample("render"), 0, 32, "right")
+    graphics.setColor(1)
+    graphics.text(perf.getFps(), 0, 0, "right")
+    graphics.text(perf.getFrameSample("update"), 0, 16, "right")
+    graphics.text(perf.getFrameSample("render"), 0, 32, "right")
   end
 end
 
