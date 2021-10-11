@@ -8,10 +8,14 @@ setmetatable(Scene, {})
 Scene.__index = Scene
 
 -- creates a new Scene instance
-function Scene.new(app)
+function Scene.new(app, maxEntities)
+  if maxEntities == nil then
+    maxEntities = 1000
+  end
+
   local newScene = {
     -- TODO: make max entities configurable
-    maxEntities = 1000,
+    maxEntities = maxEntities,
     app = app,
     entityCount = 0,
     componentArrays = {},
