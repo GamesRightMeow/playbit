@@ -23,7 +23,7 @@ end
 
 function Util.randomRange(min, max)
   --! if USE_LOVE then
-  return min + (love.math.random() * (max - min))
+  return love.math.random(min, max)
   --! else
   return 0
   --! end
