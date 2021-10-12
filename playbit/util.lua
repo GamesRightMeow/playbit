@@ -38,14 +38,14 @@ function Util.deltaTime()
 end
 
 function Util.toDegree(rads)
-  return rads * -180 / math.pi
+  return rads * 180 / math.pi
 end
 
 function Util.toRads(degrees)
   while degrees > 360 do
     degrees = degrees - 360
   end
-  return degrees * math.pi / -180;
+  return degrees * math.pi / 180;
 end
 
 return Util
