@@ -8,15 +8,10 @@ setmetatable(Scene, {})
 Scene.__index = Scene
 
 -- creates a new Scene instance
-function Scene.new(app, maxEntities)
-  if maxEntities == nil then
-    maxEntities = 1000
-  end
-
+function Scene.new(app)
   local newScene = {
-    -- TODO: make max entities configurable
-    maxEntities = maxEntities,
     app = app,
+    newEntityId = 1,
     entityCount = 0,
     componentArrays = {},
     availableEntityIds = {},
@@ -24,11 +19,6 @@ function Scene.new(app, maxEntities)
     camera = { x = 0, y = 0 }
   }
   setmetatable(newScene, Scene)
-
-  -- allocate entity ids
-  for i = 1, newScene.maxEntities, 1 do
-    newScene.availableEntityIds[i] = newScene.maxEntities - i
-  end
 
   -- create component lists
   for componentId = 1, newScene.app.nextComponentId - 1, 1 do
@@ -148,7 +138,16 @@ end
 --- allocates a new entity with the specified components and returns the id.
 function Scene:addEntity(components)
   -- init new entity
-  local entityId = table.remove(self.availableEntityIds)
+  local entityId = -1
+  if #self.availableEntityIds > 0 then
+    -- use a recycled entity id if possible
+    entityId = table.remove(self.availableEntityIds)
+  else
+    -- otherwise generate a new one
+    entityId = self.newEntityId
+    self.newEntityId = self.newEntityId + 1
+  end
+
   self.entityCount = self.entityCount + 1
 
   -- add components
