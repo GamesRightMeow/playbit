@@ -111,24 +111,25 @@ function App:getSystemId(name)
   return self.systemNameToIdMap[name]
 end
 
-function App:registerSystem(name, system)
+--- Registers a system with the given name and options.
+function App:registerSystem(name, options)
   local systemId = self.nextSystemId
 
   local componentIds = {}
-  for i = 1, #system.components, 1 do
-    local componentName = system.components[i]
+  for i = 1, #options.components, 1 do
+    local componentName = options.components[i]
     table.insert(componentIds, self:getComponentId(componentName))
   end
   self.systemComponentIds[systemId] = componentIds
 
   self.systemNameToIdMap[name] = systemId
 
-  if system["update"] ~= nil then
-    table.insert(self.updateSystems, { id = systemId, update = system.update });
+  if options["update"] ~= nil then
+    table.insert(self.updateSystems, { id = systemId, update = options.update });
   end
 
-  if system["render"] ~= nil then
-    table.insert(self.renderSystems, { id = systemId, render = system.render });
+  if options["render"] ~= nil then
+    table.insert(self.renderSystems, { id = systemId, render = options.render });
   end
   
   self.nextSystemId = self.nextSystemId + 1
