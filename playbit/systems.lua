@@ -11,6 +11,7 @@ System.Name = {
 System.TextureRenderer = {
   name = "texture-renderer",
   components = { components.Texture.name, components.Transform.name },
+  imageCache = {},
   render = function(scene, entities)
     for i = 1, #entities, 1 do
       local texture = scene:getComponent(entities[i], "texture")
@@ -22,8 +23,17 @@ System.TextureRenderer = {
       x = math.floor(x)
       y = math.floor(y)
       
+      -- get drawable once
       if texture.drawable == nil then
-        texture.drawable = love.graphics.newImage(texture.path)
+        if System.TextureRenderer.imageCache[texture.path] then
+          -- pull from cache if exists
+          texture.drawable = System.TextureRenderer.imageCache[texture.path]
+        else
+          -- otherwise generate new image and cache it
+          local img = love.graphics.newImage(texture.path)
+          System.TextureRenderer.imageCache[texture.path] = img
+          texture.drawable = img
+        end
       end
       
       graphics.draw(texture.drawable, 
