@@ -13,6 +13,7 @@ function Util.shallowCopy(result, original)
   end
 end
 
+--- Returns a random value between 0.0 and 1.0.
 function Util.random()
   --! if USE_LOVE then
   return love.math.random()
@@ -21,9 +22,26 @@ function Util.random()
   --! end
 end
 
-function Util.randomRange(min, max)
+--- Returns a random integer between min and max.
+function Util.randomRangeInt(min, max)
   --! if USE_LOVE then
+  -- love does not support floating point numbers
   return love.math.random(min, max)
+  --! else
+  return 0
+  --! end
+end
+
+--- Returns a random float between min and max, using the specified precision (defaults to 3).
+function Util.randomRangeFloat(min, max, precision)
+  --! if USE_LOVE then
+	local precision = precision or 3
+	local num = Util.random()
+	local range = math.abs(max - min)
+	local offset = range * num
+	local randomnum = min + offset
+  ---@diagnostic disable-next-line: deprecated
+	return math.floor(randomnum * math.pow(10, precision) + 0.5) / math.pow(10, precision)
   --! else
   return 0
   --! end
