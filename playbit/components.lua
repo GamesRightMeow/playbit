@@ -25,6 +25,8 @@ Components.Texture = {
     scaleX = 1,
     scaleY = 1,
     rotation = 0,
+    scrollX = 1,
+    scrollY = 1,
     path = ""
   }
 }
@@ -39,6 +41,8 @@ Components.Shape = {
     radius = 0,
     width = 0,
     height = 0,
+    scrollX = 1,
+    scrollY = 1,
     isFilled = true
   }
 }

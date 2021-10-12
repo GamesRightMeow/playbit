@@ -15,8 +15,8 @@ System.TextureRenderer = {
     for i = 1, #entities, 1 do
       local texture = scene:getComponent(entities[i], "texture")
       local transform = scene:getComponent(entities[i], "transform")
-      local x = scene.camera.x + transform.x + texture.x
-      local y = scene.camera.y + transform.y + texture.y
+      local x = scene.camera.x * texture.scrollX + transform.x + texture.x
+      local y = scene.camera.y * texture.scrollY + transform.y + texture.y
       
       if texture.drawable == nil then
         texture.drawable = love.graphics.newImage(texture.path)
@@ -40,8 +40,8 @@ System.ShapeRenderer = {
       local shape = scene:getComponent(entities[i], "shape")
       local transform = scene:getComponent(entities[i], "transform")
       graphics.setColor(shape.color)
-      local x = scene.camera.x + transform.x + shape.x
-      local y = scene.camera.y + transform.y + shape.y
+      local x = scene.camera.x * shape.scrollX + transform.x + shape.x
+      local y = scene.camera.y * shape.scrollY + transform.y + shape.y
       if shape.type == "circle" then
         graphics.circle(x, y, shape.radius, shape.isFilled)
       elseif shape.type == "rectangle" then
