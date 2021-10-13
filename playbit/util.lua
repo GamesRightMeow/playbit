@@ -55,15 +55,22 @@ function Util.deltaTime()
   --! end
 end
 
-function Util.toDegree(rads)
+--- converts rads to degress
+function Util.toDegrees(rads)
   return rads * 180 / math.pi
 end
 
+--- converts degrees to rads
 function Util.toRads(degrees)
   while degrees > 360 do
     degrees = degrees - 360
   end
-  return degrees * math.pi / 180;
+  return degrees * math.pi / 180
+end
+
+-- returns the absolute value of the difference between two angles
+function Util.angleDiff(a1, a2)
+  return 180 - math.abs(math.abs(a1 - a2) - 180)
 end
 
 return Util
