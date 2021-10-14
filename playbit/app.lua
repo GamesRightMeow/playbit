@@ -14,6 +14,7 @@ function App.new()
     drawStats = false,
     scene = nil,
     -- TODO: better name?
+    systems = {},
     systemComponentIds = {},
     systemNameToIdMap = {},
     systemsToUpdate = {},
@@ -60,9 +61,10 @@ function App:update()
   end
 
   for i = 1, #self.systemsToUpdate, 1 do
-    local systemId = self.systemsToUpdate[i].id
+    local systemId = self.systemsToUpdate[i]
     local entities = self.scene.systemEntityIds[systemId].entities
-    self.systemsToUpdate[i].update(self.scene, entities)
+    local system = self.systems[systemId]
+    system.update(self.scene, entities)
   end
 
   if self.scene["lateUpdate"] then
@@ -86,9 +88,10 @@ function App:draw()
   end
 
   for i = 1, #self.systemsToRender, 1 do
-    local systemId = self.systemsToRender[i].id
+    local systemId = self.systemsToRender[i]
     local entities = self.scene.systemEntityIds[systemId].entities
-    self.systemsToRender[i].render(self.scene, entities)
+    local system = self.systems[systemId]
+    system.render(self.scene, entities)
   end
 
   if self.scene["lateRender"] then
@@ -112,28 +115,31 @@ function App:getSystemId(name)
 end
 
 --- Registers a system with the given name and options.
-function App:registerSystem(name, options)
+function App:registerSystem(name, system)
+  -- allocate system id
   local systemId = self.nextSystemId
+  self.nextSystemId = self.nextSystemId + 1
 
+  -- convert component names to ids
   local componentIds = {}
-  for i = 1, #options.components, 1 do
-    local componentName = options.components[i]
+  for i = 1, #system.components, 1 do
+    local componentName = system.components[i]
     table.insert(componentIds, self:getComponentId(componentName))
   end
   self.systemComponentIds[systemId] = componentIds
 
+  -- register system
   self.systemNameToIdMap[name] = systemId
+  self.systems[systemId] = system
 
-
-  if options["update"] ~= nil then
-    table.insert(self.systemsToUpdate, { id = systemId, update = options.update });
+  if system.update ~= nil then
+    table.insert(self.systemsToUpdate, systemId)
   end
 
-  if options["render"] ~= nil then
-    table.insert(self.systemsToRender, { id = systemId, render = options.render });
+  if system.render ~= nil then
+    table.insert(self.systemsToRender, systemId)
   end
   
-  self.nextSystemId = self.nextSystemId + 1
   return systemId
 end
 
