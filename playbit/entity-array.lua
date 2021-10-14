@@ -3,7 +3,7 @@ local EntityArray = {}
 setmetatable(EntityArray, {})
 EntityArray.__index = EntityArray
 
---- creates a new EntityArray instance
+--- Creates a new EntityArray instance.
 function EntityArray.new()
   local newEntityArray = {
     entities = {},
@@ -14,7 +14,12 @@ function EntityArray.new()
   return newEntityArray
 end
 
---- adds an entity
+--- Returns true if the specified entity exists in this array.
+function EntityArray:contains(entityId)
+  return self.idToIndexMap[entityId] ~= nil
+end
+
+--- Adds an entity.
 function EntityArray:add(entityId)
   if self.idToIndexMap[entityId] ~= nil then
     -- entity already added
@@ -27,7 +32,7 @@ function EntityArray:add(entityId)
   table.insert(self.entities, entityId)
 end
 
---- removes an entity
+--- Removes an entity.
 function EntityArray:remove(entityId)
   local index = self.idToIndexMap[entityId]
   if index == nil then
