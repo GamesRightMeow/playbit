@@ -254,7 +254,44 @@ function ECS()
   print("entities="..endTime - startTime)
 end
 
+function DirectVsLookup()
+  -- lookup takes a tiny bit longer than direct, assuming because its doing to table[] lookups
+  local iterations = 10000
+  local size = 100
+  local targetArray = {}
+  for i = 1, size, 1 do
+    targetArray[i] = i
+  end
+
+  local lookupArray = {}
+  for i = 1, size, 1 do
+    lookupArray[i] = size - i + 1
+  end
+
+  local startTime = os.clock()
+  for j = 1, iterations, 1 do
+    for i = 1, size, 1 do
+      local a = targetArray[i]
+      -- uncommenting makes both tests run pretty much the same
+      -- local a = targetArray[i]
+    end
+  end
+  local endTime = os.clock()
+  print("direct="..endTime - startTime)
+
+  local startTime = os.clock()
+  for j = 1, iterations, 1 do
+    for i = 1, size, 1 do
+      local index = lookupArray[i]
+      local a = targetArray[index]
+    end
+  end
+  local endTime = os.clock()
+  print("lookup="..endTime - startTime)
+end
+
 local benchmarks = {
+  { name="SingleArrayVsArrayLookup", func=DirectVsLookup },
   { name="BitflagContains", func=BitflagContains },
   { name="BitflagSet", func=BitflagSet },
   { name="ArrayVsHashmap", func=ArrayVsHashmap },
