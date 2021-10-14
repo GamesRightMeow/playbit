@@ -52,12 +52,4 @@ function Graphics.text(str, x, y, align)
   --! end
 end
 
-function Graphics.draw(drawable, x, y, rotation, scaleX, scaleY, originX, originY)
-  --! if USE_LOVE then
-  -- must set color here to ensure its not tinted
-  love.graphics.setColor(1,1,1,1)
-  love.graphics.draw(drawable, x, y, rotation, scaleX, scaleY, originX, originY)
-  --! end
-end
-
 return Graphics

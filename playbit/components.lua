@@ -15,8 +15,8 @@ Components.Transform = {
   }
 }
 
-Components.Texture = {
-  name = "texture",
+Components.Graphic = {
+  name = "graphic",
   template = {
     x = 0,
     y = 0,
@@ -27,7 +27,34 @@ Components.Texture = {
     rotation = 0,
     scrollX = 1,
     scrollY = 1,
-    path = ""
+  }
+}
+
+Components.Spritesheet = {
+  name = "spritesheet",
+  template = {
+    path = "",
+    index = 0,
+    width = 0,
+    height = 0,
+  }
+}
+
+Components.Sprite = {
+  name = "sprite",
+  template = {
+    path = "",
+    x = 0,
+    y = 0,
+    width = 0,
+    height = 0,
+  }
+}
+
+Components.Texture = {
+  name = "texture",
+  template = {
+    path = "",
   }
 }
 
@@ -36,13 +63,9 @@ Components.Shape = {
   template = {
     type = "circle",
     color = 0,
-    x = 0,
-    y = 0,
     radius = 0,
     width = 0,
     height = 0,
-    scrollX = 1,
-    scrollY = 1,
     isFilled = true
   }
 }
