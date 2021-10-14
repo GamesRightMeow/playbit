@@ -16,8 +16,8 @@ function App.new()
     -- TODO: better name?
     systemComponentIds = {},
     systemNameToIdMap = {},
-    updateSystems = {},
-    renderSystems = {},
+    systemsToUpdate = {},
+    systemsToRender = {},
     nextSystemId = 1,
     componentTemplates = {},
     componentNameToIdMap = {},
@@ -59,10 +59,10 @@ function App:update()
     self.scene.update()
   end
 
-  for i = 1, #self.updateSystems, 1 do
-    local systemId = self.updateSystems[i].id
+  for i = 1, #self.systemsToUpdate, 1 do
+    local systemId = self.systemsToUpdate[i].id
     local entities = self.scene.systemEntityIds[systemId].entities
-    self.updateSystems[i].update(self.scene, entities)
+    self.systemsToUpdate[i].update(self.scene, entities)
   end
 
   if self.scene["lateUpdate"] then
@@ -85,10 +85,10 @@ function App:draw()
     self.scene.render()
   end
 
-  for i = 1, #self.renderSystems, 1 do
-    local systemId = self.renderSystems[i].id
+  for i = 1, #self.systemsToRender, 1 do
+    local systemId = self.systemsToRender[i].id
     local entities = self.scene.systemEntityIds[systemId].entities
-    self.renderSystems[i].render(self.scene, entities)
+    self.systemsToRender[i].render(self.scene, entities)
   end
 
   if self.scene["lateRender"] then
@@ -124,12 +124,13 @@ function App:registerSystem(name, options)
 
   self.systemNameToIdMap[name] = systemId
 
+
   if options["update"] ~= nil then
-    table.insert(self.updateSystems, { id = systemId, update = options.update });
+    table.insert(self.systemsToUpdate, { id = systemId, update = options.update });
   end
 
   if options["render"] ~= nil then
-    table.insert(self.renderSystems, { id = systemId, render = options.render });
+    table.insert(self.systemsToRender, { id = systemId, render = options.render });
   end
   
   self.nextSystemId = self.nextSystemId + 1
