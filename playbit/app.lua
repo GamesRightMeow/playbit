@@ -36,7 +36,7 @@ function App:load()
   end
 
   -- auto register this since order should really matter
-  self:registerSystem(nameAllocator.name, nameAllocator)
+  self:registerSystem(nameAllocator)
 
   if self["onLoad"] then
     self:onLoad()
@@ -113,7 +113,7 @@ function App:getSystemId(name)
 end
 
 --- Registers a system with the given name and options.
-function App:registerSystem(name, system)
+function App:registerSystem(system)
   -- allocate system id
   local systemId = self.nextSystemId
   self.nextSystemId = self.nextSystemId + 1
@@ -127,7 +127,7 @@ function App:registerSystem(name, system)
   self.systemComponentIds[systemId] = componentIds
 
   -- register system
-  self.systemNameToIdMap[name] = systemId
+  self.systemNameToIdMap[system.name] = systemId
   self.systems[systemId] = system
 
   if system.update ~= nil then
