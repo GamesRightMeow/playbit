@@ -1,8 +1,8 @@
 local input = require("playbit.input")
-local perf = require("playbit.perf");
-local graphics = require("playbit.graphics");
-local systems = require("playbit.systems");
-local components = require("playbit.components");
+local perf = require("playbit.perf")
+local graphics = require("playbit.graphics")
+local components = require("playbit.components")
+local nameAllocator = require("playbit.systems.name-allocator")
 
 local App = {}
 setmetatable(App, {})
@@ -32,13 +32,11 @@ end
 function App:load()
   -- register built in components
   for k,v in pairs(components) do
-    components[k].id = self:registerComponent(v.name, v.template)
+    self:registerComponent(v.name, v.template)
   end
 
-  -- register built in systems
-  for k,v in pairs(systems) do
-    systems[k].id = self:registerSystem(v.name, v)
-  end
+  -- auto register this since order should really matter
+  self:registerSystem(nameAllocator.name, nameAllocator)
 
   if self["onLoad"] then
     self:onLoad()

@@ -1,5 +1,5 @@
 local components = require("playbit.components")
-local systems = require("playbit.systems")
+local nameAllocator = require("playbit.systems.name-allocator")
 local componentArray = require("playbit.component-array")
 local entityArray = require("playbit.entity-array")
 
@@ -122,7 +122,7 @@ end
 
 --- returns the id of the first entity found with the specified name, or '-1' if it doesnt exist.
 function Scene:findEntity(name)
-  local nameSystemId = self.app:getSystemId(systems.Name.name)
+  local nameSystemId = self.app:getSystemId(nameAllocator.name)
   local nameComponentId = self.app:getComponentId(components.Name.name)
   local entityIds = self.systemEntityIds[nameSystemId].entities
   for i = 1, #entityIds, 1 do
