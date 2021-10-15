@@ -25,24 +25,33 @@ function Graphics.setColor(color)
 end
 
 --- draws a filled rectangle
-function Graphics.circle(x, y, radius, isFilled)
+function Graphics.circle(x, y, radius, isFilled, angle)
   --! if USE_LOVE then
   local mode = "line"
   if isFilled then
     mode = "fill"
   end
-  love.graphics.circle(mode , x, y, radius)
+
+  love.graphics.push()
+	love.graphics.translate(x, y)
+	love.graphics.rotate(angle)
+  love.graphics.circle(mode, 0, 0, radius)
+  love.graphics.pop()
   --! end
 end
 
 --- draws a filled rectangle
-function Graphics.rectangle(x, y, width, height, isFilled)
+function Graphics.rectangle(x, y, width, height, isFilled, angle)
   --! if USE_LOVE then
   local mode = "line"
   if isFilled then
     mode = "fill"
   end
-  love.graphics.rectangle(mode, x, y, width, height)
+  love.graphics.push()
+	love.graphics.translate(x, y)
+	love.graphics.rotate(angle)
+  love.graphics.rectangle(mode, 0, 0, width, height)
+  love.graphics.pop()
   --! end
 end
 

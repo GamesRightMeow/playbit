@@ -102,7 +102,7 @@ function App:draw()
 
   if self.drawStats then
     graphics.setColor(1)
-    graphics.rectangle(350, 0, 50, 48, true)
+    graphics.rectangle(350, 0, 50, 48, true, 0)
     graphics.setColor(0)
     graphics.text(perf.getFps(), 0, 0, "right")
     graphics.text(perf.getFrameSample("update"), 0, 16, "right")
