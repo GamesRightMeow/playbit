@@ -64,7 +64,6 @@ function Scene:addComponentById(entityId, componentId, data)
   for systemId = 1, #self.app.systemComponentIds, 1 do
     local componentIds = self.app.systemComponentIds[systemId]
     if self:hasComponentIds(entityId, componentIds) then
-      -- TODO: use system specific sort if present
       self.systemEntityIds[systemId]:add(entityId)
     end
   end

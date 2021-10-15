@@ -27,6 +27,11 @@ Components.Graphic = {
     rotation = 0,
     scrollX = 1,
     scrollY = 1,
+    layer = 0,
+    colorR = 1,
+    colorG = 1,
+    colorB = 1,
+    colorA = 1,
   }
 }
 
@@ -62,7 +67,6 @@ Components.Shape = {
   name = "shape",
   template = {
     type = "circle",
-    color = 0,
     radius = 0,
     width = 0,
     height = 0,
