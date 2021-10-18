@@ -47,7 +47,11 @@ function App:load()
     self:onLoad()
   end
 
+  --! if USE_LOVE then
   love.graphics.setDefaultFilter("nearest", "nearest")
+  --! end
+
+  graphics.createFont("playbit", "playbit/fonts/font.png")
 end
 
 function App:keypressed(key)
@@ -106,6 +110,9 @@ function App:draw()
   end
   --! end
 
+  -- default to included playbit font
+  graphics.setFont("playbit")
+
   if self.scene["render"] then
     self.scene.render()
   end
@@ -125,11 +132,11 @@ function App:draw()
 
   if self.drawStats then
     graphics.setColor(1)
-    graphics.rectangle(350, 0, 50, 48, true, 0)
+    graphics.rectangle(360, 0, 40, 25, true, 0)
     graphics.setColor(0)
-    graphics.text(perf.getFps(), 0, 0, "right")
-    graphics.text(perf.getFrameSample("update"), 0, 16, "right")
-    graphics.text(perf.getFrameSample("render"), 0, 32, "right")
+    graphics.text(perf.getFps(), 0, 1, "right")
+    graphics.text(perf.getFrameSample("update"), 0, 9, "right")
+    graphics.text(perf.getFrameSample("render"), 0, 17, "right")
   end
 end
 

@@ -3,7 +3,7 @@ local Graphics = {}
 local colorWhite = { r = 215 / 255, g = 212 / 255, b = 204 / 255 }
 local colorBlack = { r = 50 / 255, g = 47 / 255, b = 41 / 255 }
 
---- sets the background color
+--- Sets the background color.
 function Graphics.setBackgroundColor(color)
   --! if USE_LOVE then
   if color == 1 then
@@ -14,6 +14,7 @@ function Graphics.setBackgroundColor(color)
   --! end
 end
 
+--- Sets the color used to draw.
 function Graphics.setColor(color)
   --! if USE_LOVE then
   if color == 1 then
@@ -24,7 +25,7 @@ function Graphics.setColor(color)
   --! end
 end
 
---- draws a filled rectangle
+--- Draws a circle.
 function Graphics.circle(x, y, radius, isFilled, angle)
   --! if USE_LOVE then
   local mode = "line"
@@ -40,7 +41,7 @@ function Graphics.circle(x, y, radius, isFilled, angle)
   --! end
 end
 
---- draws a filled rectangle
+--- Draws a rectangle.
 function Graphics.rectangle(x, y, width, height, isFilled, angle)
   --! if USE_LOVE then
   local mode = "line"
@@ -55,6 +56,18 @@ function Graphics.rectangle(x, y, width, height, isFilled, angle)
   --! end
 end
 
+local fonts = {}
+function Graphics.createFont(name, path)
+  fonts[name] = love.graphics.newImageFont(path, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`_*#=[]'{}", 1)
+end
+
+function Graphics.setFont(name)
+  --! if USE_LOVE then
+  love.graphics.setFont(fonts[name])
+  --! end
+end
+
+--- Draws a string.
 function Graphics.text(str, x, y, align)
   --! if USE_LOVE then
   love.graphics.printf(str, x, y, 400, align)
