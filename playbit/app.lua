@@ -12,6 +12,11 @@ App.__index = App
 function App.new()
   local newApp = {
     drawStats = false,
+
+    --! if USE_LOVE then
+    draw2x = true,
+    --! end
+
     scene = nil,
     -- TODO: better name?
     systems = {},
@@ -71,9 +76,21 @@ function App:update()
     self.scene.lateUpdate()
   end
 
+  --! if USE_LOVE then
+  -- TODO: expose stat toggle in playdates menu?
   if input.getButtonDown("debug_stats") then
     self.drawStats = not self.drawStats
   end
+  
+  if input.getButtonDown("toggle_window_size") then
+    self.draw2x = not self.draw2x
+    if self.draw2x then
+      love.window.setMode(800, 480)
+    else
+      love.window.setMode(400, 240)
+    end
+  end
+  --! end
 
   input.update();
 
@@ -82,6 +99,12 @@ end
 
 function App:draw()
   perf.beginFrameSample("render")
+
+  --! if USE_LOVE then
+  if self.draw2x then
+    love.graphics.scale(2, 2)
+  end
+  --! end
 
   if self.scene["render"] then
     self.scene.render()

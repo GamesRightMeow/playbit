@@ -50,10 +50,6 @@ function GraphicRenderer.render(scene, entities)
       local x = scene.camera.x * graphic.scrollX + transform.x + graphic.x
       local y = scene.camera.y * graphic.scrollY + transform.y + graphic.y
 
-      -- force integers so that graphics arent rendered at subpixels
-      x = math.floor(x)
-      y = math.floor(y)
-
       love.graphics.setColor(graphic.colorR, graphic.colorG, graphic.colorB, graphic.colorA)
 
       local spritesheet = scene:getComponent(entityId, "spritesheet")

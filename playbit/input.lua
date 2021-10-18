@@ -8,6 +8,7 @@ keyToButton["right"] = "right"
 keyToButton["z"] = "a"
 keyToButton["x"] = "b"
 keyToButton["`"] = "debug_stats"
+keyToButton["f1"] = "toggle_window_size"
 
 local buttonStates = {}
 for k,v in pairs(keyToButton) do
