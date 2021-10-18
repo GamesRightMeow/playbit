@@ -132,11 +132,12 @@ function App:draw()
 
   if self.drawStats then
     graphics.setColor(1)
-    graphics.rectangle(360, 0, 40, 25, true, 0)
+    graphics.rectangle(360, 0, 40, 33, true, 0)
     graphics.setColor(0)
     graphics.text(perf.getFps(), 0, 1, "right")
     graphics.text(perf.getFrameSample("update"), 0, 9, "right")
     graphics.text(perf.getFrameSample("render"), 0, 17, "right")
+    graphics.text(self.scene.entityCount, 0, 25, "right")
   end
 end
 
