@@ -41,16 +41,21 @@ function GraphicRenderer.render(scene, entities)
   -- render sorted entities
   for l = 1, #layerIndexes, 1 do
     local layerIndex = layerIndexes[l]
+    
     for e = 1, #layers[layerIndex], 1 do
       local entityId = layers[layerIndex][e];
       local graphic = scene:getComponent(entityId, "graphic")
+      if not graphic.visible then
+        goto continue
+      end
+
       local transform = scene:getComponent(entityId, "transform")
 
       -- calculate render position
       local x = scene.camera.x * graphic.scrollX + transform.x + graphic.x
       local y = scene.camera.y * graphic.scrollY + transform.y + graphic.y
 
-      love.graphics.setColor(graphic.colorR, graphic.colorG, graphic.colorB, graphic.colorA)
+      love.graphics.setColor(graphic.colorR, graphic.colorG, graphic.colorB, 1)
 
       local spritesheet = scene:getComponent(entityId, "spritesheet")
       local sprite = scene:getComponent(entityId, "sprite")
@@ -113,6 +118,7 @@ function GraphicRenderer.render(scene, entities)
           graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation)
         end
       end
+      ::continue::
     end
   end
 end

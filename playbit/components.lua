@@ -31,7 +31,7 @@ Components.Graphic = {
     colorR = 1,
     colorG = 1,
     colorB = 1,
-    colorA = 1,
+    visible = true,
   }
 }
 
