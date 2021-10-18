@@ -4,6 +4,10 @@ local pp = require(folderOfThisFile.."LuaPreprocess.preprocess")
 
 local Build = {}
 
+function Build.getFileExtension(path)
+  return path:match("^.+(%..+)$")
+end
+
 function Build.copyFile(src, dst)
   os.execute("copy \"" .. src .. "\" \"" .. dst .. "\"")
 end
@@ -20,6 +24,10 @@ function Build.processLua(inputFolder, outputFolder, verbose)
   local dirOutput = dirCommand:read("*l").."\\"..inputFolder
 
   for path in dirOuput:gmatch("(.-)\n") do 
+    if Build.getFileExtension(path) ~= ".lua" then
+      goto continue
+    end
+
     local outputPath = path:gsub(dirOutput, "")
     outputPath = outputFolder .. outputPath
 
@@ -54,6 +62,8 @@ function Build.processLua(inputFolder, outputFolder, verbose)
     if verbose then
       print("Processed " .. path .. " " .. processedFileInfo.processedByteCount .. " bytes")
     end
+
+    ::continue::
   end
 end
 
