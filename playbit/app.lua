@@ -41,6 +41,8 @@ function App:load()
   if self["onLoad"] then
     self:onLoad()
   end
+
+  love.graphics.setDefaultFilter("nearest", "nearest")
 end
 
 function App:keypressed(key)
