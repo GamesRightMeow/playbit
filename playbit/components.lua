@@ -72,4 +72,15 @@ Components.Shape = {
   }
 }
 
+Components.Collider = {
+  name = "collider",
+  template = {
+    type = "circle",
+    x = 0,
+    y = 0,
+    radius = 0,
+    contacts = {},
+  }
+}
+
 return Components
