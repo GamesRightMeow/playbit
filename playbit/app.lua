@@ -13,7 +13,7 @@ function App.new()
   local newApp = {
     drawStats = false,
 
-    --! if USE_LOVE then
+    --! if LOVE2D then
     draw2x = true,
     --! end
 
@@ -47,7 +47,7 @@ function App:load()
     self:onLoad()
   end
 
-  --! if USE_LOVE then
+  --! if LOVE2D then
   love.graphics.setDefaultFilter("nearest", "nearest")
   --! end
 
@@ -67,7 +67,7 @@ function App:update()
   
   self.scene:update()
 
-  --! if USE_LOVE then
+  --! if LOVE2D then
   -- TODO: expose stat toggle in playdates menu?
   if input.getButtonDown("debug_stats") then
     self.drawStats = not self.drawStats
@@ -91,7 +91,7 @@ end
 function App:draw()
   perf.beginFrameSample("render")
 
-  --! if USE_LOVE then
+  --! if LOVE2D then
   if self.draw2x then
     love.graphics.scale(2, 2)
   end

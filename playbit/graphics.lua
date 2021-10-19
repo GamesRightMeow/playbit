@@ -5,7 +5,7 @@ local colorBlack = { r = 50 / 255, g = 47 / 255, b = 41 / 255 }
 
 --- Sets the background color.
 function Graphics.setBackgroundColor(color)
-  --! if USE_LOVE then
+  --! if LOVE2D then
   if color == 1 then
     love.graphics.setBackgroundColor(colorWhite.r, colorWhite.g, colorWhite.b);
   else
@@ -16,7 +16,7 @@ end
 
 --- Sets the color used to draw.
 function Graphics.setColor(color)
-  --! if USE_LOVE then
+  --! if LOVE2D then
   if color == 1 then
     love.graphics.setColor(colorWhite.r, colorWhite.g, colorWhite.b);
   else
@@ -27,7 +27,7 @@ end
 
 --- Draws a circle.
 function Graphics.circle(x, y, radius, isFilled, angle)
-  --! if USE_LOVE then
+  --! if LOVE2D then
   local mode = "line"
   if isFilled then
     mode = "fill"
@@ -43,7 +43,7 @@ end
 
 --- Draws a rectangle.
 function Graphics.rectangle(x, y, width, height, isFilled, angle)
-  --! if USE_LOVE then
+  --! if LOVE2D then
   local mode = "line"
   if isFilled then
     mode = "fill"
@@ -62,14 +62,14 @@ function Graphics.createFont(name, path)
 end
 
 function Graphics.setFont(name)
-  --! if USE_LOVE then
+  --! if LOVE2D then
   love.graphics.setFont(fonts[name])
   --! end
 end
 
 --- Draws a string.
 function Graphics.text(str, x, y, align)
-  --! if USE_LOVE then
+  --! if LOVE2D then
   love.graphics.printf(str, x, y, 400, align)
   --! end
 end

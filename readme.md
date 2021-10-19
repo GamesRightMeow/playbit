@@ -29,7 +29,7 @@
 * Preprocessors in comments fixes vscode linting issues since its not standard lua
 
 ## Love
-1. `lua .\build-example.lua love`
+1. `lua .\build-example.lua love2d`
 1. `love _dist`
 
 ## Playdate

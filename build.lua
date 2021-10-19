@@ -72,7 +72,7 @@ function Build.build(options)
 
   local enableVerbose = options.verbose == true
 
-  pp.metaEnvironment.USE_LOVE = arg[1] == "love"
+  pp.metaEnvironment.LOVE2D = arg[1] == "love2d"
   -- TODO: add variable for playdate sdk
 
   -- nuke old folder

@@ -15,7 +15,7 @@ end
 
 --- Returns a random value between 0.0 and 1.0.
 function Util.random()
-  --! if USE_LOVE then
+  --! if LOVE2D then
   return love.math.random()
   --! else
   return 0
@@ -24,7 +24,7 @@ end
 
 --- Returns a random integer between min and max.
 function Util.randomRangeInt(min, max)
-  --! if USE_LOVE then
+  --! if LOVE2D then
   -- love does not support floating point numbers
   return love.math.random(min, max)
   --! else
@@ -34,7 +34,7 @@ end
 
 --- Returns a random float between min and max, using the specified precision (defaults to 3).
 function Util.randomRangeFloat(min, max, precision)
-  --! if USE_LOVE then
+  --! if LOVE2D then
 	local precision = precision or 3
 	local num = Util.random()
 	local range = math.abs(max - min)
@@ -48,7 +48,7 @@ function Util.randomRangeFloat(min, max, precision)
 end
 
 function Util.deltaTime()
-  --! if USE_LOVE then
+  --! if LOVE2D then
   return love.timer.getDelta()
   --! else
   return 0
