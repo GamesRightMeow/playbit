@@ -7,6 +7,11 @@ Components.Name = {
   }
 }
 
+Components.Tags = {
+  name = "tags",
+  template = {}
+}
+
 Components.Transform = {
   name = "transform",
   template = {
