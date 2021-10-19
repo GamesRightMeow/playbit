@@ -7,6 +7,10 @@ CollisionResolver.name = "collision-detector"
 CollisionResolver.components = { components.Transform.name, components.Collider.name }
 
 function CollisionResolver.update(scene, entities)
+  -- TODO: sort entities into buckets based on collider layer
+  -- so that collisions are only checked between entities on the same layer
+  -- should it use a collision matrix, like Unity?
+
   -- clear contacts from last frame
   for i = 1, #entities, 1 do
     local entityId = entities[i]

@@ -81,6 +81,7 @@ Components.Collider = {
   name = "collider",
   template = {
     type = "circle",
+    layer = 0, -- not implemented yet
     x = 0,
     y = 0,
     radius = 0,
