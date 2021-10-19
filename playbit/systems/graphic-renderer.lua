@@ -113,7 +113,7 @@ function GraphicRenderer.render(scene, entities)
         )
       elseif shape then
         if shape.type == "circle" then
-          graphics.circle(x, y, shape.radius, shape.isFilled, graphic.rotation)
+          graphics.circle(x, y, shape.radius, shape.isFilled)
         elseif shape.type == "rectangle" then
           graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation)
         end

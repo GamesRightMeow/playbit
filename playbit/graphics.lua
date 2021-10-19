@@ -26,7 +26,7 @@ function Graphics.setColor(color)
 end
 
 --- Draws a circle.
-function Graphics.circle(x, y, radius, isFilled, angle)
+function Graphics.circle(x, y, radius, isFilled)
   --! if LOVE2D then
   local mode = "line"
   if isFilled then
@@ -35,7 +35,6 @@ function Graphics.circle(x, y, radius, isFilled, angle)
 
   love.graphics.push()
 	love.graphics.translate(x, y)
-	love.graphics.rotate(angle)
   love.graphics.circle(mode, 0, 0, radius)
   love.graphics.pop()
   --! end
