@@ -55,13 +55,14 @@ function GraphicRenderer.render(scene, entities)
       local x = scene.camera.x * graphic.scrollX + transform.x + graphic.x
       local y = scene.camera.y * graphic.scrollY + transform.y + graphic.y
 
-      love.graphics.setColor(graphic.colorR, graphic.colorG, graphic.colorB, 1)
-
       local spritesheet = scene:getComponent(entityId, "spritesheet")
       local sprite = scene:getComponent(entityId, "sprite")
       local texture = scene:getComponent(entityId, "texture")
       local shape = scene:getComponent(entityId, "shape")
       if spritesheet then
+        -- always render pure white so its not tinted
+        love.graphics.setColor(1, 1, 1, 1)
+
         local image = getImage(spritesheet.path)
 
         -- TODO: should quad creation be cached? this will change based on sheet index
@@ -83,6 +84,9 @@ function GraphicRenderer.render(scene, entities)
           graphic.originX, graphic.originY
         )
       elseif sprite then
+        -- always render pure white so its not tinted
+        love.graphics.setColor(1, 1, 1, 1)
+
         local image = getImage(sprite.path)
 
         if sprite.quad == nil then
@@ -102,6 +106,9 @@ function GraphicRenderer.render(scene, entities)
           graphic.originX, graphic.originY
         )
       elseif texture then
+        -- always render pure white so its not tinted
+        love.graphics.setColor(1, 1, 1, 1)
+
         local image = getImage(texture.path)
 
         love.graphics.draw(
@@ -112,6 +119,9 @@ function GraphicRenderer.render(scene, entities)
           graphic.originX, graphic.originY
         )
       elseif shape then
+        -- set color based on property
+        graphics.setColor(shape.color)
+
         if shape.type == "circle" then
           graphics.circle(x, y, shape.radius, shape.isFilled)
         elseif shape.type == "rectangle" then

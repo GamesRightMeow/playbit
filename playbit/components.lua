@@ -28,9 +28,6 @@ Components.Graphic = {
     scrollX = 1,
     scrollY = 1,
     layer = 0,
-    colorR = 1,
-    colorG = 1,
-    colorB = 1,
     visible = true,
   }
 }
@@ -70,6 +67,7 @@ Components.Shape = {
     radius = 0,
     width = 0,
     height = 0,
+    color = 1,
     isFilled = true
   }
 }
