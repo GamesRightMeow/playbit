@@ -40,7 +40,7 @@ function App:load()
     self:registerComponent(v.name, v.template)
   end
 
-  -- auto register this since order should really matter
+  -- auto register this since order shouldn't really matter
   self:registerSystem(nameAllocator)
 
   if self["onLoad"] then
