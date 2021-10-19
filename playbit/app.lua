@@ -65,20 +65,7 @@ end
 function App:update()
   perf.beginFrameSample("update")
   
-  if self.scene["update"] then
-    self.scene.update()
-  end
-
-  for i = 1, #self.systemsToUpdate, 1 do
-    local systemId = self.systemsToUpdate[i]
-    local entities = self.scene.systemEntityIds[systemId].entities
-    local system = self.systems[systemId]
-    system.update(self.scene, entities)
-  end
-
-  if self.scene["lateUpdate"] then
-    self.scene.lateUpdate()
-  end
+  self.scene:update()
 
   --! if USE_LOVE then
   -- TODO: expose stat toggle in playdates menu?
@@ -113,20 +100,7 @@ function App:draw()
   -- default to included playbit font
   graphics.setFont("playbit")
 
-  if self.scene["render"] then
-    self.scene.render()
-  end
-
-  for i = 1, #self.systemsToRender, 1 do
-    local systemId = self.systemsToRender[i]
-    local entities = self.scene.systemEntityIds[systemId].entities
-    local system = self.systems[systemId]
-    system.render(self.scene, entities)
-  end
-
-  if self.scene["lateRender"] then
-    self.scene.lateRender()
-  end
+  self.scene:render()
 
   perf.endFrameSample("render")
 
@@ -141,8 +115,20 @@ function App:draw()
   end
 end
 
+--- Returns the system's id with the given name.
 function App:getSystemId(name)
   return self.systemNameToIdMap[name]
+end
+
+--- Returns the system with the given name.
+function App:getSystem(name)
+  local id = self.systemNameToIdMap[name]
+  return self.systems[id]
+end
+
+--- Returns the system with the given id.
+function App:getSystemById(id)
+  return self.systems[id]
 end
 
 --- Registers a system with the given name and options.

@@ -13,6 +13,8 @@ function Scene.new(app)
     app = app,
     newEntityId = 1,
     entityCount = 0,
+    entitiesToAdd = {},
+    entitiesToRemove = {},
     componentArrays = {},
     availableEntityIds = {},
     systemEntityIds = {},
@@ -31,6 +33,68 @@ function Scene.new(app)
   end
 
   return newScene
+end
+
+function Scene:update()
+  -- add pending entities
+  local addCount = #self.entitiesToAdd
+  if addCount > 0 then
+    for i = 1, addCount, 1 do
+      local components = self.entitiesToAdd[i].components
+      if components ~= nil then
+        local entityId = self.entitiesToAdd[i].id
+        for k,v in pairs(components) do
+          self:addComponent(entityId, k, v)
+        end
+      end
+      self.entityCount = self.entityCount + 1
+    end
+    self.entitiesToAdd = {}
+  end
+
+  -- remove pending entities
+  local removeCount = #self.entitiesToRemove
+  if removeCount > 0 then
+    for i = 1, removeCount, 1 do
+      local id = self.entitiesToRemove[i]
+
+      -- remove components from lists
+      for i = 1, #self.componentArrays, 1 do
+        self.componentArrays[i]:remove(id)
+      end
+
+      -- remove entity from system lists
+      for i = 1, #self.systemEntityIds, 1 do
+        self.systemEntityIds[i]:remove(id)
+      end
+
+      -- recycle entity id
+      table.insert(self.availableEntityIds, id)
+
+      self.entityCount = self.entityCount - 1
+    end
+    self.entitiesToRemove = {}
+  end
+
+  -- update systems
+  local systemsToUpdate = self.app.systemsToUpdate
+  for i = 1, #systemsToUpdate, 1 do
+    local systemId = systemsToUpdate[i]
+    local entities = self.systemEntityIds[systemId].entities
+    local system = self.app:getSystemById(systemId)
+    system.update(self, entities)
+  end
+end
+
+function Scene:render()
+  -- render systems
+  local systemsToRender = self.app.systemsToRender
+  for i = 1, #systemsToRender, 1 do
+    local systemId = systemsToRender[i]
+    local entities = self.systemEntityIds[systemId].entities
+    local system = self.app:getSystemById(systemId)
+    system.render(self, entities)
+  end
 end
 
 --- retrieves a component from an entity
@@ -148,30 +212,14 @@ function Scene:addEntity(components)
     self.newEntityId = self.newEntityId + 1
   end
 
-  self.entityCount = self.entityCount + 1
-
-  -- add components
-  if components ~= nil then
-    for k,v in pairs(components) do
-      self:addComponent(entityId, k, v)
-    end
-  end
+  table.insert(self.entitiesToAdd, { id=entityId, components=components} )
 
   return entityId
 end
 
 --- removes the entity with the specified id.
 function Scene:removeEntity(id)
-  for i = 1, #self.componentArrays, 1 do
-    self.componentArrays[i]:remove(id)
-  end
-
-  table.insert(self.availableEntityIds, id)
-  self.entityCount = self.entityCount - 1
-
-  for i = 1, #self.systemEntityIds, 1 do
-    self.systemEntityIds[i]:remove(id)
-  end
+  table.insert(self.entitiesToRemove, id)
 end
 
 return Scene
