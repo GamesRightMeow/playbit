@@ -34,6 +34,7 @@ Components.Graphic = {
     scrollY = 1,
     layer = 0,
     visible = true,
+    flash = 0.0,
   }
 }
 

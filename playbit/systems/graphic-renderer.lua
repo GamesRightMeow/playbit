@@ -1,5 +1,6 @@
 local components = require("playbit.components")
 local graphics = require("playbit.graphics")
+local util = require("playbit.util")
 
 local GraphicRenderer = {}
 
@@ -20,6 +21,18 @@ end
 
 GraphicRenderer.name = "graphic-renderer"
 GraphicRenderer.components = { components.Transform.name, components.Graphic.name }
+
+local playbitShader = love.graphics.newShader[[
+extern float WhiteFactor;
+
+vec4 effect(vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord)
+{
+    vec4 outputcolor = Texel(tex, texcoord) * vcolor;
+    outputcolor.rgb += vec3(WhiteFactor);
+    outputcolor.rgb = min(outputcolor.rgb, vec3(0.84313725490196, 0.83137254901961, 0.8));
+    return outputcolor;
+}
+]]
 
 function GraphicRenderer.render(scene, entities)
   -- generate layer buckets
@@ -51,6 +64,9 @@ function GraphicRenderer.render(scene, entities)
 
       local transform = scene:getComponent(entityId, "transform")
 
+      -- TODO: should this be called every frame?
+      love.graphics.setShader(playbitShader)
+
       -- calculate render position
       local x = scene.camera.x * graphic.scrollX + transform.x + graphic.x
       local y = scene.camera.y * graphic.scrollY + transform.y + graphic.y
@@ -60,6 +76,9 @@ function GraphicRenderer.render(scene, entities)
       local texture = scene:getComponent(entityId, "texture")
       local shape = scene:getComponent(entityId, "shape")
       if spritesheet then
+        -- render texture as solid white or not
+        playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
         -- always render pure white so its not tinted
         love.graphics.setColor(1, 1, 1, 1)
 
@@ -84,6 +103,9 @@ function GraphicRenderer.render(scene, entities)
           graphic.originX, graphic.originY
         )
       elseif sprite then
+        -- render texture as solid white or not
+        playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
         -- always render pure white so its not tinted
         love.graphics.setColor(1, 1, 1, 1)
 
@@ -106,6 +128,9 @@ function GraphicRenderer.render(scene, entities)
           graphic.originX, graphic.originY
         )
       elseif texture then
+        -- render texture as solid white or not
+        playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
         -- always render pure white so its not tinted
         love.graphics.setColor(1, 1, 1, 1)
 
@@ -119,6 +144,9 @@ function GraphicRenderer.render(scene, entities)
           graphic.originX, graphic.originY
         )
       elseif shape then
+        -- TODO: flash shape?
+        -- playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
         -- set color based on property
         graphics.setColor(shape.color)
 
@@ -128,6 +156,12 @@ function GraphicRenderer.render(scene, entities)
           graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation)
         end
       end
+
+      -- reduce flash timer
+      if graphic.flash > 0 then
+        graphic.flash = math.max(0, graphic.flash - util.deltaTime())
+      end
+
       ::continue::
     end
   end
