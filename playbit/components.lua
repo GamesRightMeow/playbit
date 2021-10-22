@@ -35,6 +35,7 @@ Components.Graphic = {
     layer = 0,
     visible = true,
     flash = 0.0,
+    worldSpace = true,
   }
 }
 

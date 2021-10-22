@@ -68,13 +68,20 @@ function GraphicRenderer.render(scene, entities)
       love.graphics.setShader(playbitShader)
 
       -- calculate render position
-      local x = scene.camera.x * graphic.scrollX + transform.x + graphic.x
-      local y = scene.camera.y * graphic.scrollY + transform.y + graphic.y
+      local x = transform.x + graphic.x
+      local y = transform.y + graphic.y
+
+      -- if in world space, add camera and scroll offsets
+      if graphic.worldSpace then
+        x = x + scene.camera.x * graphic.scrollX
+        y = y + scene.camera.y * graphic.scrollY
+      end
 
       local spritesheet = scene:getComponent(entityId, "spritesheet")
       local sprite = scene:getComponent(entityId, "sprite")
       local texture = scene:getComponent(entityId, "texture")
       local shape = scene:getComponent(entityId, "shape")
+      local text = scene:getComponent(entityId, "text")
       if spritesheet then
         -- render texture as solid white or not
         playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
