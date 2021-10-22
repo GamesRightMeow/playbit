@@ -79,6 +79,16 @@ Components.Shape = {
   }
 }
 
+Components.Text = {
+  name = "text",
+  template = {
+    type = "text",
+    text = "",
+    align = "left",
+    color = 1,
+  }
+}
+
 Components.Collider = {
   name = "collider",
   template = {

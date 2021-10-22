@@ -162,6 +162,14 @@ function GraphicRenderer.render(scene, entities)
         elseif shape.type == "rectangle" then
           graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation)
         end
+      elseif text then
+        -- TODO: flash text?
+        -- playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
+        -- set color based on property
+        graphics.setColor(text.color)
+
+        graphics.text(text.text, x, y, text.align)
       end
 
       -- reduce flash timer
