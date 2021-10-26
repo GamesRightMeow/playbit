@@ -4,7 +4,7 @@ local componentArray = require("playbit.component-array")
 local entityArray = require("playbit.entity-array")
 
 local Scene = {}
-setmetatable(Scene, {})
+
 Scene.__index = Scene
 
 -- creates a new Scene instance

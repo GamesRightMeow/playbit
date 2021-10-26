@@ -10,7 +10,6 @@ local band = bit.band
 local bnot = bit.bnot
 
 local Bitfield = {}
-setmetatable(Bitfield, {})
 Bitfield.__index = Bitfield
 
 --- creates a bitfield from an array of flags (valid values are 0-31).

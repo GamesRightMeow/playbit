@@ -5,7 +5,6 @@ local components = require("playbit.components")
 local nameAllocator = require("playbit.systems.name-allocator")
 
 local App = {}
-setmetatable(App, {})
 App.__index = App
 
 -- TODO: add settings argument

@@ -1,6 +1,4 @@
 local ComponentArray = {}
-
-setmetatable(ComponentArray, {})
 ComponentArray.__index = ComponentArray
 
 --- creates a new ComponentArray instance

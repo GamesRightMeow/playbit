@@ -1,6 +1,4 @@
 local EntityArray = {}
-
-setmetatable(EntityArray, {})
 EntityArray.__index = EntityArray
 
 --- Creates a new EntityArray instance.
