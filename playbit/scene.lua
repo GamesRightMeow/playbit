@@ -4,13 +4,13 @@ local componentArray = require("playbit.component-array")
 local entityArray = require("playbit.entity-array")
 
 local Scene = {}
-
 Scene.__index = Scene
 
 -- creates a new Scene instance
-function Scene.new(app)
+function Scene.new()
   local newScene = {
-    app = app,
+    app = nil,
+    hasStarted = false,
     newEntityId = 1,
     entityCount = 0,
     entitiesToAdd = {},
@@ -22,17 +22,45 @@ function Scene.new(app)
   }
   setmetatable(newScene, Scene)
 
+  return newScene
+end
+
+function Scene:startInternal()
+  if self.hasStarted then
+    return
+  end
+
   -- create component lists
-  for componentId = 1, newScene.app.nextComponentId - 1, 1 do
-    newScene.componentArrays[componentId] = componentArray.new()
+  for componentId = 1, self.app.nextComponentId - 1, 1 do
+    self.componentArrays[componentId] = componentArray.new()
   end
 
   -- create system entity lists
-  for systemId = 1, newScene.app.nextSystemId - 1, 1 do
-    newScene.systemEntityIds[systemId] = entityArray.new()
+  for systemId = 1, self.app.nextSystemId - 1, 1 do
+    self.systemEntityIds[systemId] = entityArray.new()
   end
 
-  return newScene
+  if self.start then
+    self:start()
+  end
+
+  self.hasStarted = true
+end
+
+function Scene:enterInternal()
+  -- TODO: internal enter?
+
+  if self.enter then
+    self:enter()
+  end
+end
+
+function Scene:exitInternal()
+  -- TODO: internal exit?
+
+  if self.exit then
+    self:exit()
+  end
 end
 
 function Scene:update()

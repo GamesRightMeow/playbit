@@ -1,6 +1,7 @@
 local input = require("playbit.input")
 local perf = require("playbit.perf")
 local graphics = require("playbit.graphics")
+local scene = require("playbit.scene")
 local components = require("playbit.components")
 local nameAllocator = require("playbit.systems.name-allocator")
 
@@ -27,7 +28,6 @@ function App.new()
     componentTemplates = {},
     componentNameToIdMap = {},
     nextComponentId = 1,
-    scenes = {},
   }
   setmetatable(newApp, App)
   return newApp
@@ -177,21 +177,16 @@ function App:registerComponent(name, template)
   return id;
 end
 
-function App:addScene(newScene)
-  table.insert(self.scenes, newScene)
-  newScene.app = self
-end
-
+--- Sets the active scene that the app is running.
 function App:changeScene(newScene)
-  if self.scene ~= nil and self.scene["enter"] then
-    self.scene:exit()
+  if self.scene ~= nil then
+    self.scene:exitInternal()
   end
 
-  self.scene = newScene;
-
-  if self.scene ~= nil and self.scene["enter"] then
-    self.scene:enter()
-  end
+  self.scene = newScene
+  self.scene.app = self
+  self.scene:startInternal()
+  self.scene:enterInternal()
 end
 
 return App
