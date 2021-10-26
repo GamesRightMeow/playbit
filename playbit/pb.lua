@@ -14,5 +14,6 @@ namespace.bitfield = require("playbit.bitfield");
 namespace.systems = {}
 namespace.systems.collisionDetector = require("playbit.systems.collision-detector")
 namespace.systems.graphicRenderer = require("playbit.systems.graphic-renderer")
+namespace.systems.parentManager = require("playbit.systems.parent-manager")
 
 return namespace

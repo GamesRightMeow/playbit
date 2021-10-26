@@ -7,6 +7,16 @@ Components.Name = {
   }
 }
 
+Components.Parent = {
+  name = "parent",
+  template = {
+    entity = -1,
+    name = "",
+    x = 0,
+    y = 0,
+  }
+}
+
 Components.Tags = {
   name = "tags",
   template = {}
