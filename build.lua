@@ -71,8 +71,8 @@ function Build.build(options)
   local timeStart = os.clock()
 
   local enableVerbose = options.verbose == true
-
-  pp.metaEnvironment.LOVE2D = arg[1] == "love2d"
+  local targetPlatform = options.platform
+  pp.metaEnvironment.LOVE2D = targetPlatform == "love2d"
   -- TODO: add variable for playdate sdk
 
   -- nuke old folder
