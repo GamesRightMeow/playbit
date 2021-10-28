@@ -1,14 +1,24 @@
 local Input = {}
 
-local keyToButton = {}
-keyToButton["up"] = "up"
-keyToButton["down"] = "down"
-keyToButton["left"] = "left"
-keyToButton["right"] = "right"
-keyToButton["z"] = "a"
-keyToButton["x"] = "b"
-keyToButton["`"] = "debug_stats"
-keyToButton["f1"] = "toggle_window_size"
+local keyToButton = {
+  up = "up",
+  down = "down",
+  left = "left",
+  right = "right",
+  z = "a",
+  x = "b",
+  ["`"] = "debug_stats",
+  f1 = "toggle_window_size",
+}
+
+local gamepadToButton = {
+  dpup = "up",
+  dpdown = "down",
+  dpleft = "left",
+  dpright = "right",
+  a = "a",
+  b = "b",
+}
 
 local buttonStates = {}
 for k,v in pairs(keyToButton) do
@@ -21,6 +31,32 @@ function Input.update()
       buttonStates[k] = 2
     end
   end
+end
+
+function Input.handleGamepadPressed(joystick, gamepadButton)
+  local button = gamepadToButton[gamepadButton]
+  if button == nil then
+    return
+  end
+
+  if buttonStates[button] == nil then
+    return
+  end
+
+  buttonStates[button] = 1
+end
+
+function Input.handleGamepadReleased(joystick, gamepadButton)
+  local button = gamepadToButton[gamepadButton]
+  if button == nil then
+    return
+  end
+
+  if buttonStates[button] == nil then
+    return
+  end
+
+  buttonStates[button] = 0
 end
 
 function Input.handleKeyPressed(key)

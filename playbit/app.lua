@@ -53,6 +53,14 @@ function App:load()
   graphics.createFont("playbit", "playbit/fonts/font.png")
 end
 
+function App:gamepadpressed(joystick, button)
+  input.handleGamepadPressed(joystick, button)
+end
+
+function App:gamepadreleased(joystick, button)
+  input.handleGamepadReleased(joystick, button)
+end
+
 function App:keypressed(key)
   input.handleKeyPressed(key)
 end
