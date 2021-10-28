@@ -140,6 +140,8 @@ end
 
 --- Registers a system with the given name and options.
 function App:registerSystem(system)
+  assert(self.systemNameToIdMap[system.name] == nil, "A system with the name '"..system.name.."' has already been registered!")
+
   -- allocate system id
   local systemId = self.nextSystemId
   self.nextSystemId = self.nextSystemId + 1
@@ -176,6 +178,7 @@ function App:getComponentTemplate(id)
 end
 
 function App:registerComponent(name, template)
+  assert(self.componentNameToIdMap[name] == nil, "A component with the name '"..name.."' has already been registered!")
   local id = self.nextComponentId
   self.componentTemplates[id] = template
   setmetatable(template, {})
