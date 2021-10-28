@@ -10,6 +10,7 @@ namespace.input = require("playbit.input");
 namespace.util = require("playbit.util");
 namespace.components = require("playbit.components");
 namespace.bitfield = require("playbit.bitfield");
+namespace.vector = require("playbit.vector");
 
 namespace.systems = {}
 namespace.systems.collisionDetector = require("playbit.systems.collision-detector")
