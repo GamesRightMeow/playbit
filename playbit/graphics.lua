@@ -26,30 +26,43 @@ function Graphics.setColor(color)
 end
 
 --- Draws a circle.
-function Graphics.circle(x, y, radius, isFilled)
+function Graphics.circle(x, y, radius, isFilled, lineWidth)
   --! if LOVE2D then
   local mode = "line"
   if isFilled then
     mode = "fill"
   end
 
+  if lineWidth == nil then
+    lineWidth = 0.5
+  end
+
   love.graphics.push()
 	love.graphics.translate(x, y)
+  love.graphics.setLineWidth(lineWidth)
+  love.graphics.setLineStyle("rough")
   love.graphics.circle(mode, 0, 0, radius)
   love.graphics.pop()
   --! end
 end
 
 --- Draws a rectangle.
-function Graphics.rectangle(x, y, width, height, isFilled, angle)
+function Graphics.rectangle(x, y, width, height, isFilled, angle, lineWidth)
   --! if LOVE2D then
   local mode = "line"
   if isFilled then
     mode = "fill"
   end
+
+  if lineWidth == nil then
+    lineWidth = 0.5
+  end
+
   love.graphics.push()
 	love.graphics.translate(x, y)
 	love.graphics.rotate(angle)
+  love.graphics.setLineWidth(lineWidth)
+  love.graphics.setLineStyle("rough")
   love.graphics.rectangle(mode, 0, 0, width, height)
   love.graphics.pop()
   --! end
