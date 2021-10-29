@@ -68,6 +68,20 @@ function Graphics.rectangle(x, y, width, height, isFilled, angle, lineWidth)
   --! end
 end
 
+function Graphics.line(x1, y1, x2, y2, lineWidth)
+  --! if LOVE2D then
+  if lineWidth == nil then
+    lineWidth = 0.5
+  end
+
+  love.graphics.push()
+  love.graphics.setLineWidth(lineWidth)
+  love.graphics.setLineStyle("rough")
+  love.graphics.line(x1, y1, x2, y2)
+  love.graphics.pop()
+  --! end
+end
+
 local fonts = {}
 function Graphics.createFont(name, path)
   fonts[name] = love.graphics.newImageFont(path, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`_*#=[]'{}", 1)
