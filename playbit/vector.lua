@@ -117,7 +117,7 @@ function Vector:cross(other)
 end
 
 function Vector:dot(other)
-  return self.x * other.y + self.y * other.x
+  return self.x * other.x + self.y * other.y
 end
 
 return Vector
