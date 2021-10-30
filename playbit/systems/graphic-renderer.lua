@@ -34,6 +34,104 @@ vec4 effect(vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord)
 }
 ]]
 
+local function renderSpritesheet(x, y, graphic, spritesheet)
+  -- render texture as solid white or not
+  playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
+  -- always render pure white so its not tinted
+  love.graphics.setColor(1, 1, 1, 1)
+
+  local image = getImage(spritesheet.path)
+
+  -- TODO: should quad creation be cached? this will change based on sheet index
+  local totalRows = (image:getWidth() / spritesheet.width)
+  local row = math.floor(spritesheet.index / totalRows)
+  local column = spritesheet.index % totalRows
+  local quad = love.graphics.newQuad(
+    column * spritesheet.width, row * spritesheet.height, 
+    spritesheet.width, spritesheet.height, 
+    image:getWidth(), image:getHeight()
+  )
+
+  love.graphics.draw(
+    image,
+    quad,
+    x, y, 
+    graphic.rotation, 
+    graphic.scaleX, graphic.scaleY,
+    graphic.originX, graphic.originY
+  )
+end
+
+local function renderSprite(x, y, graphic, sprite)
+  -- render texture as solid white or not
+  playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
+  -- always render pure white so its not tinted
+  love.graphics.setColor(1, 1, 1, 1)
+
+  local image = getImage(sprite.path)
+
+  if sprite.quad == nil then
+    sprite.quad = love.graphics.newQuad(
+      sprite.x, sprite.y, 
+      sprite.width, sprite.height, 
+      image:getWidth(), image:getHeight()
+    )
+  end
+
+  love.graphics.draw(
+    image,
+    sprite.quad,
+    x, y, 
+    graphic.rotation, 
+    graphic.scaleX, graphic.scaleY,
+    graphic.originX, graphic.originY
+  )
+end
+
+local function renderTexture(x, y, graphic, texture)
+  -- render texture as solid white or not
+  playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
+  -- always render pure white so its not tinted
+  love.graphics.setColor(1, 1, 1, 1)
+
+  local image = getImage(texture.path)
+
+  love.graphics.draw(
+    image, 
+    x, y, 
+    graphic.rotation, 
+    graphic.scaleX, graphic.scaleY,
+    graphic.originX, graphic.originY
+  )
+end
+
+local function renderShape(x, y, graphic, shape)
+  -- TODO: flash shape?
+  -- playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
+  -- set color based on property
+  graphics.setColor(shape.color)
+
+  if shape.type == "circle" then
+    graphics.circle(x, y, shape.radius, shape.isFilled)
+  elseif shape.type == "rectangle" then
+    graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation)
+  end
+end
+
+local function renderText(x, y, graphic, text)
+  -- TODO: flash text?
+  -- playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+
+  -- set color based on property
+  graphics.setColor(text.color)
+
+  graphics.text(text.text, x, y, text.align)
+end
+
 function GraphicRenderer.render(scene, entities)
   -- generate layer buckets
   -- TODO: this happens every frame which will get expensive with lots of entities
@@ -77,99 +175,23 @@ function GraphicRenderer.render(scene, entities)
         y = y + scene.camera.y * graphic.scrollY
       end
 
+      -- TODO: (optimization) cache the component to graphic component so that we don't have to do this look up each time?
+      -- TODO: (optimization) get components by ID instead of name
       local spritesheet = scene:getComponent(entityId, "spritesheet")
       local sprite = scene:getComponent(entityId, "sprite")
       local texture = scene:getComponent(entityId, "texture")
       local shape = scene:getComponent(entityId, "shape")
       local text = scene:getComponent(entityId, "text")
       if spritesheet then
-        -- render texture as solid white or not
-        playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
-
-        -- always render pure white so its not tinted
-        love.graphics.setColor(1, 1, 1, 1)
-
-        local image = getImage(spritesheet.path)
-
-        -- TODO: should quad creation be cached? this will change based on sheet index
-        local totalRows = (image:getWidth() / spritesheet.width)
-        local row = math.floor(spritesheet.index / totalRows)
-        local column = spritesheet.index % totalRows
-        local quad = love.graphics.newQuad(
-          column * spritesheet.width, row * spritesheet.height, 
-          spritesheet.width, spritesheet.height, 
-          image:getWidth(), image:getHeight()
-        )
-
-        love.graphics.draw(
-          image,
-          quad,
-          x, y, 
-          graphic.rotation, 
-          graphic.scaleX, graphic.scaleY,
-          graphic.originX, graphic.originY
-        )
+        renderSpritesheet(x, y, graphic, spritesheet)
       elseif sprite then
-        -- render texture as solid white or not
-        playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
-
-        -- always render pure white so its not tinted
-        love.graphics.setColor(1, 1, 1, 1)
-
-        local image = getImage(sprite.path)
-
-        if sprite.quad == nil then
-          sprite.quad = love.graphics.newQuad(
-            sprite.x, sprite.y, 
-            sprite.width, sprite.height, 
-            image:getWidth(), image:getHeight()
-          )
-        end
-
-        love.graphics.draw(
-          image,
-          sprite.quad,
-          x, y, 
-          graphic.rotation, 
-          graphic.scaleX, graphic.scaleY,
-          graphic.originX, graphic.originY
-        )
+        renderSprite(x, y, graphic, sprite)
       elseif texture then
-        -- render texture as solid white or not
-        playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
-
-        -- always render pure white so its not tinted
-        love.graphics.setColor(1, 1, 1, 1)
-
-        local image = getImage(texture.path)
-
-        love.graphics.draw(
-          image, 
-          x, y, 
-          graphic.rotation, 
-          graphic.scaleX, graphic.scaleY,
-          graphic.originX, graphic.originY
-        )
+        renderTexture(x, y, graphic, texture)
       elseif shape then
-        -- TODO: flash shape?
-        -- playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
-
-        -- set color based on property
-        graphics.setColor(shape.color)
-
-        if shape.type == "circle" then
-          graphics.circle(x, y, shape.radius, shape.isFilled)
-        elseif shape.type == "rectangle" then
-          graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation)
-        end
+        renderShape(x, y, graphic, shape)
       elseif text then
-        -- TODO: flash text?
-        -- playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
-
-        -- set color based on property
-        graphics.setColor(text.color)
-
-        graphics.text(text.text, x, y, text.align)
+        renderText(x, y, graphic, text)
       end
 
       -- reduce flash timer
