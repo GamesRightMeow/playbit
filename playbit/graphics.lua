@@ -1,15 +1,15 @@
 local Graphics = {}
 
-local colorWhite = { r = 215 / 255, g = 212 / 255, b = 204 / 255 }
-local colorBlack = { r = 50 / 255, g = 47 / 255, b = 41 / 255 }
+Graphics.COLOR_WHITE = { r = 215 / 255, g = 212 / 255, b = 204 / 255 }
+Graphics.COLOR_BLACK = { r = 50 / 255, g = 47 / 255, b = 41 / 255 }
 
 --- Sets the background color.
 function Graphics.setBackgroundColor(color)
   --! if LOVE2D then
   if color == 1 then
-    love.graphics.setBackgroundColor(colorWhite.r, colorWhite.g, colorWhite.b);
+    love.graphics.setBackgroundColor(Graphics.COLOR_WHITE.r, Graphics.COLOR_WHITE.g, Graphics.COLOR_WHITE.b)
   else
-    love.graphics.setBackgroundColor(colorBlack.r, colorBlack.g, colorBlack.b);
+    love.graphics.setBackgroundColor(Graphics.COLOR_BLACK.r, Graphics.COLOR_BLACK.g, Graphics.COLOR_BLACK.b)
   end
   --! end
 end
@@ -18,9 +18,9 @@ end
 function Graphics.setColor(color)
   --! if LOVE2D then
   if color == 1 then
-    love.graphics.setColor(colorWhite.r, colorWhite.g, colorWhite.b);
+    love.graphics.setColor(Graphics.COLOR_WHITE.r, Graphics.COLOR_WHITE.g, Graphics.COLOR_WHITE.b, 1)
   else
-    love.graphics.setColor(colorBlack.r, colorBlack.g, colorBlack.b);
+    love.graphics.setColor(Graphics.COLOR_BLACK.r, Graphics.COLOR_BLACK.g, Graphics.COLOR_BLACK.b, 1)
   end
   --! end
 end

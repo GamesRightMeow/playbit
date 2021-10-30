@@ -99,6 +99,21 @@ Components.Text = {
   }
 }
 
+Components.ParticleSystem = {
+  name = "particle-system",
+  template = {
+    path = "",
+    -- TODO: quads for sprite sheet
+    maxParticles = 0,
+    lifetimeMin = 0,
+    lifetimeMax = 0,
+    emissionRate = 0,
+    emissionDirection = 0,
+    speedMin = 0,
+    speedMax = 0,
+  }
+}
+
 Components.Collider = {
   name = "collider",
   template = {

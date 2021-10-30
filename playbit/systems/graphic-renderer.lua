@@ -110,7 +110,7 @@ end
 
 local function renderShape(x, y, graphic, shape)
   -- TODO: flash shape?
-  -- playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+  playbitShader:send("WhiteFactor", 0)
 
   -- set color based on property
   graphics.setColor(shape.color)
@@ -124,12 +124,29 @@ end
 
 local function renderText(x, y, graphic, text)
   -- TODO: flash text?
-  -- playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
+  playbitShader:send("WhiteFactor", 0)
 
   -- set color based on property
   graphics.setColor(text.color)
 
   graphics.text(text.text, x, y, text.align)
+end
+
+local function renderParticleSystem(x, y, graphic, particleSystem)
+  -- TODO: flash particle?
+  playbitShader:send("WhiteFactor", 0)
+
+  local image = getImage(particleSystem.path)
+
+  -- always render pure white so its not tinted
+  love.graphics.setColor(1, 1, 1, 1)
+
+  if particleSystem.system == nil then
+    local system = love.graphics.newParticleSystem(image, particleSystem.maxParticles)
+    particleSystem.system = system
+  end
+
+	love.graphics.draw(particleSystem.system, x, y)
 end
 
 function GraphicRenderer.render(scene, entities)
@@ -139,7 +156,7 @@ function GraphicRenderer.render(scene, entities)
   local layerIndexes = {}
   for i = 1, #entities, 1 do
     local entityId = entities[i]
-    local graphic = scene:getComponent(entities[i], "graphic")
+    local graphic = scene:getComponent(entityId, "graphic")
     if layers[graphic.layer] == nil then
       layers[graphic.layer] = {}
       table.insert(layerIndexes, graphic.layer)
@@ -182,6 +199,7 @@ function GraphicRenderer.render(scene, entities)
       local texture = scene:getComponent(entityId, "texture")
       local shape = scene:getComponent(entityId, "shape")
       local text = scene:getComponent(entityId, "text")
+      local particleSystem = scene:getComponent(entityId, "particle-system")
       if spritesheet then
         renderSpritesheet(x, y, graphic, spritesheet)
       elseif sprite then
@@ -192,6 +210,8 @@ function GraphicRenderer.render(scene, entities)
         renderShape(x, y, graphic, shape)
       elseif text then
         renderText(x, y, graphic, text)
+      elseif particleSystem then
+        renderParticleSystem(scene.camera.x, scene.camera.y, graphic, particleSystem)
       end
 
       -- reduce flash timer

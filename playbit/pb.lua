@@ -16,5 +16,6 @@ namespace.systems = {}
 namespace.systems.collisionDetector = require("playbit.systems.collision-detector")
 namespace.systems.graphicRenderer = require("playbit.systems.graphic-renderer")
 namespace.systems.parentManager = require("playbit.systems.parent-manager")
+namespace.systems.particleSystem = require("playbit.systems.particle-system")
 
 return namespace
