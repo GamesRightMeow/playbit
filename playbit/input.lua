@@ -25,11 +25,28 @@ for k,v in pairs(keyToButton) do
   buttonStates[v] = 0
 end
 
+local activeGamepad = {}
+
 function Input.update()
   for k,v in pairs(buttonStates) do
     if buttonStates[k] == 1 then
       buttonStates[k] = 2
     end
+  end
+end
+
+function Input.handeGamepadAdded(gamepad)
+  -- always take most reset added gamepad as active gamepad
+  activeGamepad = gamepad
+end
+
+function Input.handeGamepadRemoved(gamepad)
+  if activeGamepad == nil then
+    return
+  end
+
+  if gamepad:getID() == activeGamepad:getID() then
+    activeGamepad = nil
   end
 end
 
@@ -85,14 +102,48 @@ function Input.handleKeyReleased(key)
   buttonStates[button] = 0
 end
 
--- returns true when the specified button is held down
+--- Returns true when the specified button is held down.
 function Input.getButton(button)
   return buttonStates[button] > 0
 end
 
--- returns true when the specified button was pressed in the last frame
+--- Returns true when the specified button was pressed in the last frame.
 function Input.getButtonDown(button)
   return buttonStates[button] == 1
+end
+
+--- Returns true if the crank is extended.
+function Input.isCrankExtended()
+  -- TODO: emulate on keyboard?
+  local x = math.abs(activeGamepad:getAxis(3))
+  local y = math.abs(activeGamepad:getAxis(4))
+  if x > 0.3 or y > 0.3 then
+    return true
+  end
+  return false
+end
+
+--- Returns the angle the crank is currently at in radians.
+function Input.getCrank()
+  if not activeGamepad then
+    -- TODO: emulate on keyboard?
+    return 0
+  end
+
+  local x = activeGamepad:getAxis(3)
+  local y = activeGamepad:getAxis(4)
+
+  ---@diagnostic disable-next-line: deprecated
+  return math.atan2(-y, x)
+end
+
+--- Returns the angle the crank is currently at in degrees.
+function Input.getCrankDeg()
+  local degrees = math.deg(Input.getCrank())
+  if degrees < 0 then
+    return degrees + 360
+  end
+  return degrees
 end
 
 return Input

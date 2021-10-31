@@ -53,6 +53,14 @@ function App:load()
   graphics.createFont("playbit", "playbit/fonts/font.png")
 end
 
+function App:joystickadded(joystick)
+  input.handeGamepadAdded(joystick)
+end
+
+function App:joystickremoved(joystick)
+  input.handeGamepadRemoved(joystick)
+end
+
 function App:gamepadpressed(joystick, button)
   input.handleGamepadPressed(joystick, button)
 end
