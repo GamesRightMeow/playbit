@@ -55,9 +55,19 @@ function Util.deltaTime()
   --! end
 end
 
--- returns the absolute value of the difference between two angles
-function Util.angleDiff(a1, a2)
-  return 180 - math.abs(math.abs(a1 - a2) - 180)
+--- Gets the difference of two angles, wrapped around to the range -180 to 180.
+function Util.angleDiff(a, b)
+  local diff = b - a
+
+  while (diff > 180) do
+    diff = diff - 360 
+  end
+
+  while (diff <= -180) do 
+    diff = diff + 360 
+  end
+
+  return diff
 end
 
 return Util
