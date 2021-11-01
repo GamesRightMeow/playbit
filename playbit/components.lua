@@ -123,6 +123,7 @@ Components.Collider = {
     y = 0,
     radius = 0,
     contacts = {},
+    enabled = true,
   }
 }
 

@@ -22,6 +22,10 @@ function CollisionResolver.update(scene, entities)
   for i = 1, #entities, 1 do
     local entityId = entities[i]
     local collider = scene:getComponent(entityId, "collider")
+    if not collider.enabled then
+      goto nextEntity
+    end
+
     local transform = scene:getComponent(entityId, "transform")
     local x = transform.x + collider.x
     local y = transform.y + collider.x
@@ -34,6 +38,10 @@ function CollisionResolver.update(scene, entities)
 
       local otherEntityId = entities[j]
       local otherCollider = scene:getComponent(otherEntityId, "collider")
+      if not otherCollider.enabled then
+        goto nextContact
+      end
+
       local otherTransform = scene:getComponent(otherEntityId, "transform")
       local dx = x - (otherTransform.x + otherCollider.x)
       local dy = y - (otherTransform.y + otherCollider.y)
@@ -43,7 +51,11 @@ function CollisionResolver.update(scene, entities)
         table.insert(collider.contacts, otherEntityId)
         table.insert(otherCollider.contacts, entityId)
       end
+
+      ::nextContact::
     end
+
+    ::nextEntity::
   end
 end
 
