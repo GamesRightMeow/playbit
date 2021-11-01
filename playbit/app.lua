@@ -158,7 +158,9 @@ function App:registerSystem(system)
   local componentIds = {}
   for i = 1, #system.components, 1 do
     local componentName = system.components[i]
-    table.insert(componentIds, self:getComponentId(componentName))
+    local componentId = self:getComponentId(componentName)
+    assert(componentId ~= nil, "System '"..system.name.."' requires a non-existent component '"..componentName.."'!")
+    table.insert(componentIds, componentId)
   end
   self.systemComponentIds[systemId] = componentIds
 
