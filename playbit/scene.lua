@@ -13,8 +13,10 @@ function Scene.new()
     hasStarted = false,
     newEntityId = 1,
     entityCount = 0,
-    entitiesToAdd = {},
-    entitiesToRemove = {},
+    entitiesToRemove = nil,
+    componentsToAdd = nil,
+    componentsToRemove = nil,
+    dirtyEntities = nil,
     componentArrays = {},
     availableEntityIds = {},
     systemEntityIds = {},
@@ -63,46 +65,102 @@ function Scene:exitInternal()
   end
 end
 
+local function addPendingComponents(self)
+  if not self.componentsToAdd then
+    return
+  end
+
+  if not self.dirtyEntities then
+    self.dirtyEntities = {}
+  end
+
+  for k,v in pairs(self.componentsToAdd) do
+    local entityId = k
+
+    -- add pending components
+    for i = 1, #self.componentsToAdd[entityId], 1 do
+      local componentId = self.componentsToAdd[entityId][i].id
+      local componentData = self.componentsToAdd[entityId][i].data
+      self.componentArrays[componentId]:add(entityId, componentData)
+    end
+
+    -- mark as dirty so entity can be added/removed from systems
+    self.dirtyEntities[entityId] = true
+  end
+
+  self.componentsToAdd = nil
+end
+
+local function removePendingComponents(self)
+  if not self.componentsToRemove then
+    return
+  end
+
+  if not self.dirtyEntities then
+    self.dirtyEntities = {}
+  end
+
+  for k,v in pairs(self.componentsToRemove) do
+    local entityId = k
+
+    -- remove pending components
+    for i = 1, #self.componentsToRemove[entityId], 1 do
+      local componentId = self.componentsToRemove[entityId][i].id
+      self.componentArrays[componentId]:remove(entityId)
+    end
+
+    -- mark as dirty so entity can be added/removed from systems
+    self.dirtyEntities[entityId] = true
+  end
+
+  self.componentsToRemove = nil
+end
+
+local function removeEntities(self)
+  if not self.entitiesToRemove then
+    return
+  end
+
+  if not self.dirtyEntities then
+    self.dirtyEntities = {}
+  end
+
+  for k,v in pairs(self.entitiesToRemove) do
+    local entityId = k
+    table.insert(self.availableEntityIds, entityId)
+    self.entityCount = self.entityCount - 1
+    self.dirtyEntities[entityId] = true
+  end
+
+  self.entitiesToRemove = nil
+end
+
+local function processDirtyEntities(self)
+  if not self.dirtyEntities then
+    return
+  end
+
+  for k,v in pairs(self.dirtyEntities) do
+    local entityId = k
+    for systemId = 1, #self.app.systemComponentIds, 1 do
+      local systemComponents = self.app.systemComponentIds[systemId]
+      -- TODO: this adds/removes entities from every system when dirty - need to only do this to affected ones
+      if self:hasComponentIds(entityId, systemComponents) then
+        self.systemEntityIds[systemId]:add(entityId)
+      else
+        self.systemEntityIds[systemId]:remove(entityId)
+      end
+    end
+  end
+
+  self.dirtyEntities = nil
+end
+
 function Scene:update()
-  -- add pending entities
-  local addCount = #self.entitiesToAdd
-  if addCount > 0 then
-    for i = 1, addCount, 1 do
-      local components = self.entitiesToAdd[i].components
-      if components ~= nil then
-        local entityId = self.entitiesToAdd[i].id
-        for k,v in pairs(components) do
-          self:addComponent(entityId, k, v)
-        end
-      end
-      self.entityCount = self.entityCount + 1
-    end
-    self.entitiesToAdd = {}
-  end
-
-  -- remove pending entities
-  local removeCount = #self.entitiesToRemove
-  if removeCount > 0 then
-    for i = 1, removeCount, 1 do
-      local id = self.entitiesToRemove[i]
-
-      -- remove components from lists
-      for i = 1, #self.componentArrays, 1 do
-        self.componentArrays[i]:remove(id)
-      end
-
-      -- remove entity from system lists
-      for i = 1, #self.systemEntityIds, 1 do
-        self.systemEntityIds[i]:remove(id)
-      end
-
-      -- recycle entity id
-      table.insert(self.availableEntityIds, id)
-
-      self.entityCount = self.entityCount - 1
-    end
-    self.entitiesToRemove = {}
-  end
+  addPendingComponents(self)
+  removePendingComponents(self)
+  removeEntities(self)
+  processDirtyEntities(self)
 
   -- update systems
   local systemsToUpdate = self.app.systemsToUpdate
@@ -136,6 +194,13 @@ function Scene:getComponentById(entityId, componentId)
   return self.componentArrays[componentId]:get(entityId)
 end
 
+--- Adds multiple components to an entity.
+function Scene:addComponents(entityId, components)
+  for k,v in pairs(components) do
+    self:addComponent(entityId, k, v)
+  end
+end
+
 --- adds a component to an entity
 function Scene:addComponent(entityId, componentName, data)
   local componentId = self.app:getComponentId(componentName)
@@ -149,16 +214,14 @@ function Scene:addComponentById(entityId, componentId, data)
   local template = self.app:getComponentTemplate(componentId)
   setmetatable(data, template)
 
-  -- add component
-  self.componentArrays[componentId]:add(entityId, data)
-
-  -- add entity to systems based on component signature
-  for systemId = 1, #self.app.systemComponentIds, 1 do
-    local componentIds = self.app.systemComponentIds[systemId]
-    if self:hasComponentIds(entityId, componentIds) then
-      self.systemEntityIds[systemId]:add(entityId)
-    end
+  -- add to queue to be added next frame
+  if not self.componentsToAdd then
+    self.componentsToAdd = {}
   end
+  if not self.componentsToAdd[entityId] then
+    self.componentsToAdd[entityId] = {}
+  end
+  table.insert(self.componentsToAdd[entityId], { id = componentId, data = data })
 end
 
 --- removes a component from an entity.
@@ -169,14 +232,14 @@ end
 
 --- removes a component from an entity.
 function Scene:removeComponentById(entityId, componentId)
-  self.componentArrays[componentId]:remove(entityId)
-
-  for systemId = 1, #self.app.systemComponentIds, 1 do
-    local componentIds = self.app.systemComponentIds[systemId]
-    if not self:hasComponentIds(entityId, componentIds) then
-      self.systemEntityIds[systemId]:remove(entityId)
-    end
+  -- add to queue to be removed next frame
+  if not self.componentsToRemove then
+    self.componentsToRemove = {}
   end
+  if not self.componentsToRemove[entityId] then
+    self.componentsToRemove[entityId] = {}
+  end
+  table.insert(self.componentsToRemove[entityId], { id = componentId })
 end
 
 --- returns true if the specified entity has the specified component
@@ -240,14 +303,25 @@ function Scene:addEntity(components)
     self.newEntityId = self.newEntityId + 1
   end
 
-  table.insert(self.entitiesToAdd, { id=entityId, components=components} )
+  if components then
+    self:addComponents(entityId, components)
+  end
+
+  self.entityCount = self.entityCount + 1
 
   return entityId
 end
 
 --- removes the entity with the specified id.
 function Scene:removeEntity(id)
-  table.insert(self.entitiesToRemove, id)
+  for i = 1, #self.componentArrays, 1 do
+    self:removeComponentById(id, i)
+  end
+
+  if not self.entitiesToRemove then
+    self.entitiesToRemove = {}
+  end
+  self.entitiesToRemove[id] = true
 end
 
 return Scene
