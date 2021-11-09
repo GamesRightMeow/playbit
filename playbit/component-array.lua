@@ -59,4 +59,9 @@ function ComponentArray:get(entityId)
   return self.components[index]
 end
 
+--- Returns the entity id of the owner of the component at the specified index.
+function ComponentArray:getOwner(componentIndex)
+  return self.indexToIdMap[componentIndex]
+end
+
 return ComponentArray;
