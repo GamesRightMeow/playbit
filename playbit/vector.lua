@@ -1,11 +1,10 @@
 local Vector = {}
-Vector.__index = Vector
 
-function Vector.new(x, y)
-  return setmetatable({ x = x or 0, y = y or 0 }, Vector)
-end
+local meta = {}
+meta.__index = meta
+Vector.__index = meta
 
-function Vector.__add(a, b)
+function meta.__add(a, b)
   if type(a) == "number" then
     return Vector.new(b.x + a, b.y + a)
   elseif type(b) == "number" then
@@ -15,7 +14,7 @@ function Vector.__add(a, b)
   end
 end
 
-function Vector.__sub(a, b)
+function meta.__sub(a, b)
   if type(a) == "number" then
     return Vector.new(a - b.x, a - b.y)
   elseif type(b) == "number" then
@@ -25,7 +24,7 @@ function Vector.__sub(a, b)
   end
 end
 
-function Vector.__mul(a, b)
+function meta.__mul(a, b)
   if type(a) == "number" then
     return Vector.new(b.x * a, b.y * a)
   elseif type(b) == "number" then
@@ -35,7 +34,7 @@ function Vector.__mul(a, b)
   end
 end
 
-function Vector.__div(a, b)
+function meta.__div(a, b)
   if type(a) == "number" then
     return Vector.new(a / b.x, a / b.y)
   elseif type(b) == "number" then
@@ -45,54 +44,54 @@ function Vector.__div(a, b)
   end
 end
 
-function Vector.__eq(a, b)
+function meta.__eq(a, b)
   return a.x == b.x and a.y == b.y
 end
 
-function Vector.__lt(a, b)
+function meta.__lt(a, b)
   return a.x < b.x or (a.x == b.x and a.y < b.y)
 end
 
-function Vector.__le(a, b)
+function meta.__le(a, b)
   return a.x <= b.x and a.y <= b.y
 end
 
-function Vector.__tostring(a)
+function meta.__tostring(a)
   return "(" .. a.x .. ", " .. a.y .. ")"
 end
 
-function Vector.distance(a, b)
+function meta.distance(a, b)
   return (b - a):len()
 end
 
-function Vector:clone()
-  return Vector.new(self.x, self.y)
+function meta:clone()
+  return meta.new(self.x, self.y)
 end
 
-function Vector:unpack()
+function meta:unpack()
   return self.x, self.y
 end
 
-function Vector:len()
+function meta:len()
   return math.sqrt(self.x * self.x + self.y * self.y)
 end
 
-function Vector:lenSq()
+function meta:lenSq()
   return self.x * self.x + self.y * self.y
 end
 
-function Vector:normalize()
+function meta:normalize()
   local len = self:len()
   self.x = self.x / len
   self.y = self.y / len
   return self
 end
 
-function Vector:normalized()
+function meta:normalized()
   return self / self:len()
 end
 
-function Vector:rotate(phi)
+function meta:rotate(phi)
   local c = math.cos(phi)
   local s = math.sin(phi)
   self.x = c * self.x - s * self.y
@@ -100,24 +99,48 @@ function Vector:rotate(phi)
   return self
 end
 
-function Vector:rotated(phi)
+function meta:rotated(phi)
   return self:clone():rotate(phi)
 end
 
-function Vector:perpendicular()
-  return Vector.new(-self.y, self.x)
+function meta:perpendicular()
+  return meta.new(-self.y, self.x)
 end
 
-function Vector:projectOn(other)
+function meta:projectOn(other)
   return (self * other) * other / other:lenSq()
 end
 
-function Vector:cross(other)
+function meta:cross(other)
   return self.x * other.y - self.y * other.x
 end
 
-function Vector:dot(other)
+function meta:dot(other)
   return self.x * other.x + self.y * other.y
+end
+
+-- Static functions
+function Vector.new(x, y)
+  return setmetatable({ x = x or 0, y = y or 0 }, meta)
+end
+
+function Vector.len(x, y)
+  return math.sqrt(x * x + y * y)
+end
+
+function Vector.normalize(x, y)
+  local len = math.sqrt(x * x + y * y)
+  x = x / len
+  y = y / len
+  return { x = x, y = y }
+end
+
+function Vector.cross(x1, y1, x2, y2)
+  return x1 * y2 - y1 * x2
+end
+
+function Vector.dot(x1, y1, x2, y2)
+  return x1 * x2 + y1 * y2
 end
 
 return Vector
