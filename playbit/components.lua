@@ -85,7 +85,8 @@ Components.Shape = {
     width = 0,
     height = 0,
     color = 1,
-    isFilled = true
+    isFilled = true,
+    lineThickness = 0.5,
   }
 }
 

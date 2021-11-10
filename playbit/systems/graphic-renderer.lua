@@ -116,9 +116,9 @@ local function renderShape(x, y, graphic, shape)
   graphics.setColor(shape.color)
 
   if shape.type == "circle" then
-    graphics.circle(x, y, shape.radius, shape.isFilled)
+    graphics.circle(x, y, shape.radius, shape.isFilled, shape.lineThickness)
   elseif shape.type == "rectangle" then
-    graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation)
+    graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation, shape.lineThickness)
   end
 end
 
