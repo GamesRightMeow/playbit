@@ -54,7 +54,11 @@ function Graphics.rectangle(x, y, width, height, isFilled, angle, lineWidth)
     mode = "fill"
   end
 
-  if lineWidth == nil then
+  if not angle then
+    angle = 0
+  end
+
+  if not lineWidth then
     lineWidth = 0.5
   end
 
