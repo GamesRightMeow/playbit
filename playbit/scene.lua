@@ -182,6 +182,7 @@ function Scene:render()
     system.render(self, entities)
   end
 
+  --! if DEBUG then
   if self.app.drawStats and self.app.drawSystemDebug > 0 then
     local systemId = self.app.systemsToRenderDebug[self.app.drawSystemDebug]
     local entities = self.systemEntityIds[systemId].entities
@@ -193,6 +194,7 @@ function Scene:render()
     pb.graphics.setColor(1)
     pb.graphics.text(system.name, 200, 0, "center")
   end
+  --! end
 end
 
 --- Returns the entity id of the owner of the component at the specified index.
@@ -234,7 +236,7 @@ end
 --- adds a component to an entity
 function Scene:addComponent(entityId, componentName, data)
   local componentId = self.app:getComponentId(componentName)
-  assert(componentId, "Component '"..componentName.."' does not exist.")
+  pb.assert(componentId, "Component '"..componentName.."' does not exist.")
   self:addComponentById(entityId, componentId, data)
 end
 

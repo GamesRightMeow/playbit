@@ -19,4 +19,10 @@ namespace.systems.graphicRenderer = require("playbit.systems.graphic-renderer")
 namespace.systems.parentManager = require("playbit.systems.parent-manager")
 namespace.systems.particleSystem = require("playbit.systems.particle-system")
 
+function namespace.assert(value, message)
+  --! if ASSERT then
+  assert(value, message)
+  --! end
+end
+
 return namespace

@@ -72,8 +72,19 @@ function Build.build(options)
 
   local enableVerbose = options.verbose == true
   local targetPlatform = options.platform
-  pp.metaEnvironment.LOVE2D = targetPlatform == "love2d"
+
+  -- built in env values
   -- TODO: add variable for playdate sdk
+  pp.metaEnvironment.LOVE2D = targetPlatform == "love2d"
+  pp.metaEnvironment.ASSERT = options.assert
+  pp.metaEnvironment.DEBUG = options.debug
+
+  -- any game specific env values
+  if options.env then
+    for i = 1, #options.env, 1 do
+      pp.metaEnvironment[options.env[i]] = true
+    end
+  end
 
   -- nuke old folder
   local outputFolder = "_dist"

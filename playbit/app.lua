@@ -90,6 +90,8 @@ function App:update()
   self.scene:update()
 
   --! if LOVE2D then
+  
+  --! if DEBUG then
   -- TODO: expose stat toggle in playdates menu?
   if input.getButtonDown("debug_stats") then
     self.drawStats = not self.drawStats
@@ -102,6 +104,7 @@ function App:update()
       self.drawSystemDebug = self.drawSystemDebug + 1
     end
   end
+  --! end
   
   if input.getButtonDown("toggle_window_size") then
     self.draw2x = not self.draw2x
@@ -134,6 +137,7 @@ function App:draw()
 
   perf.endFrameSample("render")
 
+  --! if DEBUG then
   -- TODO: consider putting these in dedicated system if more entity-specific features are added
   if self.drawStats and self.drawSystemDebug == 0 then
     graphics.setColor(1)
@@ -152,6 +156,7 @@ function App:draw()
     graphics.text("E", 361, 25, "left")
     graphics.text(self.scene.entityCount, 400, 25, "right")
   end
+  --! end
 end
 
 --- Returns the system's id with the given name.
@@ -172,7 +177,7 @@ end
 
 --- Registers a system with the given name and options.
 function App:registerSystem(system)
-  assert(self.systemNameToIdMap[system.name] == nil, "A system with the name '"..system.name.."' has already been registered!")
+  pb.assert(self.systemNameToIdMap[system.name] == nil, "A system with the name '"..system.name.."' has already been registered!")
 
   -- allocate system id
   local systemId = self.nextSystemId
@@ -183,7 +188,7 @@ function App:registerSystem(system)
   for i = 1, #system.components, 1 do
     local componentName = system.components[i]
     local componentId = self:getComponentId(componentName)
-    assert(componentId ~= nil, "System '"..system.name.."' requires a non-existent component '"..componentName.."'!")
+    pb.assert(componentId ~= nil, "System '"..system.name.."' requires a non-existent component '"..componentName.."'!")
     table.insert(componentIds, componentId)
   end
   self.systemComponentIds[systemId] = componentIds
@@ -200,9 +205,11 @@ function App:registerSystem(system)
     table.insert(self.systemsToRender, systemId)
   end
 
+  --! if DEBUG then
   if system.renderDebug ~= nil then
     table.insert(self.systemsToRenderDebug, systemId)
   end
+  --! end
   
   return systemId
 end
@@ -216,7 +223,7 @@ function App:getComponentTemplate(id)
 end
 
 function App:registerComponent(name, template)
-  assert(self.componentNameToIdMap[name] == nil, "A component with the name '"..name.."' has already been registered!")
+  pb.assert(self.componentNameToIdMap[name] == nil, "A component with the name '"..name.."' has already been registered!")
   local id = self.nextComponentId
   self.componentTemplates[id] = template
   setmetatable(template, {})
