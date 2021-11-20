@@ -59,22 +59,21 @@ function CollisionResolver.update(scene, entities)
   end
 end
 
--- TODO: reimplement when there is some sort of system debugger
--- function CollisionResolver.render(scene, entities)
---   for i = 1, #entities, 1 do
---     local entityId = entities[i]
---     local collider = scene:getComponent(entityId, "collider")
---     local transform = scene:getComponent(entityId, "transform")
+function CollisionResolver.renderDebug(scene, entities)
+  for i = 1, #entities, 1 do
+    local entityId = entities[i]
+    local collider = scene:getComponent(entityId, "collider")
+    local transform = scene:getComponent(entityId, "transform")
 
---     local x = scene.camera.x + transform.x + collider.x
---     local y = scene.camera.y + transform.y + collider.y
---     graphics.setColor(1)
---     if #collider.contacts > 0 then
---       graphics.circle(x, y, collider.radius, true)
---     else
---       graphics.circle(x, y, collider.radius, false)
---     end
---   end
--- end
+    local x = scene.camera.x + transform.x + collider.x
+    local y = scene.camera.y + transform.y + collider.y
+    graphics.setColor(1)
+    if #collider.contacts > 0 then
+      graphics.circle(x, y, collider.radius, true)
+    else
+      graphics.circle(x, y, collider.radius, false)
+    end
+  end
+end
 
 return CollisionResolver

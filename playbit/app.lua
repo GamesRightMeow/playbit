@@ -12,6 +12,7 @@ App.__index = App
 function App.new()
   local newApp = {
     drawStats = false,
+    drawSystemDebug = 0,
 
     --! if LOVE2D then
     draw2x = true,
@@ -24,6 +25,7 @@ function App.new()
     systemNameToIdMap = {},
     systemsToUpdate = {},
     systemsToRender = {},
+    systemsToRenderDebug = {},
     nextSystemId = 1,
     componentTemplates = {},
     componentNameToIdMap = {},
@@ -92,6 +94,14 @@ function App:update()
   if input.getButtonDown("debug_stats") then
     self.drawStats = not self.drawStats
   end
+
+  if input.getButtonDown("toggle_debug_stats") then
+    if self.drawSystemDebug == #self.systemsToRenderDebug then
+      self.drawSystemDebug = 0
+    else
+      self.drawSystemDebug = self.drawSystemDebug + 1
+    end
+  end
   
   if input.getButtonDown("toggle_window_size") then
     self.draw2x = not self.draw2x
@@ -124,7 +134,8 @@ function App:draw()
 
   perf.endFrameSample("render")
 
-  if self.drawStats then
+  -- TODO: consider putting these in dedicated system if more entity-specific features are added
+  if self.drawStats and self.drawSystemDebug == 0 then
     graphics.setColor(1)
     graphics.rectangle(360, 0, 40, 33, true, 0)
     graphics.setColor(0)
@@ -187,6 +198,10 @@ function App:registerSystem(system)
 
   if system.render ~= nil then
     table.insert(self.systemsToRender, systemId)
+  end
+
+  if system.renderDebug ~= nil then
+    table.insert(self.systemsToRenderDebug, systemId)
   end
   
   return systemId

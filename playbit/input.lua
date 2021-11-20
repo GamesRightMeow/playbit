@@ -8,6 +8,7 @@ local keyToButton = {
   z = "a",
   x = "b",
   ["`"] = "debug_stats",
+  tab = "toggle_debug_stats",
   f1 = "toggle_window_size",
 }
 

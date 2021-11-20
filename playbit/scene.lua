@@ -181,6 +181,18 @@ function Scene:render()
     local system = self.app:getSystemById(systemId)
     system.render(self, entities)
   end
+
+  if self.app.drawStats and self.app.drawSystemDebug > 0 then
+    local systemId = self.app.systemsToRenderDebug[self.app.drawSystemDebug]
+    local entities = self.systemEntityIds[systemId].entities
+    local system = self.app:getSystemById(systemId)
+    system.renderDebug(self, entities)
+
+    pb.graphics.setColor(0)
+    pb.graphics.rectangle(0, 0, 400, 10, true)
+    pb.graphics.setColor(1)
+    pb.graphics.text(system.name, 200, 0, "center")
+  end
 end
 
 --- Returns the entity id of the owner of the component at the specified index.
