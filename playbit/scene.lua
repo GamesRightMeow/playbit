@@ -2,6 +2,7 @@ local components = require("playbit.components")
 local nameAllocator = require("playbit.systems.name-allocator")
 local componentArray = require("playbit.component-array")
 local entityArray = require("playbit.entity-array")
+local perf = require("playbit.perf")
 
 local Scene = {}
 Scene.__index = Scene
@@ -192,7 +193,7 @@ function Scene:render()
     pb.graphics.setColor(0)
     pb.graphics.rectangle(0, 0, 400, 10, true)
     pb.graphics.setColor(1)
-    pb.graphics.text(system.name, 200, 0, "center")
+    pb.graphics.text(system.name.." "..perf.getFrameSample(system.perfSampleName).."ms", 200, 0, "center")
   end
   --! end
 end
