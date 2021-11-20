@@ -50,7 +50,12 @@ function App:load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   --! end
 
-  graphics.createFont("playbit", "playbit/fonts/font.png")
+  graphics.createFont(
+    "playbit",
+    "playbit/fonts/playbit.png",
+    ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~',
+    -2.5
+  )
 end
 
 function App:joystickadded(joystick)
@@ -123,10 +128,18 @@ function App:draw()
     graphics.setColor(1)
     graphics.rectangle(360, 0, 40, 33, true, 0)
     graphics.setColor(0)
-    graphics.text(perf.getFps(), 0, 1, "right")
-    graphics.text(perf.getFrameSample("update"), 0, 9, "right")
-    graphics.text(perf.getFrameSample("render"), 0, 17, "right")
-    graphics.text(self.scene.entityCount, 0, 25, "right")
+
+    graphics.text("F", 360, 0, "left")
+    graphics.text(perf.getFps(), 399, 0, "right")
+
+    graphics.text("U", 360, 8, "left")
+    graphics.text(perf.getFrameSample("update"), 399, 8, "right")
+
+    graphics.text("R", 360, 16, "left")
+    graphics.text(perf.getFrameSample("render"), 399, 16, "right")
+
+    graphics.text("E", 360, 24, "left")
+    graphics.text(self.scene.entityCount, 399, 24, "right")
   end
 end
 

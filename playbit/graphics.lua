@@ -83,20 +83,35 @@ function Graphics.line(x1, y1, x2, y2, lineWidth)
 end
 
 local fonts = {}
-function Graphics.createFont(name, path)
-  fonts[name] = love.graphics.newImageFont(path, " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`_*#=[]'{}", 1)
+local activeFontName = ""
+function Graphics.createFont(name, path, glyphs, spacing)
+  fonts[name] = love.graphics.newImageFont(path, glyphs, spacing)
 end
 
 function Graphics.setFont(name)
   --! if LOVE2D then
   love.graphics.setFont(fonts[name])
+  activeFontName = name
   --! end
 end
 
 --- Draws a string.
 function Graphics.text(str, x, y, align)
   --! if LOVE2D then
-  love.graphics.printf(str, x, y, 400, align)
+  local font = fonts[activeFontName]
+
+  -- TODO: creating a new text object every frame isn't very efficent
+  -- (but this is more convenient)
+  local text = love.graphics.newText(font, str)
+  
+  -- printf() supports alignment, but it requires setting the max width which isn't always ideal
+  if align == "center" then
+    x = x - text:getWidth() * 0.5  
+  elseif align == "right" then
+    x = x - text:getWidth()
+  end
+
+  love.graphics.draw(text, x, y)
   --! end
 end
 
