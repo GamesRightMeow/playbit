@@ -55,8 +55,8 @@ function App:load()
   graphics.createFont(
     "playbit",
     "playbit/fonts/playbit.png",
-    ' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~',
-    -2.5
+    " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`_*#=[]'{}",
+    1
   )
 end
 
@@ -140,17 +140,17 @@ function App:draw()
     graphics.rectangle(360, 0, 40, 33, true, 0)
     graphics.setColor(0)
 
-    graphics.text("F", 360, 0, "left")
-    graphics.text(perf.getFps(), 399, 0, "right")
+    graphics.text("F", 361, 1, "left")
+    graphics.text(perf.getFps(), 400, 1, "right")
 
-    graphics.text("U", 360, 8, "left")
-    graphics.text(perf.getFrameSample("update"), 399, 8, "right")
+    graphics.text("U", 361, 9, "left")
+    graphics.text(perf.getFrameSample("update"), 400, 9, "right")
 
-    graphics.text("R", 360, 16, "left")
-    graphics.text(perf.getFrameSample("render"), 399, 16, "right")
+    graphics.text("R", 361, 17, "left")
+    graphics.text(perf.getFrameSample("render"), 400, 17, "right")
 
-    graphics.text("E", 360, 24, "left")
-    graphics.text(self.scene.entityCount, 399, 24, "right")
+    graphics.text("E", 361, 25, "left")
+    graphics.text(self.scene.entityCount, 400, 25, "right")
   end
 end
 
