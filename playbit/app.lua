@@ -85,7 +85,7 @@ function App:keyreleased(key)
 end
 
 function App:update()
-  perf.beginFrameSample("update")
+  perf.beginFrameSample("__update")
   
   self.scene:update()
 
@@ -118,11 +118,11 @@ function App:update()
 
   input.update();
 
-  perf.endFrameSample("update")
+  perf.endFrameSample("__update")
 end
 
 function App:draw()
-  perf.beginFrameSample("render")
+  perf.beginFrameSample("__render")
 
   --! if LOVE2D then
   if self.draw2x then
@@ -135,7 +135,7 @@ function App:draw()
 
   self.scene:render()
 
-  perf.endFrameSample("render")
+  perf.endFrameSample("__render")
 
   --! if DEBUG then
   -- TODO: consider putting these in dedicated system if more entity-specific features are added
@@ -148,10 +148,10 @@ function App:draw()
     graphics.text(perf.getFps(), 400, 1, "right")
 
     graphics.text("U", 361, 9, "left")
-    graphics.text(perf.getFrameSample("update"), 400, 9, "right")
+    graphics.text(perf.getFrameSample("__update"), 400, 9, "right")
 
     graphics.text("R", 361, 17, "left")
-    graphics.text(perf.getFrameSample("render"), 400, 17, "right")
+    graphics.text(perf.getFrameSample("__render"), 400, 17, "right")
 
     graphics.text("E", 361, 25, "left")
     graphics.text(self.scene.entityCount, 400, 25, "right")
