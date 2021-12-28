@@ -1,4 +1,40 @@
-local pb = require("playbit.pb")
+local build = require("build")
+
+-- TODO: break build step out so there can be separate tests for different configurations e.g. playdate vs love2d
+build.build({ 
+  verbose = false,
+  assert = true,
+  debug = true,
+  platform = "playdate",
+  output = "_test\\",
+  luaFolders = {
+    { "playbit", "playbit" }
+  },
+  copyFiles = {
+    { "example\\main.lua", "_test\\main.lua" },
+    { "example\\conf.lua", "_test\\conf.lua" },
+  },
+  runOnSuccess = "",
+})
+
+-- update path so that lua uses the version of playbit we just processed
+package.path = ".\\_test\\?.lua;" .. package.path
+
+-- set playbit globally
+pb = require("_test.playbit.pb")
+local components = require("_test.playbit.components")
+
+function CreateAppInstance()
+  local game = pb.app.new()
+  game:load()
+
+  game:registerSystem(pb.systems.collisionDetector)
+  game:registerSystem(pb.systems.parentManager)
+  game:registerSystem(pb.systems.particleSystem)
+  game:registerSystem(pb.systems.graphicRenderer)
+
+  return game
+end
 
 function SystemTests()
   local game = pb.app.new()
@@ -10,10 +46,10 @@ function SystemTests()
   assert(componentBId == 2)
   assert(componentCId == 3)
 
-  local systemAId = game:registerSystem("SystemA",   { components={ "ComponentA" } })
-  local systemBId = game:registerSystem("SystemB",   { components={ "ComponentB" } })
-  local systemCId = game:registerSystem("SystemC",   { components={ "ComponentC" } })
-  local systemBCId = game:registerSystem("SystemBC", { components={ "ComponentB", "ComponentC" } })
+  local systemAId = game:registerSystem({ name="SystemA",   components={ "ComponentA" } })
+  local systemBId = game:registerSystem({ name="SystemB",   components={ "ComponentB" } })
+  local systemCId = game:registerSystem({ name="SystemC",   components={ "ComponentC" } })
+  local systemBCId = game:registerSystem({ name="SystemBC", components={ "ComponentB", "ComponentC" } })
   assert(systemAId == 1)
   assert(systemBId == 2)
   assert(systemCId == 3)
@@ -27,6 +63,8 @@ function SystemTests()
   assert(componentDId == 28)
 
   local scene = pb.scene.new(game)
+  game:changeScene(scene)
+
   scene:addEntity({
     ["ComponentA"] = {}
   })
@@ -40,6 +78,9 @@ function SystemTests()
     ["ComponentB"] = {},
     ["ComponentC"] = {},
   })
+
+  scene:update()
+  
   assert(#scene.systemEntityIds[systemAId].entities == 1)
   assert(#scene.systemEntityIds[systemBId].entities == 2)
   assert(#scene.systemEntityIds[systemCId].entities == 2)
@@ -158,25 +199,29 @@ function ComponentTests()
 end
 
 function EntityTests()
-  local game = pb.app.new()
-  game:load()
-  
+  local game = CreateAppInstance()
+  local nameId = game:getComponentId("name")
+  local transformId = game:getComponentId("transform")
+
   local componentAId = game:registerComponent("ComponentA", {})
   local componentBId = game:registerComponent("ComponentB", {})
 
   local scene = pb.scene.new(game)
+  game:changeScene(scene)
 
   local tempId = scene:addEntity({
     [pb.components.Name.name] = { },
     [pb.components.Transform.name] = { x = 5 },
   })
+  scene:update()
   assert(scene.entityCount == 1)
 
   local tranformComponent = scene:getComponent(tempId, pb.components.Transform.name)
   assert(tranformComponent.x == 5)
   assert(tranformComponent.y == 0)
 
-  scene:removeEntity(tempId);
+  scene:removeEntity(tempId)
+  scene:update()
   assert(scene.entityCount == 0)
 
   local playerName = "Player"
@@ -184,64 +229,73 @@ function EntityTests()
     [pb.components.Name.name] = { name=playerName },
     ["ComponentA"] = { x=0, y=0 },
   })
+  scene:update()
 
-  local nameSystemId = game:getSystemId("name")
+  local nameSystemId = game:getSystemId("name-allocator")
   assert(#scene.systemEntityIds[nameSystemId].entities == 1)
-  assert(playerId == 0)
+  assert(playerId == 1)
   assert(scene.entityCount == 1)
   assert(scene:findEntity(playerName) == playerId)
   assert(scene:findEntity("does not exist") == -1)
 
-  assert(scene:hasComponentId(playerId, pb.components.Name.id))
+  assert(scene:hasComponentId(playerId, nameId))
   assert(scene:hasComponentId(playerId, componentAId))
   assert(not scene:hasComponentId(playerId, componentBId))
-  assert(not scene:hasComponentId(playerId, pb.components.Transform.id))
+  assert(not scene:hasComponentId(playerId, transformId))
   
   scene:addComponent(playerId, "ComponentB", {})
-  assert(scene:hasComponentId(playerId, pb.components.Name.id))
+  scene:update()
+
+  assert(scene:hasComponentId(playerId, nameId))
   assert(scene:hasComponentId(playerId, componentAId))
   assert(scene:hasComponentId(playerId, componentBId))
-  assert(not scene:hasComponentId(playerId, pb.components.Transform.id))
+  assert(not scene:hasComponentId(playerId, transformId))
 
   scene:removeComponent(playerId, "ComponentA")
-  assert(scene:hasComponentId(playerId, pb.components.Name.id))
+  scene:update()
+
+  assert(scene:hasComponentId(playerId, nameId))
   assert(not scene:hasComponentId(playerId, componentAId))
   assert(scene:hasComponentId(playerId, componentBId))
-  assert(not scene:hasComponentId(playerId, pb.components.Transform.id))
+  assert(not scene:hasComponentId(playerId, transformId))
 
   local entityA = scene:addEntity({ 
     ["ComponentA"] = { x=0, y=0 },
   })
-  assert(entityA == 1);
+  scene:update()
+  assert(entityA == 2)
   assert(scene.entityCount == 2)
 
   local entityB = scene:addEntity({ 
     ["ComponentA"] = { x=0, y=0 },
   })
-  assert(entityB == 2);
+  scene:update()
+  assert(entityB == 3)
   assert(scene.entityCount == 3)
 
   scene:removeEntity(entityA)
+  scene:update()
   assert(scene.entityCount == 2)
 
   local entityC = scene:addEntity({ 
     ["ComponentA"] = { x=0, y=0 },
   })
-  assert(entityC == 1);
+  scene:update()
+  assert(entityC == 2)
   assert(scene.entityCount == 3)
 
   scene:removeEntity(playerId)
+  scene:update()
   assert(scene.entityCount == 2)
 
   assert(scene:findEntity(playerName) == -1)
 end
 
 function AppTests()
-  local game = pb.app.new()
-  game:load()
+  local game = CreateAppInstance()
 
   local nameId = game:getComponentId("name")
-  assert(nameId == pb.components.Name.id)
+  assert(nameId ~= nil)
 end
 
 local testsToRun = {
@@ -259,3 +313,5 @@ for k,v in ipairs(testsToRun) do
   local endTime = os.clock()
   print("'" .. v.name .. "' completed in " .. (endTime - startTime) .. "ms")
 end
+
+print("\nAll tests succeeded")
