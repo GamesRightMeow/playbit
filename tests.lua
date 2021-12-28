@@ -36,7 +36,7 @@ function CreateAppInstance()
   return game
 end
 
-function SystemTests()
+function Test_Systems()
   local game = pb.app.new()
 
   local componentAId = game:registerComponent("ComponentA", {})
@@ -87,7 +87,7 @@ function SystemTests()
   assert(#scene.systemEntityIds[systemBCId].entities == 1)
 end
 
-function MiscUtilsTests()
+function Test_Utils()
   local tableA = {
     x=0,
     y=1004,
@@ -106,7 +106,7 @@ function MiscUtilsTests()
   assert(tableB.x ~= tableA.x)
 end
 
-function BitfieldTests()
+function Test_Bitfield()
   local emptyBitfield = pb.bitfield.new()
   assert(emptyBitfield.value == 0)
   assert(not emptyBitfield:has(0))
@@ -174,7 +174,7 @@ function BitfieldTests()
   assert(not bitfield:has(31))
 end
 
-function ComponentTests()
+function Test_Components()
   local componentArray = require("playbit.component-array")
   local arr = componentArray.new()
 
@@ -198,7 +198,7 @@ function ComponentTests()
   assert(#arr.components == 0)
 end
 
-function EntityTests()
+function Test_Entities()
   local game = CreateAppInstance()
   local nameId = game:getComponentId("name")
   local transformId = game:getComponentId("transform")
@@ -291,7 +291,7 @@ function EntityTests()
   assert(scene:findEntity(playerName) == -1)
 end
 
-function AppTests()
+function Test_App()
   local game = CreateAppInstance()
 
   local nameId = game:getComponentId("name")
@@ -299,19 +299,21 @@ function AppTests()
 end
 
 local testsToRun = {
-  { name="App Tests", testFunction=AppTests },
-  { name="Bitfield Tests", testFunction=BitfieldTests },
-  { name="Misc Util Tests", testFunction=MiscUtilsTests },
-  { name="System Tests", testFunction=SystemTests },
-  { name="Component Tests", testFunction=ComponentTests },
-  { name="Entity Tests", testFunction=EntityTests },
+  { name="App Tests", testFunction=Test_App },
+  { name="Bitfield Tests", testFunction=Test_Bitfield },
+  { name="Misc Util Tests", testFunction=Test_Utils },
+  { name="System Tests", testFunction=Test_Systems },
+  { name="Component Tests", testFunction=Test_Components },
+  { name="Entity Tests", testFunction=Test_Entities },
 }
 
+local totalStartTime = os.clock()
 for k,v in ipairs(testsToRun) do
   local startTime = os.clock()
   v.testFunction()
   local endTime = os.clock()
   print("'" .. v.name .. "' completed in " .. (endTime - startTime) .. "ms")
 end
+local totalEndTime = os.clock()
 
-print("\nAll tests succeeded")
+print("\nAll tests succeeded in " .. (totalEndTime - totalStartTime) .. "ms")
