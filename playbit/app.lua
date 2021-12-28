@@ -230,7 +230,7 @@ function App:registerComponent(name, template)
   template.__index = template
   self.componentNameToIdMap[name] = id
   self.nextComponentId = self.nextComponentId + 1
-  return id;
+  return id
 end
 
 --- Sets the active scene that the app is running.
