@@ -22,6 +22,7 @@ end
 GraphicRenderer.name = "graphic-renderer"
 GraphicRenderer.components = { components.Transform.name, components.Graphic.name }
 
+--! if LOVE2D then
 local playbitShader = love.graphics.newShader[[
 extern float WhiteFactor;
 
@@ -33,6 +34,7 @@ vec4 effect(vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord)
     return outputcolor;
 }
 ]]
+--! end
 
 local function renderSpritesheet(x, y, graphic, spritesheet)
   -- render texture as solid white or not

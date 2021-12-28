@@ -89,7 +89,9 @@ end
 local fonts = {}
 local activeFontName = ""
 function Graphics.createFont(name, path, glyphs, spacing)
+  --! if LOVE2D then
   fonts[name] = love.graphics.newImageFont(path, glyphs, spacing)
+  --! end
 end
 
 function Graphics.setFont(name)
