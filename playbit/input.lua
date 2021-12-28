@@ -26,7 +26,7 @@ for k,v in pairs(keyToButton) do
   buttonStates[v] = 0
 end
 
-local activeGamepad = {}
+local activeGamepad = nil
 
 function Input.update()
   for k,v in pairs(buttonStates) do
@@ -115,6 +115,11 @@ end
 
 --- Returns true if the crank is extended.
 function Input.isCrankExtended()
+  if not activeGamepad then
+    -- TODO: test keyboard if no gamepad
+    return false
+  end
+
   -- TODO: emulate on keyboard?
   local x = math.abs(activeGamepad:getAxis(3))
   local y = math.abs(activeGamepad:getAxis(4))
@@ -127,10 +132,11 @@ end
 --- Returns the angle the crank is currently at in radians.
 function Input.getCrank()
   if not activeGamepad then
-    -- TODO: emulate on keyboard?
+    -- TODO: test keyboard if no gamepad
     return 0
   end
 
+  -- TODO: emulate on keyboard?
   local x = activeGamepad:getAxis(3)
   local y = activeGamepad:getAxis(4)
 
