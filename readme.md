@@ -23,17 +23,19 @@
 }
 ```
 
-# Building
+# Building/Running example
 * Lua files need to be parsed by [preprocess](http://luapreprocess.refreezed.com/docs/) before actually running
 * Preprocess does not support the comment style, so comments are removed in the build step prior to preprocess.
 * Preprocessors in comments fixes vscode linting issues since its not standard lua
 
 ## Love
-1. `lua .\build-example.lua love2d`
-1. `love _dist`
+`lua example/build.lua`
 
 ## Playdate
 TODO: playdate build docs
+
+# Running unit tests
+`lua tests.lua`
 
 # TODO Tree support
 `"todo-tree.regex.regex": "$\\s*--\\s*($TAGS)",`
