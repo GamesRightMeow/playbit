@@ -198,11 +198,18 @@ function Scene:render()
   --! end
 end
 
---- Returns the entity id of the owner of the component at the specified index.
---- This should be used with the getComponents() method.
-function Scene:getComponentOwner(componentName, componentIndex)
+--- Returns all entities that have the specified component.
+function Scene:getEntitiesWithComponent(componentName)
   local componentId = self.app:getComponentId(componentName)
-  return self.componentArrays[componentId]:getOwner(componentIndex)
+  local count = #self.componentArrays[componentId].components
+
+  local owners = {}
+  for i = 1, count, 1 do  
+    local ownerEntityId = self.componentArrays[componentId]:getOwner(i)
+    table.insert(owners, ownerEntityId)
+  end
+
+  return owners 
 end
 
 --- Retrieves all components of the specified type.
