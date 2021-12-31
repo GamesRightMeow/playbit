@@ -60,10 +60,6 @@ function meta.__tostring(a)
   return "(" .. a.x .. ", " .. a.y .. ")"
 end
 
-function meta.distance(a, b)
-  return (b - a):len()
-end
-
 function meta:clone()
   return meta.new(self.x, self.y)
 end
@@ -122,6 +118,10 @@ end
 -- Static functions
 function Vector.new(x, y)
   return setmetatable({ x = x or 0, y = y or 0 }, meta)
+end
+
+function Vector.distance(a, b)
+  return (b - a):len()
 end
 
 function Vector.len(x, y)
