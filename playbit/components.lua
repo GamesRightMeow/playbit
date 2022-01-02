@@ -128,4 +128,12 @@ Components.Collider = {
   }
 }
 
+Components.Velocity = {
+  name = "velocity",
+  template = {
+    x = 0,
+    y = 0,
+  }
+}
+
 return Components

@@ -19,6 +19,7 @@ namespace.systems.collisionDetector = require("playbit.systems.collision-detecto
 namespace.systems.graphicRenderer = require("playbit.systems.graphic-renderer")
 namespace.systems.parentManager = require("playbit.systems.parent-manager")
 namespace.systems.particleSystem = require("playbit.systems.particle-system")
+namespace.systems.physics = require("playbit.systems.physics")
 
 function namespace.assert(value, message)
   --! if ASSERT then
