@@ -115,6 +115,11 @@ function meta:dot(other)
   return self.x * other.x + self.y * other.y
 end
 
+function meta:toRad()
+  ---@diagnostic disable-next-line: deprecated
+  return math.atan2(-self.y, self.x)
+end
+
 -- Static functions
 function Vector.new(x, y)
   return setmetatable({ x = x or 0, y = y or 0 }, meta)
