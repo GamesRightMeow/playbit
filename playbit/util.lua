@@ -70,4 +70,14 @@ function Util.angleDiff(a, b)
   return diff
 end
 
+function Util.sign(a)
+  if a > 0 then
+    return 1
+  elseif a < 0 then
+    return -1
+  else
+    return 0
+  end
+end
+
 return Util
