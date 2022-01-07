@@ -138,6 +138,7 @@ Components.Velocity = {
   template = {
     x = 0,
     y = 0,
+    minSpeed = 0.001,
   }
 }
 
