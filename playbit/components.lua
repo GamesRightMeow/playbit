@@ -141,4 +141,16 @@ Components.Velocity = {
   }
 }
 
+Components.OffscreenDetector = 
+{
+  name = "offscreen-detector",
+  template = {
+    deleteWhenOffScreen = false,
+    -- 
+    x = 0,
+    y = 0,
+    isOffscreen = false,
+  }
+}
+
 return Components
