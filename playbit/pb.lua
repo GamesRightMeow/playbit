@@ -22,10 +22,6 @@ namespace.systems.particleSystem = require("playbit.systems.particle-system")
 namespace.systems.physics = require("playbit.systems.physics")
 namespace.systems.offscreenDetector = require("playbit.systems.offscreen-detector")
 
-function namespace.assert(value, message)
-  --! if ASSERT then
-  assert(value, message)
-  --! end
-end
+namespace.debug = require("playbit.debug")
 
 return namespace

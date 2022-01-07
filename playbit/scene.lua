@@ -195,6 +195,26 @@ function Scene:render()
     pb.graphics.setColor(1)
     pb.graphics.text(system.name.." "..perf.getFrameSample(system.perfSampleName).."ms", 200, 0, "center")
   end
+
+  local count = #pb.debug.debugShapes 
+  for i = count, 1, -1 do
+    local shape = pb.debug.debugShapes[i]
+    if shape.duration <= 0 then
+      table.remove(pb.debug.debugShapes, i)
+    else
+      shape.duration = shape.duration - pb.util.deltaTime()
+      if shape.type == "line" then
+        pb.graphics.setColor(shape.color)
+        -- TODO: allow for non-camera aligned shapes
+        pb.graphics.line(
+          self.camera.x + shape.x1, self.camera.y + shape.y1, 
+          self.camera.x + shape.x2, self.camera.y + shape.y2, 
+          0.5)
+      end
+      -- TODO: other shapes
+    end
+  end
+  
   --! end
 end
 
@@ -244,7 +264,7 @@ end
 --- adds a component to an entity
 function Scene:addComponent(entityId, componentName, data)
   local componentId = self.app:getComponentId(componentName)
-  pb.assert(componentId, "Component '"..componentName.."' does not exist.")
+  pb.debug.assert(componentId, "Component '"..componentName.."' does not exist.")
   self:addComponentById(entityId, componentId, data)
 end
 

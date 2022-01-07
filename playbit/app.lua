@@ -177,7 +177,7 @@ end
 
 --- Registers a system with the given name and options.
 function App:registerSystem(system)
-  pb.assert(self.systemNameToIdMap[system.name] == nil, "A system with the name '"..system.name.."' has already been registered!")
+  pb.debug.assert(self.systemNameToIdMap[system.name] == nil, "A system with the name '"..system.name.."' has already been registered!")
 
   -- allocate system id
   local systemId = self.nextSystemId
@@ -188,7 +188,7 @@ function App:registerSystem(system)
   for i = 1, #system.components, 1 do
     local componentName = system.components[i]
     local componentId = self:getComponentId(componentName)
-    pb.assert(componentId ~= nil, "System '"..system.name.."' requires a non-existent component '"..componentName.."'!")
+    pb.debug.assert(componentId ~= nil, "System '"..system.name.."' requires a non-existent component '"..componentName.."'!")
     table.insert(componentIds, componentId)
   end
   self.systemComponentIds[systemId] = componentIds
@@ -223,7 +223,7 @@ function App:getComponentTemplate(id)
 end
 
 function App:registerComponent(name, template)
-  pb.assert(self.componentNameToIdMap[name] == nil, "A component with the name '"..name.."' has already been registered!")
+  pb.debug.assert(self.componentNameToIdMap[name] == nil, "A component with the name '"..name.."' has already been registered!")
   local id = self.nextComponentId
   self.componentTemplates[id] = template
   setmetatable(template, {})
