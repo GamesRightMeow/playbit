@@ -105,6 +105,7 @@ Components.ParticleSystem = {
   template = {
     path = "",
     -- TODO: quads for sprite sheet
+    active = true,
     maxParticles = 0,
     lifetimeMin = 0,
     lifetimeMax = 0,
@@ -112,6 +113,10 @@ Components.ParticleSystem = {
     emissionDirection = 0,
     speedMin = 0,
     speedMax = 0,
+    sizeStart = 1,
+    sizeEnd = 1,
+    -- 
+    wasActive = true,
   }
 }
 
