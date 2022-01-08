@@ -6,9 +6,16 @@ function Debug.assert(value, message)
   --! end
 end
 
+--! if DEBUG then
 Debug.debugShapes = {}
+--! end
 
-function Debug.drawLine(x1, y1, x2, y2, color, duration)
+function Debug.drawLine(x1, y1, x2, y2, duration, color)
+  --! if DEBUG then
+  if not color then
+    color = 1
+  end
+  
   table.insert(Debug.debugShapes, { 
     type = "line", 
     x1 = x1, y1 = y1, 
@@ -16,6 +23,7 @@ function Debug.drawLine(x1, y1, x2, y2, color, duration)
     color = color, 
     duration = duration
   })
+  --! end
 end
 
 return Debug

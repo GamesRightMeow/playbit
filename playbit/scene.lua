@@ -204,7 +204,14 @@ function Scene:render()
     else
       shape.duration = shape.duration - pb.util.deltaTime()
       if shape.type == "line" then
+        
+        --! if LOVE2D then
+        -- render red in love, because we can and its easier to see
+        love.graphics.setColor(1, 0.1, 0.1)
+        --! else
         pb.graphics.setColor(shape.color)
+        --! end
+
         -- TODO: allow for non-camera aligned shapes
         pb.graphics.line(
           self.camera.x + shape.x1, self.camera.y + shape.y1, 
