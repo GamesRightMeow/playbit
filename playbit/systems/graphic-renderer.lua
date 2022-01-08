@@ -151,6 +151,33 @@ local function renderParticleSystem(x, y, graphic, particleSystem)
 	love.graphics.draw(particleSystem.system, x, y)
 end
 
+local function renderLine(x, y, graphic, line)
+  local pointCount = #line.points
+  if pointCount < 2 then
+    -- we need at least 2 points to draw a segment
+    return
+  end
+
+  -- TODO: flash line?
+  playbitShader:send("WhiteFactor", 0)
+
+  -- set color based on property
+  graphics.setColor(line.color)
+
+  love.graphics.push()
+
+  love.graphics.translate(x, y)
+  love.graphics.rotate(graphic.rotation)
+  
+  for i = 1, #line.points - 1, 1 do
+    local point = line.points[i]
+    local nextPoint = line.points[i + 1]
+    graphics.line(point.x, point.y, nextPoint.x, nextPoint.y, line.lineThickness)
+  end
+
+  love.graphics.pop()
+end
+
 function GraphicRenderer.render(scene, entities)
   -- generate layer buckets
   -- TODO: this happens every frame which will get expensive with lots of entities
@@ -202,6 +229,7 @@ function GraphicRenderer.render(scene, entities)
       local shape = scene:getComponent(entityId, "shape")
       local text = scene:getComponent(entityId, "text")
       local particleSystem = scene:getComponent(entityId, "particle-system")
+      local line = scene:getComponent(entityId, "line")
       if spritesheet then
         renderSpritesheet(x, y, graphic, spritesheet)
       elseif sprite then
@@ -214,6 +242,8 @@ function GraphicRenderer.render(scene, entities)
         renderText(x, y, graphic, text)
       elseif particleSystem then
         renderParticleSystem(scene.camera.x, scene.camera.y, graphic, particleSystem)
+      elseif line then
+        renderLine(x, y, graphic, line)
       end
 
       -- reduce flash timer

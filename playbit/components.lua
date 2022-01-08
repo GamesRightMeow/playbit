@@ -90,6 +90,15 @@ Components.Shape = {
   }
 }
 
+Components.Line = {
+  name = "line",
+  template = {
+    color = 1,
+    lineThickness = 0.5,
+    points = {},
+  }
+}
+
 Components.Text = {
   name = "text",
   template = {
