@@ -1,7 +1,9 @@
 local Graphics = {}
 
-Graphics.COLOR_WHITE = { r = 215 / 255, g = 212 / 255, b = 204 / 255 }
-Graphics.COLOR_BLACK = { r = 50 / 255, g = 47 / 255, b = 41 / 255 }
+-- #b0aea7
+Graphics.COLOR_WHITE = { r = 176 / 255, g = 174 / 255, b = 167 / 255 }
+-- #312f28
+Graphics.COLOR_BLACK = { r = 49 / 255, g = 47 / 255, b = 40 / 255 }
 
 --- Sets the background color.
 function Graphics.setBackgroundColor(color)
