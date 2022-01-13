@@ -12,7 +12,7 @@ function System.update(scene, entities)
     local transform = scene:getComponent(entity, "transform")
 
     transform.x = transform.x + velocity.x * pb.util.deltaTime()
-    transform.y = transform.y - velocity.y * pb.util.deltaTime()
+    transform.y = transform.y + velocity.y * pb.util.deltaTime()
   end
 end
 

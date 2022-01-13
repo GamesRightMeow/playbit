@@ -117,7 +117,7 @@ end
 
 function meta:toRad()
   ---@diagnostic disable-next-line: deprecated
-  return math.atan2(-self.y, self.x)
+  return -math.atan2(-self.y, self.x)
 end
 
 -- Static functions
