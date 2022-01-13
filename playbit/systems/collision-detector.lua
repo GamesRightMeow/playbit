@@ -1,5 +1,5 @@
 local components = require("playbit.components")
-local graphics = require("playbit.graphics")
+local debug = require("playbit.debug")
 local perf = require("playbit.perf")
 
 local CollisionResolver = {}
@@ -71,11 +71,10 @@ function CollisionResolver.renderDebug(scene, entities)
 
     local x = scene.camera.x + transform.x + collider.x
     local y = scene.camera.y + transform.y + collider.y
-    graphics.setColor(1)
     if #collider.contacts > 0 then
-      graphics.circle(x, y, collider.radius, true)
+      debug.circle(x, y, collider.radius, true, -1, 1)
     else
-      graphics.circle(x, y, collider.radius, false)
+      debug.circle(x, y, collider.radius, false, -1, 1)
     end
   end
 end
