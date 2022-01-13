@@ -10,7 +10,6 @@ Scene.__index = Scene
 -- creates a new Scene instance
 function Scene.new()
   local newScene = {
-    app = nil,
     hasStarted = false,
     newEntityId = 1,
     entityCount = 0,
@@ -34,12 +33,12 @@ function Scene:startInternal()
   end
 
   -- create component lists
-  for componentId = 1, self.app.nextComponentId - 1, 1 do
+  for componentId = 1, pb.app.nextComponentId - 1, 1 do
     self.componentArrays[componentId] = componentArray.new()
   end
 
   -- create system entity lists
-  for systemId = 1, self.app.nextSystemId - 1, 1 do
+  for systemId = 1, pb.app.nextSystemId - 1, 1 do
     self.systemEntityIds[systemId] = entityArray.new()
   end
 
@@ -143,8 +142,8 @@ local function processDirtyEntities(self)
 
   for k,v in pairs(self.dirtyEntities) do
     local entityId = k
-    for systemId = 1, #self.app.systemComponentIds, 1 do
-      local systemComponents = self.app.systemComponentIds[systemId]
+    for systemId = 1, #pb.app.systemComponentIds, 1 do
+      local systemComponents = pb.app.systemComponentIds[systemId]
       -- TODO: this adds/removes entities from every system when dirty - need to only do this to affected ones
       if self:hasComponentIds(entityId, systemComponents) then
         self.systemEntityIds[systemId]:add(entityId)
@@ -164,30 +163,30 @@ function Scene:update()
   processDirtyEntities(self)
 
   -- update systems
-  local systemsToUpdate = self.app.systemsToUpdate
+  local systemsToUpdate = pb.app.systemsToUpdate
   for i = 1, #systemsToUpdate, 1 do
     local systemId = systemsToUpdate[i]
     local entities = self.systemEntityIds[systemId].entities
-    local system = self.app:getSystemById(systemId)
+    local system = pb.app.getSystemById(systemId)
     system.update(self, entities)
   end
 end
 
 function Scene:render()
   -- render systems
-  local systemsToRender = self.app.systemsToRender
+  local systemsToRender = pb.app.systemsToRender
   for i = 1, #systemsToRender, 1 do
     local systemId = systemsToRender[i]
     local entities = self.systemEntityIds[systemId].entities
-    local system = self.app:getSystemById(systemId)
+    local system = pb.app.getSystemById(systemId)
     system.render(self, entities)
   end
 
   --! if DEBUG then
-  if self.app.drawStats and self.app.drawSystemDebug > 0 then
-    local systemId = self.app.systemsToRenderDebug[self.app.drawSystemDebug]
+  if pb.app.drawStats and pb.app.drawSystemDebug > 0 then
+    local systemId = pb.app.systemsToRenderDebug[pb.app.drawSystemDebug]
     local entities = self.systemEntityIds[systemId].entities
-    local system = self.app:getSystemById(systemId)
+    local system = pb.app.getSystemById(systemId)
     system.renderDebug(self, entities)
 
     pb.graphics.setColor(0)
@@ -241,7 +240,7 @@ end
 
 --- Retrieves all components of the specified type.
 function Scene:getComponents(componentName)
-  local componentId = self.app:getComponentId(componentName)
+  local componentId = pb.app.getComponentId(componentName)
   return self:getComponentsById(componentId)
 end
 
@@ -252,7 +251,7 @@ end
 
 --- retrieves a component from an entity
 function Scene:getComponent(entityId, componentName)
-  local componentId = self.app:getComponentId(componentName)
+  local componentId = pb.app.getComponentId(componentName)
   return self:getComponentById(entityId, componentId)
 end
 
@@ -270,7 +269,7 @@ end
 
 --- adds a component to an entity
 function Scene:addComponent(entityId, componentName, data)
-  local componentId = self.app:getComponentId(componentName)
+  local componentId = pb.app.getComponentId(componentName)
   pb.debug.assert(componentId, "Component '"..componentName.."' does not exist.")
   self:addComponentById(entityId, componentId, data)
 end
@@ -278,7 +277,7 @@ end
 --- adds a component to an entity
 function Scene:addComponentById(entityId, componentId, data)
   -- make template the meta table of new data
-  local template = self.app:getComponentTemplate(componentId)
+  local template = pb.app.getComponentTemplate(componentId)
   setmetatable(data, template)
 
   -- add to queue to be added next frame
@@ -293,7 +292,7 @@ end
 
 --- removes a component from an entity.
 function Scene:removeComponent(entityId, componentName)
-  local componentId = self.app:getComponentId(componentName)
+  local componentId = pb.app.getComponentId(componentName)
   self:removeComponentById(entityId, componentId)
 end
 
@@ -311,7 +310,7 @@ end
 
 --- returns true if the specified entity has the specified component
 function Scene:hasComponent(entityId, componentName)
-  local componentId = self.app:getComponentId(componentName)
+  local componentId = pb.app.getComponentId(componentName)
   return self.componentArrays[componentId]:get(entityId) ~= nil
 end
 
@@ -323,7 +322,7 @@ end
 -- returns true if entity has all specified components
 function Scene:hasComponents(entityId, componentNames)
   for i = 1, #componentNames, 1 do
-    local componentId = self.app:getComponentId(componentNames[i])
+    local componentId = pb.app.getComponentId(componentNames[i])
     if self.componentArrays[componentId]:get(entityId) == nil then
       return false
     end
@@ -344,8 +343,8 @@ end
 
 --- returns the id of the first entity found with the specified name, or '-1' if it doesnt exist.
 function Scene:findEntity(name)
-  local nameSystemId = self.app:getSystemId(nameAllocator.name)
-  local nameComponentId = self.app:getComponentId(components.Name.name)
+  local nameSystemId = pb.app.getSystemId(nameAllocator.name)
+  local nameComponentId = pb.app.getComponentId(components.Name.name)
   local entityIds = self.systemEntityIds[nameSystemId].entities
   for i = 1, #entityIds, 1 do
     local nameComponent = self:getComponentById(entityIds[i], nameComponentId)
