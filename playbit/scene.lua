@@ -195,38 +195,14 @@ function Scene:render()
     pb.graphics.text(system.name.." "..perf.getFrameSample(system.perfSampleName).."ms", 200, 0, "center")
   end
 
-  local count = #pb.debug.debugShapes 
-  for i = count, 1, -1 do
-    local shape = pb.debug.debugShapes[i]
-    if shape.duration <= 0 then
-      table.remove(pb.debug.debugShapes, i)
-    else
-      shape.duration = shape.duration - pb.util.deltaTime()
-      if shape.type == "line" then
-        
-        --! if LOVE2D then
-        -- render red in love, because we can and its easier to see
-        love.graphics.setColor(1, 0.1, 0.1)
-        --! else
-        pb.graphics.setColor(shape.color)
-        --! end
-
-        -- TODO: allow for non-camera aligned shapes
-        pb.graphics.line(
-          self.camera.x + shape.x1, self.camera.y + shape.y1, 
-          self.camera.x + shape.x2, self.camera.y + shape.y2, 
-          0.5)
-      end
-      -- TODO: other shapes
-    end
-  end
+  pb.debug.renderDebugShapes()
   
   --! end
 end
 
 --- Returns all entities that have the specified component.
 function Scene:getEntitiesWithComponent(componentName)
-  local componentId = self.app:getComponentId(componentName)
+  local componentId = pb.app.getComponentId(componentName)
   local count = #self.componentArrays[componentId].components
 
   local owners = {}
