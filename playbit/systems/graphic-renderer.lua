@@ -131,6 +131,10 @@ local function renderText(x, y, graphic, text)
 end
 
 local function renderParticleSystem(x, y, graphic, particleSystem)
+  -- the particle system gets its values set internally
+  x = pb.app.scene.camera.x
+  y = pb.app.scene.camera.y
+
   -- TODO: flash particle?
   playbitShader:send("WhiteFactor", 0)
 
@@ -173,6 +177,21 @@ local function renderLine(x, y, graphic, line)
 
   love.graphics.pop()
 end
+
+
+local renderers = {}
+function GraphicRenderer.addRenderer(componentName, renderer)
+  pb.debug.assert(renderers[componentName] == nil)
+  renderers[componentName] = renderer
+end
+
+GraphicRenderer.addRenderer("spritesheet", renderSpritesheet)
+GraphicRenderer.addRenderer("sprite", renderSprite)
+GraphicRenderer.addRenderer("texture", renderTexture)
+GraphicRenderer.addRenderer("shape", renderShape)
+GraphicRenderer.addRenderer("text", renderText)
+GraphicRenderer.addRenderer("particle-system", renderParticleSystem)
+GraphicRenderer.addRenderer("line", renderLine)
 
 function GraphicRenderer.render(scene, entities)
   -- generate layer buckets
@@ -219,27 +238,13 @@ function GraphicRenderer.render(scene, entities)
 
       -- TODO: (optimization) cache the component to graphic component so that we don't have to do this look up each time?
       -- TODO: (optimization) get components by ID instead of name
-      local spritesheet = scene:getComponent(entityId, "spritesheet")
-      local sprite = scene:getComponent(entityId, "sprite")
-      local texture = scene:getComponent(entityId, "texture")
-      local shape = scene:getComponent(entityId, "shape")
-      local text = scene:getComponent(entityId, "text")
-      local particleSystem = scene:getComponent(entityId, "particle-system")
-      local line = scene:getComponent(entityId, "line")
-      if spritesheet then
-        renderSpritesheet(x, y, graphic, spritesheet)
-      elseif sprite then
-        renderSprite(x, y, graphic, sprite)
-      elseif texture then
-        renderTexture(x, y, graphic, texture)
-      elseif shape then
-        renderShape(x, y, graphic, shape)
-      elseif text then
-        renderText(x, y, graphic, text)
-      elseif particleSystem then
-        renderParticleSystem(scene.camera.x, scene.camera.y, graphic, particleSystem)
-      elseif line then
-        renderLine(x, y, graphic, line)
+      local renderComponent = nil
+      for rendererName, rendererFunc in pairs(renderers) do
+        renderComponent = scene:getComponent(entityId, rendererName)
+        if renderComponent then
+          rendererFunc(x, y, graphic, renderComponent)
+          break
+        end
       end
 
       -- reduce flash timer
