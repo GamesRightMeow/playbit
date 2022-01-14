@@ -1,10 +1,3 @@
-local input = require("playbit.input")
-local perf = require("playbit.perf")
-local graphics = require("playbit.graphics")
-local scene = require("playbit.scene")
-local components = require("playbit.components")
-local nameAllocator = require("playbit.systems.name-allocator")
-
 local App = {}
 
 App.drawStats = false
@@ -44,12 +37,12 @@ end
 
 function App.load()
   -- register built in components
-  for k,v in pairs(components) do
+  for k,v in pairs(pb.components) do
     App.registerComponent(v.name, v.template)
   end
 
   -- auto register this since order shouldn't really matter
-  App.registerSystem(nameAllocator)
+  App.registerSystem(pb.systems.nameAllocator)
 
   if App.onLoad then
     App.onLoad()
@@ -59,7 +52,7 @@ function App.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   --! end
 
-  graphics.createFont(
+  pb.graphics.createFont(
     "playbit",
     "playbit/fonts/playbit.png",
     " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`_*#=[]'{}",
@@ -68,31 +61,31 @@ function App.load()
 end
 
 function App.joystickadded(joystick)
-  input.handeGamepadAdded(joystick)
+  pb.input.handeGamepadAdded(joystick)
 end
 
 function App.joystickremoved(joystick)
-  input.handeGamepadRemoved(joystick)
+  pb.input.handeGamepadRemoved(joystick)
 end
 
 function App.gamepadpressed(joystick, button)
-  input.handleGamepadPressed(joystick, button)
+  pb.input.handleGamepadPressed(joystick, button)
 end
 
 function App.gamepadreleased(joystick, button)
-  input.handleGamepadReleased(joystick, button)
+  pb.input.handleGamepadReleased(joystick, button)
 end
 
 function App.keypressed(key)
-  input.handleKeyPressed(key)
+  pb.input.handleKeyPressed(key)
 end
 
 function App.keyreleased(key)
-  input.handleKeyReleased(key)
+  pb.input.handleKeyReleased(key)
 end
 
 function App.update()
-  perf.beginFrameSample("__update")
+  pb.perf.beginFrameSample("__update")
   
   App.scene:update()
 
@@ -100,11 +93,11 @@ function App.update()
   
   --! if DEBUG then
   -- TODO: expose stat toggle in playdates menu?
-  if input.getButtonDown("debug_stats") then
+  if pb.input.getButtonDown("debug_stats") then
     App.drawStats = not App.drawStats
   end
 
-  if input.getButtonDown("toggle_debug_stats") then
+  if pb.input.getButtonDown("toggle_debug_stats") then
     if App.drawSystemDebug == #App.systemsToRenderDebug then
       App.drawSystemDebug = 0
     else
@@ -113,7 +106,7 @@ function App.update()
   end
   --! end
   
-  if input.getButtonDown("toggle_window_size") then
+  if pb.input.getButtonDown("toggle_window_size") then
     App.draw2x = not App.draw2x
     if App.draw2x then
       love.window.setMode(800, 480)
@@ -123,13 +116,13 @@ function App.update()
   end
   --! end
 
-  input.update();
+  pb.input.update();
 
-  perf.endFrameSample("__update")
+  pb.perf.endFrameSample("__update")
 end
 
 function App.draw()
-  perf.beginFrameSample("__render")
+  pb.perf.beginFrameSample("__render")
 
   --! if LOVE2D then
   if App.draw2x then
@@ -138,30 +131,30 @@ function App.draw()
   --! end
 
   -- default to included playbit font
-  graphics.setFont("playbit")
+  pb.graphics.setFont("playbit")
 
   App.scene:render()
 
-  perf.endFrameSample("__render")
+  pb.perf.endFrameSample("__render")
 
   --! if DEBUG then
   -- TODO: consider putting these in dedicated system if more entity-specific features are added
   if App.drawStats and App.drawSystemDebug == 0 then
-    graphics.setColor(1)
-    graphics.rectangle(360, 0, 40, 33, true, 0)
-    graphics.setColor(0)
+    pb.graphics.setColor(1)
+    pb.graphics.rectangle(360, 0, 40, 33, true, 0)
+    pb.graphics.setColor(0)
 
-    graphics.text("F", 361, 1, "left")
-    graphics.text(perf.getFps(), 400, 1, "right")
+    pb.graphics.text("F", 361, 1, "left")
+    pb.graphics.text(pb.perf.getFps(), 400, 1, "right")
 
-    graphics.text("U", 361, 9, "left")
-    graphics.text(perf.getFrameSample("__update"), 400, 9, "right")
+    pb.graphics.text("U", 361, 9, "left")
+    pb.graphics.text(pb.perf.getFrameSample("__update"), 400, 9, "right")
 
-    graphics.text("R", 361, 17, "left")
-    graphics.text(perf.getFrameSample("__render"), 400, 17, "right")
+    pb.graphics.text("R", 361, 17, "left")
+    pb.graphics.text(pb.perf.getFrameSample("__render"), 400, 17, "right")
 
-    graphics.text("E", 361, 25, "left")
-    graphics.text(App.scene.entityCount, 400, 25, "right")
+    pb.graphics.text("E", 361, 25, "left")
+    pb.graphics.text(App.scene.entityCount, 400, 25, "right")
   end
   --! end
 end

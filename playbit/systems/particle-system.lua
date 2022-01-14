@@ -1,10 +1,7 @@
-local components = require("playbit.components")
-local util = require("playbit.util")
-
 local System = {}
 
 System.name = "particle-system"
-System.components = { components.ParticleSystem.name }
+System.components = { pb.components.ParticleSystem.name }
 
 function System.update(scene, entities)
   for i = 1, #entities, 1 do
@@ -31,7 +28,7 @@ function System.update(scene, entities)
       local x = transform.x + graphic.x
       local y = transform.y + graphic.y
       particleSystem.system:moveTo(x, y)
-      particleSystem.system:update(util.deltaTime())
+      particleSystem.system:update(pb.util.deltaTime())
     end
     
     ::continue::

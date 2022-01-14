@@ -1,7 +1,3 @@
-local components = require("playbit.components")
-local graphics = require("playbit.graphics")
-local util = require("playbit.util")
-
 local GraphicRenderer = {}
 
 -- TODO: this is probably safe to share between scenes, but seems wrong? maybe store in each scene?
@@ -20,7 +16,7 @@ local function getImage(path)
 end
 
 GraphicRenderer.name = "graphic-renderer"
-GraphicRenderer.components = { components.Transform.name, components.Graphic.name }
+GraphicRenderer.components = { pb.components.Transform.name, pb.components.Graphic.name }
 
 --! if LOVE2D then
 local playbitShader = love.graphics.newShader[[
@@ -115,12 +111,12 @@ local function renderShape(x, y, graphic, shape)
   playbitShader:send("WhiteFactor", 0)
 
   -- set color based on property
-  graphics.setColor(shape.color)
+  pb.graphics.setColor(shape.color)
 
   if shape.type == "circle" then
-    graphics.circle(x, y, shape.radius, shape.isFilled, shape.lineThickness)
+    pb.graphics.circle(x, y, shape.radius, shape.isFilled, shape.lineThickness)
   elseif shape.type == "rectangle" then
-    graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation, shape.lineThickness)
+    pb.graphics.rectangle(x, y, shape.width, shape.height, shape.isFilled, graphic.rotation, shape.lineThickness)
   end
 end
 
@@ -129,9 +125,9 @@ local function renderText(x, y, graphic, text)
   playbitShader:send("WhiteFactor", 0)
 
   -- set color based on property
-  graphics.setColor(text.color)
+  pb.graphics.setColor(text.color)
 
-  graphics.text(text.text, x, y, text.align)
+  pb.graphics.text(text.text, x, y, text.align)
 end
 
 local function renderParticleSystem(x, y, graphic, particleSystem)
@@ -162,7 +158,7 @@ local function renderLine(x, y, graphic, line)
   playbitShader:send("WhiteFactor", 0)
 
   -- set color based on property
-  graphics.setColor(line.color)
+  pb.graphics.setColor(line.color)
 
   love.graphics.push()
 
@@ -172,7 +168,7 @@ local function renderLine(x, y, graphic, line)
   for i = 1, #line.points - 1, 1 do
     local point = line.points[i]
     local nextPoint = line.points[i + 1]
-    graphics.line(point.x, point.y, nextPoint.x, nextPoint.y, line.lineThickness)
+    pb.graphics.line(point.x, point.y, nextPoint.x, nextPoint.y, line.lineThickness)
   end
 
   love.graphics.pop()
@@ -248,7 +244,7 @@ function GraphicRenderer.render(scene, entities)
 
       -- reduce flash timer
       if graphic.flash > 0 then
-        graphic.flash = math.max(0, graphic.flash - util.deltaTime())
+        graphic.flash = math.max(0, graphic.flash - pb.util.deltaTime())
       end
 
       ::continue::

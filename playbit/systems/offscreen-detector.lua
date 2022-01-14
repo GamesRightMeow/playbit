@@ -1,17 +1,15 @@
-local components = require("playbit.components")
-
 local System = {}
 
 System.name = "offscreen-detector"
-System.components = { components.OffscreenDetector.name, components.Transform.name, components.Graphic.name }
+System.components = { pb.components.OffscreenDetector.name, pb.components.Transform.name, pb.components.Graphic.name }
 
 function System.update(scene, entities)
   for i = 1, #entities, 1 do
     local entityId = entities[i]
 
-    local transform = scene:getComponent(entityId, components.Transform.name)
-    local detector = scene:getComponent(entityId, components.OffscreenDetector.name)
-    local graphic = scene:getComponent(entityId, components.Graphic.name)
+    local transform = scene:getComponent(entityId, pb.components.Transform.name)
+    local detector = scene:getComponent(entityId, pb.components.OffscreenDetector.name)
+    local graphic = scene:getComponent(entityId, pb.components.Graphic.name)
 
     local distanceX = -scene.camera.x * graphic.scrollX - transform.x
     local distanceY = -scene.camera.y * graphic.scrollY - transform.y

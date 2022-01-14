@@ -1,9 +1,7 @@
-local components = require("playbit.components")
-
 local System = {}
 
 System.name = "physics"
-System.components = { components.Velocity.name, components.Transform.name }
+System.components = { pb.components.Velocity.name, pb.components.Transform.name }
 
 function System.update(scene, entities)
   for i = 1, #entities, 1 do

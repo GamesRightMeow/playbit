@@ -1,9 +1,7 @@
-local components = require("playbit.components")
-
 local System = {}
 
 System.name = "parent-manager"
-System.components = { components.Parent.name, components.Transform.name }
+System.components = { pb.components.Parent.name, pb.components.Transform.name }
 
 local function setPosition(scene, entity, processedEntities)
   if processedEntities[entity] then

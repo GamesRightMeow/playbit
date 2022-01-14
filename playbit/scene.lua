@@ -1,9 +1,3 @@
-local components = require("playbit.components")
-local nameAllocator = require("playbit.systems.name-allocator")
-local componentArray = require("playbit.component-array")
-local entityArray = require("playbit.entity-array")
-local perf = require("playbit.perf")
-
 local Scene = {}
 Scene.__index = Scene
 
@@ -34,12 +28,12 @@ function Scene:startInternal()
 
   -- create component lists
   for componentId = 1, pb.app.nextComponentId - 1, 1 do
-    self.componentArrays[componentId] = componentArray.new()
+    self.componentArrays[componentId] = pb.componentArray.new()
   end
 
   -- create system entity lists
   for systemId = 1, pb.app.nextSystemId - 1, 1 do
-    self.systemEntityIds[systemId] = entityArray.new()
+    self.systemEntityIds[systemId] = pb.entityArray.new()
   end
 
   if self.start then
@@ -192,7 +186,7 @@ function Scene:render()
     pb.graphics.setColor(0)
     pb.graphics.rectangle(0, 0, 400, 10, true)
     pb.graphics.setColor(1)
-    pb.graphics.text(system.name.." "..perf.getFrameSample(system.perfSampleName).."ms", 200, 0, "center")
+    pb.graphics.text(system.name.." "..pb.perf.getFrameSample(system.perfSampleName).."ms", 200, 0, "center")
   end
 
   pb.debug.renderDebugShapes()
@@ -319,8 +313,8 @@ end
 
 --- returns the id of the first entity found with the specified name, or '-1' if it doesnt exist.
 function Scene:findEntity(name)
-  local nameSystemId = pb.app.getSystemId(nameAllocator.name)
-  local nameComponentId = pb.app.getComponentId(components.Name.name)
+  local nameSystemId = pb.app.getSystemId(pb.systems.nameAllocator.name)
+  local nameComponentId = pb.app.getComponentId(pb.components.Name.name)
   local entityIds = self.systemEntityIds[nameSystemId].entities
   for i = 1, #entityIds, 1 do
     local nameComponent = self:getComponentById(entityIds[i], nameComponentId)

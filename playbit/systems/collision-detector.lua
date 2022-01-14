@@ -1,15 +1,11 @@
-local components = require("playbit.components")
-local debug = require("playbit.debug")
-local perf = require("playbit.perf")
-
 local CollisionResolver = {}
 
 CollisionResolver.name = "collision-detector"
 CollisionResolver.perfSampleName = "__collision-detector"
-CollisionResolver.components = { components.Transform.name, components.Collider.name }
+CollisionResolver.components = { pb.components.Transform.name, pb.components.Collider.name }
 
 function CollisionResolver.update(scene, entities)
-  perf.beginFrameSample(CollisionResolver.perfSampleName)
+  pb.perf.beginFrameSample(CollisionResolver.perfSampleName)
   -- TODO: sort entities into buckets based on collider layer
   -- so that collisions are only checked between entities on the same layer
   -- should it use a collision matrix, like Unity?
@@ -60,7 +56,7 @@ function CollisionResolver.update(scene, entities)
 
     ::nextEntity::
   end
-  perf.endFrameSample(CollisionResolver.perfSampleName)
+  pb.perf.endFrameSample(CollisionResolver.perfSampleName)
 end
 
 function CollisionResolver.renderDebug(scene, entities)
@@ -72,9 +68,9 @@ function CollisionResolver.renderDebug(scene, entities)
     local x = scene.camera.x + transform.x + collider.x
     local y = scene.camera.y + transform.y + collider.y
     if #collider.contacts > 0 then
-      debug.circle(x, y, collider.radius, true, -1, 1)
+      pb.debug.circle(x, y, collider.radius, true, -1, 1)
     else
-      debug.circle(x, y, collider.radius, false, -1, 1)
+      pb.debug.circle(x, y, collider.radius, false, -1, 1)
     end
   end
 end

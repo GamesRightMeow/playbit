@@ -1,5 +1,3 @@
-local util = require("playbit.util")
-
 local Perf = {}
 
 local sampleStart = 0
@@ -47,7 +45,7 @@ function Perf.getFrameSample(name)
     return "0.000"
   end
 
-  return util.round(time, 3)
+  return pb.util.round(time, 3)
   --! else
     return "0.000"
   --! end
