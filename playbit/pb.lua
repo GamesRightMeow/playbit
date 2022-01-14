@@ -15,6 +15,7 @@ pb.bitfield = require("playbit.bitfield")
 pb.vector = require("playbit.vector")
 pb.ease = require("playbit.ease")
 pb.steering = require("playbit.steering")
+pb.debug = require("playbit.debug")
 
 pb.systems = {}
 pb.systems.nameAllocator = require("playbit.systems.name-allocator")
@@ -24,5 +25,3 @@ pb.systems.parentManager = require("playbit.systems.parent-manager")
 pb.systems.particleSystem = require("playbit.systems.particle-system")
 pb.systems.physics = require("playbit.systems.physics")
 pb.systems.offscreenDetector = require("playbit.systems.offscreen-detector")
-
-pb.debug = require("playbit.debug")
