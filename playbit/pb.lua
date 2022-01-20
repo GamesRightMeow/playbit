@@ -15,6 +15,7 @@ pb.bitfield = require("playbit.bitfield")
 pb.vector = require("playbit.vector")
 pb.ease = require("playbit.ease")
 pb.steering = require("playbit.steering")
+pb.loader = require("playbit.loader")
 pb.debug = require("playbit.debug")
 
 pb.systems = {}

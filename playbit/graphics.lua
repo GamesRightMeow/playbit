@@ -88,6 +88,25 @@ function Graphics.line(x1, y1, x2, y2, lineWidth)
   --! end
 end
 
+function Graphics.texture(path, x, y, rotation, scaleX, scaleY, originX, originY)
+  --! if LOVE2D then
+  local image = pb.loader.image(path)
+
+  -- always render pure white so its not tinted
+  love.graphics.setColor(1, 1, 1, 1)
+
+  love.graphics.draw(
+    image, 
+    x, y, 
+    rotation, 
+    scaleX, scaleY,
+    originX, originY
+  )
+  --! end
+end
+
+-- TODO: move other drawing functions over here from graphic-renderer.lua
+
 local fonts = {}
 local activeFontName = ""
 function Graphics.createFont(name, path, glyphs, spacing)

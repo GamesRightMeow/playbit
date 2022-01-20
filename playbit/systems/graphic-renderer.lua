@@ -1,20 +1,5 @@
 local GraphicRenderer = {}
 
--- TODO: this is probably safe to share between scenes, but seems wrong? maybe store in each scene?
-local imageCache = {}
-local function getImage(path)
-  local cachedImage = imageCache[path]
-  if cachedImage then
-    -- pull from cache if exists
-    return cachedImage
-  end
-
-  -- otherwise generate new image and cache it
-  local img = love.graphics.newImage(path)
-  imageCache[path] = img
-  return img
-end
-
 GraphicRenderer.name = "graphic-renderer"
 GraphicRenderer.components = { pb.components.Transform.name, pb.components.Graphic.name }
 
@@ -39,7 +24,7 @@ local function renderSpritesheet(x, y, graphic, spritesheet)
   -- always render pure white so its not tinted
   love.graphics.setColor(1, 1, 1, 1)
 
-  local image = getImage(spritesheet.path)
+  local image = pb.loader.image(spritesheet.path)
 
   -- TODO: should quad creation be cached? this will change based on sheet index
   local totalRows = (image:getWidth() / spritesheet.width)
@@ -68,7 +53,7 @@ local function renderSprite(x, y, graphic, sprite)
   -- always render pure white so its not tinted
   love.graphics.setColor(1, 1, 1, 1)
 
-  local image = getImage(sprite.path)
+  local image = pb.loader.image(sprite.path)
 
   if sprite.quad == nil then
     sprite.quad = love.graphics.newQuad(
@@ -92,13 +77,8 @@ local function renderTexture(x, y, graphic, texture)
   -- render texture as solid white or not
   playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
 
-  -- always render pure white so its not tinted
-  love.graphics.setColor(1, 1, 1, 1)
-
-  local image = getImage(texture.path)
-
-  love.graphics.draw(
-    image, 
+  pb.graphics.texture(
+    texture.path, 
     x, y, 
     graphic.rotation, 
     graphic.scaleX, graphic.scaleY,
@@ -138,7 +118,7 @@ local function renderParticleSystem(x, y, graphic, particleSystem)
   -- TODO: flash particle?
   playbitShader:send("WhiteFactor", 0)
 
-  local image = getImage(particleSystem.path)
+  local image = pb.loader.image(particleSystem.path)
 
   -- always render pure white so its not tinted
   love.graphics.setColor(1, 1, 1, 1)
