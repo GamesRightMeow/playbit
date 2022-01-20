@@ -2,10 +2,11 @@ local Ease = {}
 
 -- Adapted from https://github.com/kikito/tween.lua.
 -- For all easing functions:
--- t = time == how much time has to pass for the tweening to complete
+-- TODO: t and d are swapped :(
+-- t = duration == running time. How much time has passed *right now*
 -- b = begin == starting property value
 -- c = change == ending - beginning
--- d = duration == running time. How much time has passed *right now*
+-- d = time == how much time has to pass for the tweening to complete
 
 local pow, sin, cos, pi, sqrt, abs, asin = math.pow, math.sin, math.cos, math.pi, math.sqrt, math.abs, math.asin
 
