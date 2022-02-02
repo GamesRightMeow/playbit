@@ -8,6 +8,14 @@ function Build.getFileExtension(path)
   return path:match("^.+(%..+)$")
 end
 
+function Build.createFolderIfNeeded(path)
+  local existCommand = io.popen("IF EXIST "..path.." ECHO true")
+  local existOutput = existCommand:read("*a")
+  if #existOutput == 0 then
+    os.execute("mkdir " .. path)
+  end
+end
+
 function Build.copyFile(src, dst)
   os.execute("copy \"" .. src .. "\" \"" .. dst .. "\"")
 end
@@ -16,23 +24,54 @@ function Build.copyFolder(src, dst)
   os.execute("xcopy /E /H /y " .. src .. " " .. dst)
 end
 
-function Build.processLua(inputFolder, outputFolder, verbose)
+function Build.exportAseprite(inputFolder, outputFolder, ignoredLayers, verbose)
   local dirCommand = io.popen("dir /a-D /S /B \"" .. inputFolder .. "\"")
-  local dirOuput = dirCommand:read("*a")
+  local dirOutput = dirCommand:read("*a")
 
   dirCommand = io.popen("cd")
-  local dirOutput = dirCommand:read("*l").."\\"..inputFolder
-
-  for path in dirOuput:gmatch("(.-)\n") do 
-    if Build.getFileExtension(path) ~= ".lua" then
+  local fullInputFolder = dirCommand:read("*l").."\\"..inputFolder
+  
+  for fullPath in dirOutput:gmatch("(.-)\n") do 
+    if Build.getFileExtension(fullPath) ~= ".aseprite" then
       goto continue
     end
 
-    local outputPath = path:gsub(dirOutput, "")
-    outputPath = outputFolder .. outputPath
+    local relativeOutputPath = fullPath:gsub(fullInputFolder, ""):gsub(".aseprite", ".png")
+    relativeOutputPath = outputFolder .. relativeOutputPath
+
+    -- create folder(s) first to fix errors when writing lua fila
+    Build.createFolderIfNeeded(relativeOutputPath:match("(.*\\)"))
+
+    -- TODO: expose param to set aseprite location
+    local command = "\"C:\\Program Files\\Aseprite\\Aseprite.exe\" -bv "
+    command = command..fullPath
+    for i = 1, #ignoredLayers, 1 do
+      command = command.." --ignore-layer "..ignoredLayers[i]
+    end
+    command = command.." --save-as "..relativeOutputPath
+    io.popen(command, "w")
+
+    ::continue::
+  end
+end
+
+function Build.processLua(inputFolder, outputFolder, verbose)
+  local dirCommand = io.popen("dir /a-D /S /B \"" .. inputFolder .. "\"")
+  local dirOutput = dirCommand:read("*a")
+
+  dirCommand = io.popen("cd")
+  local fullInputFolder = dirCommand:read("*l").."\\"..inputFolder
+
+  for fullPath in dirOutput:gmatch("(.-)\n") do 
+    if Build.getFileExtension(fullPath) ~= ".lua" then
+      goto continue
+    end
+
+    local relativeOutputPath = fullPath:gsub(fullInputFolder, "")
+    relativeOutputPath = outputFolder .. relativeOutputPath
 
     -- read original source
-    local file = io.open(path, "r")
+    local file = io.open(fullPath, "r")
     local rawLua = file:read("a")
     file:close();
 
@@ -46,21 +85,15 @@ function Build.processLua(inputFolder, outputFolder, verbose)
     }
 
     -- create folder(s) first to fix errors when writing lua fila
-    local outputFolder = outputPath:match("(.*\\)")
-
-    local existCommand = io.popen("IF EXIST "..outputFolder.." ECHO true")
-    local existOutput = existCommand:read("*a")
-    if #existOutput == 0 then
-      os.execute("mkdir " .. outputFolder)
-    end
+    Build.createFolderIfNeeded(relativeOutputPath:match("(.*\\)"))
 
     -- save out processed file
-    file = io.open(outputPath, "w+")
+    file = io.open(relativeOutputPath, "w+")
     file:write(processedLua)
     file:close();
 
     if verbose then
-      print("Processed " .. path .. " " .. processedFileInfo.processedByteCount .. " bytes")
+      print("Processed " .. fullPath .. " " .. processedFileInfo.processedByteCount .. " bytes")
     end
 
     ::continue::
@@ -86,11 +119,12 @@ function Build.build(options)
     end
   end
 
-  -- nuke old folder
   local outputFolder = "_dist"
   if options.output then
     outputFolder = options.output
   end
+
+  -- nuke old folder
   os.execute("rmdir "..outputFolder.." /s /q")
   os.execute("mkdir "..outputFolder)
 
@@ -101,17 +135,24 @@ function Build.build(options)
     end
   end
 
+  -- export aseprite files as pngs
+  if options.aseprite and options.aseprite.folders then
+    for i = 1, #options.aseprite.folders, 1 do
+      Build.exportAseprite(options.aseprite.folders[i][1], outputFolder..options.aseprite.folders[i][2], options.aseprite.excludeLayers, enableVerbose)
+    end
+  end
+
   -- copy folders
   if options.copyFolders then
     for i = 1, #options.copyFolders, 1 do
-      Build.copyFolder(options.copyFolders[i][1], options.copyFolders[i][2])
+      Build.copyFolder(options.copyFolders[i][1], outputFolder..options.copyFolders[i][2])
     end
   end
 
   -- copy files
   if options.copyFiles then
     for i = 1, #options.copyFiles, 1 do
-      Build.copyFile(options.copyFiles[i][1], options.copyFiles[i][2])
+      Build.copyFile(options.copyFiles[i][1], outputFolder..options.copyFiles[i][2])
     end
   end
 
