@@ -88,20 +88,46 @@ function Graphics.line(x1, y1, x2, y2, lineWidth)
   --! end
 end
 
-function Graphics.texture(path, x, y, rotation, scaleX, scaleY, originX, originY)
+function Graphics.texture(image, x, y, rotation, scaleX, scaleY, originX, originY)
   --! if LOVE2D then
-  local image = pb.loader.image(path)
-
   -- always render pure white so its not tinted
   love.graphics.setColor(1, 1, 1, 1)
 
   love.graphics.draw(
-    image, 
+    image.data, 
     x, y, 
     rotation, 
     scaleX, scaleY,
     originX, originY
   )
+  --! elseif PLAYDATE then
+  -- TODO: scale, rotation, origin
+  image:draw(x, y, false)
+  --! end
+end
+
+-- Love2D requires quads to draw parts of textures, but Playdate does not
+function Graphics.newQuad(x, y, width, height, textureWidth, textureHeight)
+  --! if LOVE2D then
+  return love.graphics.newQuad(x, y, width, height, textureWidth, textureHeight)
+  --! elseif PLAYDATE then
+  return playdate.geometry.rect.new(x, y, width, height)
+  --! end
+end
+
+function Graphics.sprite(image, quad, x, y, rotation, scaleX, scaleY, originX, originY)
+  --! if LOVE2D then
+  love.graphics.draw(
+    image.data,
+    quad,
+    x, y, 
+    rotation, 
+    scaleX, scaleY,
+    originX, originY
+  )
+  --! elseif PLAYDATE then
+  -- TODO: scale, rotation, origin
+  image.data:draw(x, y, false, quad)
   --! end
 end
 

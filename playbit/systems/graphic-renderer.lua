@@ -37,7 +37,7 @@ local function renderSpritesheet(x, y, graphic, spritesheet)
   )
 
   love.graphics.draw(
-    image,
+    image.data,
     quad,
     x, y, 
     graphic.rotation, 
@@ -55,15 +55,16 @@ local function renderSprite(x, y, graphic, sprite)
 
   local image = pb.loader.image(sprite.path)
 
+  -- cache quad
   if sprite.quad == nil then
-    sprite.quad = love.graphics.newQuad(
+    sprite.quad = pb.graphics.newQuad(
       sprite.x, sprite.y, 
       sprite.width, sprite.height, 
       image:getWidth(), image:getHeight()
     )
   end
 
-  love.graphics.draw(
+  pb.graphics.sprite(
     image,
     sprite.quad,
     x, y, 
@@ -77,8 +78,10 @@ local function renderTexture(x, y, graphic, texture)
   -- render texture as solid white or not
   playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
 
+  local image = pb.loader.image(texture.path)
+
   pb.graphics.texture(
-    texture.path, 
+    image, 
     x, y, 
     graphic.rotation, 
     graphic.scaleX, graphic.scaleY,
@@ -124,7 +127,7 @@ local function renderParticleSystem(x, y, graphic, particleSystem)
   love.graphics.setColor(1, 1, 1, 1)
 
   if particleSystem.system == nil then
-    local system = love.graphics.newParticleSystem(image, particleSystem.maxParticles)
+    local system = love.graphics.newParticleSystem(image.data, particleSystem.maxParticles)
     particleSystem.system = system
   end
 

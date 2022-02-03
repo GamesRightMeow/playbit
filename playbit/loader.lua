@@ -10,7 +10,7 @@ function Loader.image(path)
   end
 
   -- otherwise generate new image and cache it
-  local img = love.graphics.newImage(path)
+  local img = pb.image.new(path)
   cache[path] = img
   return img
 end

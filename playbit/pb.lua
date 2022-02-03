@@ -5,6 +5,7 @@ pb = {}
 pb.app = require("playbit.app")
 pb.scene = require("playbit.scene")
 pb.graphics = require("playbit.graphics")
+pb.image = require("playbit.image")
 pb.perf = require("playbit.perf")
 pb.input = require("playbit.input")
 pb.util = require("playbit.util")
