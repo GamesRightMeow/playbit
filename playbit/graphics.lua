@@ -128,8 +128,13 @@ function Graphics.newSpritesheetQuad(index, image, cellWidth, cellHeight)
     image:getWidth(), image:getHeight()
   )
 end
+
+-- Renders a portion of an image as defined by a quad
 function Graphics.sprite(image, quad, x, y, rotation, scaleX, scaleY, originX, originY)
   --! if LOVE2D then
+  -- always render pure white so texture is not tinted
+  love.graphics.setColor(1, 1, 1, 1)
+
   love.graphics.draw(
     image.data,
     quad,

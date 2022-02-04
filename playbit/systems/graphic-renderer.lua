@@ -21,9 +21,6 @@ local function renderSpritesheet(x, y, graphic, spritesheet)
   -- render texture as solid white or not
   playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
 
-  -- always render pure white so its not tinted
-  love.graphics.setColor(1, 1, 1, 1)
-
   local image = pb.loader.image(spritesheet.path)
 
   -- TODO: should quad creation be cached? this will change based on sheet index
@@ -42,9 +39,6 @@ end
 local function renderSprite(x, y, graphic, sprite)
   -- render texture as solid white or not
   playbitShader:send("WhiteFactor", graphic.flash > 0 and 1 or 0)
-
-  -- always render pure white so its not tinted
-  love.graphics.setColor(1, 1, 1, 1)
 
   local image = pb.loader.image(sprite.path)
 
