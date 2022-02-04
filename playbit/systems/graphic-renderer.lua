@@ -27,17 +27,10 @@ local function renderSpritesheet(x, y, graphic, spritesheet)
   local image = pb.loader.image(spritesheet.path)
 
   -- TODO: should quad creation be cached? this will change based on sheet index
-  local totalRows = (image:getWidth() / spritesheet.width)
-  local row = math.floor(spritesheet.index / totalRows)
-  local column = spritesheet.index % totalRows
-  local quad = love.graphics.newQuad(
-    column * spritesheet.width, row * spritesheet.height, 
-    spritesheet.width, spritesheet.height, 
-    image:getWidth(), image:getHeight()
-  )
+  local quad = pb.graphics.newSpritesheetQuad(spritesheet.index, image, spritesheet.width, spritesheet.height)
 
-  love.graphics.draw(
-    image.data,
+  pb.graphics.sprite(
+    image,
     quad,
     x, y, 
     graphic.rotation, 

@@ -106,6 +106,7 @@ function Graphics.texture(image, x, y, rotation, scaleX, scaleY, originX, origin
   --! end
 end
 
+-- Returns a new quad
 -- Love2D requires quads to draw parts of textures, but Playdate does not
 function Graphics.newQuad(x, y, width, height, textureWidth, textureHeight)
   --! if LOVE2D then
@@ -115,6 +116,18 @@ function Graphics.newQuad(x, y, width, height, textureWidth, textureHeight)
   --! end
 end
 
+-- Returns a new quad for a sprite in a spritesheet
+function Graphics.newSpritesheetQuad(index, image, cellWidth, cellHeight)
+  -- TODO: support non-square cells
+  local totalRows = (image:getWidth() / cellWidth)
+  local row = math.floor(index / totalRows)
+  local column = index % totalRows
+  return Graphics.newQuad(
+    column * cellWidth, row * cellHeight, 
+    cellWidth, cellHeight, 
+    image:getWidth(), image:getHeight()
+  )
+end
 function Graphics.sprite(image, quad, x, y, rotation, scaleX, scaleY, originX, originY)
   --! if LOVE2D then
   love.graphics.draw(
