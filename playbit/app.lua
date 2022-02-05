@@ -21,7 +21,7 @@ App.componentNameToIdMap = {}
 App.nextComponentId = 1
 
 -- TODO: add settings argument
-function App.start()
+function App.load()
   App.scene = nil
   App.systems = {}
   App.systemComponentIds = {}
@@ -33,9 +33,7 @@ function App.start()
   App.componentTemplates = {}
   App.componentNameToIdMap = {}
   App.nextComponentId = 1
-end
 
-function App.load()
   -- register built in components
   for k,v in pairs(pb.components) do
     App.registerComponent(v.name, v.template)
