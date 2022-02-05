@@ -1,11 +1,11 @@
 local Steering = {}
 
 local function intersectsCircle(obstacle, ahead1, ahead2, radius)
-  if pb.vector.distance(obstacle, ahead1) < radius then
+  if pb.vector.distance(obstacle.x, obstacle.y, ahead1.x, ahead1.y) < radius then
     return true
   end
 
-  return pb.vector.distance(obstacle, ahead2) < radius
+  return pb.vector.distance(obstacle.x, obstacle.y, ahead2.x, ahead2.y) < radius
 end
 
 local function findClosestObstacle(obstacles, position, ahead1, ahead2)
@@ -15,7 +15,7 @@ local function findClosestObstacle(obstacles, position, ahead1, ahead2)
     local obstacle = obstacles[i]
     local doesIntersect = intersectsCircle(obstacle.position, ahead1, ahead2, obstacle.radius)
     if doesIntersect then
-      local distance = pb.vector.distance(position, obstacle.position)
+      local distance = pb.vector.distance(position.x, position.y, obstacle.position.x, obstacle.position.y)
       if closestObstacleDistance == -1 or distance < closestObstacleDistance then
         closestObstacle = obstacle
         closestObstacleDistance = distance
