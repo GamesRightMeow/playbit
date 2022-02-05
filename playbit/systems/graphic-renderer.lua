@@ -219,7 +219,7 @@ function GraphicRenderer.render(scene, entities)
 
       -- reduce flash timer
       if graphic.flash > 0 then
-        graphic.flash = math.max(0, graphic.flash - pb.util.deltaTime())
+        graphic.flash = math.max(0, graphic.flash - pb.time.deltaTime())
       end
 
       ::continue::

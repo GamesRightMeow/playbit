@@ -28,7 +28,7 @@ function System.update(scene, entities)
       local x = transform.x + graphic.x
       local y = transform.y + graphic.y
       particleSystem.system:moveTo(x, y)
-      particleSystem.system:update(pb.util.deltaTime())
+      particleSystem.system:update(pb.time.deltaTime())
     end
     
     ::continue::

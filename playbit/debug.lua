@@ -91,7 +91,7 @@ function Debug.renderDebugShapes()
     if shape.duration <= 0 then
       table.remove(pb.debug.debugShapes, i)
     else
-      shape.duration = shape.duration - pb.util.deltaTime()
+      shape.duration = shape.duration - pb.time.deltaTime()
       if shape.type == "line" then
         drawLine(shape.x1, shape.y1, shape.x2, shape.y2, shape.color)
       elseif shape.type == "circle" then
