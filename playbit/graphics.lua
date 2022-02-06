@@ -170,19 +170,15 @@ end
 function Graphics.text(str, x, y, align)
   --! if LOVE2D then
   local font = fonts[activeFontName]
-
-  -- TODO: creating a new text object every frame isn't very efficent
-  -- (but this is more convenient)
-  local text = love.graphics.newText(font, str)
   
   -- printf() supports alignment, but it requires setting the max width which isn't always ideal
   if align == "center" then
-    x = x - text:getWidth() * 0.5  
+    x = x - font:getWidth(str) * 0.5  
   elseif align == "right" then
-    x = x - text:getWidth()
+    x = x - font:getWidth(str)
   end
 
-  love.graphics.draw(text, x, y)
+  love.graphics.print(str, x, y)
   --! end
 end
 

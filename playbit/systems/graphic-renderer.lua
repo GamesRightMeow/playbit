@@ -163,29 +163,43 @@ GraphicRenderer.addRenderer("text", renderText)
 GraphicRenderer.addRenderer("particle-system", renderParticleSystem)
 GraphicRenderer.addRenderer("line", renderLine)
 
+local entityLayers = {}
+local layers = {}
+local sortedLayerIds = {}
 function GraphicRenderer.render(scene, entities)
   -- generate layer buckets
   -- TODO: this happens every frame which will get expensive with lots of entities
-  local layers = {}
-  local layerIndexes = {}
+  local layerIndex = 1
+  for layerId, v in pairs(layers) do
+    for entityIndex = 1, #entityLayers[layerId], 1 do
+      entityLayers[layerId][entityIndex] = nil 
+    end
+    layers[layerId] = nil
+    sortedLayerIds[layerIndex] = nil
+    layerIndex = layerIndex + 1
+  end
+  
   for i = 1, #entities, 1 do
     local entityId = entities[i]
     local graphic = scene:getComponent(entityId, "graphic")
-    if layers[graphic.layer] == nil then
-      layers[graphic.layer] = {}
-      table.insert(layerIndexes, graphic.layer)
+    if entityLayers[graphic.layer] == nil then
+      entityLayers[graphic.layer] = {}
     end
-    table.insert(layers[graphic.layer], entityId)
+    if layers[graphic.layer] == nil then
+      table.insert(sortedLayerIds, graphic.layer)
+      layers[graphic.layer] = graphic.layer
+    end
+    table.insert(entityLayers[graphic.layer], entityId)
   end
 
-  table.sort(layerIndexes)
+  table.sort(sortedLayerIds)
 
   -- render sorted entities
-  for l = 1, #layerIndexes, 1 do
-    local layerIndex = layerIndexes[l]
+  for l = 1, #sortedLayerIds, 1 do
+    local layerIndex = sortedLayerIds[l]
     
-    for e = 1, #layers[layerIndex], 1 do
-      local entityId = layers[layerIndex][e];
+    for e = 1, #entityLayers[layerIndex], 1 do
+      local entityId = entityLayers[layerIndex][e];
       local graphic = scene:getComponent(entityId, "graphic")
       if not graphic.visible then
         goto continue
