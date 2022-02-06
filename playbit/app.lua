@@ -139,20 +139,23 @@ function App.draw()
   -- TODO: consider putting these in dedicated system if more entity-specific features are added
   if App.drawStats and App.drawSystemDebug == 0 then
     pb.graphics.setColor(1)
-    pb.graphics.rectangle(360, 0, 40, 33, true, 0)
+    pb.graphics.rectangle(350, 0, 50, 41, true, 0)
     pb.graphics.setColor(0)
 
-    pb.graphics.text("F", 361, 1, "left")
+    pb.graphics.text("F", 351, 1, "left")
     pb.graphics.text(pb.perf.getFps(), 400, 1, "right")
 
-    pb.graphics.text("U", 361, 9, "left")
+    pb.graphics.text("U", 351, 9, "left")
     pb.graphics.text(pb.perf.getFrameSample("__update"), 400, 9, "right")
 
-    pb.graphics.text("R", 361, 17, "left")
+    pb.graphics.text("R", 351, 17, "left")
     pb.graphics.text(pb.perf.getFrameSample("__render"), 400, 17, "right")
 
-    pb.graphics.text("E", 361, 25, "left")
+    pb.graphics.text("E", 351, 25, "left")
     pb.graphics.text(App.scene.entityCount, 400, 25, "right")
+
+    pb.graphics.text("M", 351, 33, "left")
+    pb.graphics.text(math.ceil(pb.perf.getMemory()), 400, 33, "right")
   end
   --! end
 end

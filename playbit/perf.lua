@@ -52,7 +52,16 @@ function Perf.getFrameSample(name)
 end
 
 function Perf.getFps()
+  --! if LOVE2D then
   return love.timer.getFPS()
+  --! elseif PLAYDATE then
+  -- TODO: calcualte FPS on playdate
+  return 0
+  --! end
+end
+
+function Perf.getMemory()
+  return collectgarbage("count"), 2
 end
 
 return Perf;
