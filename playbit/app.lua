@@ -1,50 +1,14 @@
 local App = {}
 
 App.drawStats = false
-App.drawSystemDebug = 0
 
 --! if LOVE2D then
 App.draw2x = true
 --! end
 
-App.scene = nil
--- TODO: better name?
-App.systems = {}
-App.systemComponentIds = {}
-App.systemNameToIdMap = {}
-App.systemsToUpdate = {}
-App.systemsToRender = {}
-App.systemsToRenderDebug = {}
-App.nextSystemId = 1
-App.componentTemplates = {}
-App.componentNameToIdMap = {}
-App.nextComponentId = 1
-
 -- TODO: add settings argument
 function App.load()
-  App.scene = nil
-  App.systems = {}
-  App.systemComponentIds = {}
-  App.systemNameToIdMap = {}
-  App.systemsToUpdate = {}
-  App.systemsToRender = {}
-  App.systemsToRenderDebug = {}
-  App.nextSystemId = 1
-  App.componentTemplates = {}
-  App.componentNameToIdMap = {}
-  App.nextComponentId = 1
-
-  -- register built in components
-  for k,v in pairs(pb.components) do
-    App.registerComponent(v.name, v.template)
-  end
-
-  -- auto register this since order shouldn't really matter
-  App.registerSystem(pb.systems.nameAllocator)
-
-  if App.onLoad then
-    App.onLoad()
-  end
+  pb.graphics.setBackgroundColor(0)
 
   --! if LOVE2D then
   love.graphics.setDefaultFilter("nearest", "nearest")
@@ -56,36 +20,18 @@ function App.load()
     " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?-+/():;%&`_*#=[]'{}",
     1
   )
-end
 
-function App.joystickadded(joystick)
-  pb.input.handeGamepadAdded(joystick)
-end
-
-function App.joystickremoved(joystick)
-  pb.input.handeGamepadRemoved(joystick)
-end
-
-function App.gamepadpressed(joystick, button)
-  pb.input.handleGamepadPressed(joystick, button)
-end
-
-function App.gamepadreleased(joystick, button)
-  pb.input.handleGamepadReleased(joystick, button)
-end
-
-function App.keypressed(key)
-  pb.input.handleKeyPressed(key)
-end
-
-function App.keyreleased(key)
-  pb.input.handleKeyReleased(key)
+  if App.onLoad then
+    App.onLoad()
+  end
 end
 
 function App.update()
   pb.perf.beginFrameSample("__update")
   
-  App.scene:update()
+  if App.onUpdate then
+    App.onUpdate()
+  end
 
   --! if LOVE2D then
   
@@ -93,14 +39,6 @@ function App.update()
   -- TODO: expose stat toggle in playdates menu?
   if pb.input.getButtonDown("debug_stats") then
     App.drawStats = not App.drawStats
-  end
-
-  if pb.input.getButtonDown("toggle_debug_stats") then
-    if App.drawSystemDebug == #App.systemsToRenderDebug then
-      App.drawSystemDebug = 0
-    else
-      App.drawSystemDebug = App.drawSystemDebug + 1
-    end
   end
   --! end
   
@@ -119,7 +57,7 @@ function App.update()
   pb.perf.endFrameSample("__update")
 end
 
-function App.draw()
+function App.render()
   pb.perf.beginFrameSample("__render")
 
   --! if LOVE2D then
@@ -131,13 +69,15 @@ function App.draw()
   -- default to included playbit font
   pb.graphics.setFont("playbit")
 
-  App.scene:render()
+  if App.onRender then
+    App.onRender()
+  end
 
   pb.perf.endFrameSample("__render")
 
   --! if DEBUG then
   -- TODO: consider putting these in dedicated system if more entity-specific features are added
-  if App.drawStats and App.drawSystemDebug == 0 then
+  if App.drawStats then
     pb.graphics.setColor(1)
     pb.graphics.rectangle(350, 0, 50, 41, true, 0)
     pb.graphics.setColor(0)
@@ -158,91 +98,6 @@ function App.draw()
     pb.graphics.text(math.ceil(pb.perf.getMemory()), 400, 33, "right")
   end
   --! end
-end
-
---- Returns the system's id with the given name.
-function App.getSystemId(name)
-  return App.systemNameToIdMap[name]
-end
-
---- Returns the system with the given name.
-function App.getSystem(name)
-  local id = App.systemNameToIdMap[name]
-  return App.systems[id]
-end
-
---- Returns the system with the given id.
-function App.getSystemById(id)
-  return App.systems[id]
-end
-
---- Registers a system with the given name and options.
-function App.registerSystem(system)
-  pb.debug.assert(App.systemNameToIdMap[system.name] == nil, "A system with the name '"..system.name.."' has already been registered!")
-
-  -- allocate system id
-  local systemId = App.nextSystemId
-  App.nextSystemId = App.nextSystemId + 1
-
-  -- convert component names to ids
-  local componentIds = {}
-  for i = 1, #system.components, 1 do
-    local componentName = system.components[i]
-    local componentId = App.getComponentId(componentName)
-    pb.debug.assert(componentId ~= nil, "System '"..system.name.."' requires a non-existent component '"..componentName.."'!")
-    table.insert(componentIds, componentId)
-  end
-  App.systemComponentIds[systemId] = componentIds
-
-  -- register system
-  App.systemNameToIdMap[system.name] = systemId
-  App.systems[systemId] = system
-
-  if system.update ~= nil then
-    table.insert(App.systemsToUpdate, systemId)
-  end
-
-  if system.render ~= nil then
-    table.insert(App.systemsToRender, systemId)
-  end
-
-  --! if DEBUG then
-  if system.renderDebug ~= nil then
-    table.insert(App.systemsToRenderDebug, systemId)
-  end
-  --! end
-  
-  return systemId
-end
-
-function App.getComponentId(name)
-  return App.componentNameToIdMap[name]
-end
-
-function App.getComponentTemplate(id)
-  return App.componentTemplates[id]
-end
-
-function App.registerComponent(name, template)
-  pb.debug.assert(App.componentNameToIdMap[name] == nil, "A component with the name '"..name.."' has already been registered!")
-  local id = App.nextComponentId
-  App.componentTemplates[id] = template
-  setmetatable(template, {})
-  template.__index = template
-  App.componentNameToIdMap[name] = id
-  App.nextComponentId = App.nextComponentId + 1
-  return id
-end
-
---- Sets the active scene that the app is running.
-function App.changeScene(newScene)
-  if App.scene ~= nil then
-    App.scene:exitInternal()
-  end
-
-  App.scene = newScene
-  App.scene:startInternal()
-  App.scene:enterInternal()
 end
 
 return App
