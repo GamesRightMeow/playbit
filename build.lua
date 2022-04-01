@@ -107,7 +107,7 @@ function Build.build(options)
   local targetPlatform = options.platform
 
   -- built in env values
-  -- TODO: add variable for playdate sdk
+  pp.metaEnvironment.PLAYDATE = targetPlatform == "playdate"
   pp.metaEnvironment.LOVE2D = targetPlatform == "love2d"
   pp.metaEnvironment.ASSERT = options.assert
   pp.metaEnvironment.DEBUG = options.debug
