@@ -158,10 +158,6 @@ function Build.build(options)
 
   local timeEnd = os.clock()
   print("Build completed in "..(timeEnd - timeStart).."ms")
-
-  if options.runOnSuccess then 
-    os.execute(options.runOnSuccess)
-  end
 end
 
 return Build
