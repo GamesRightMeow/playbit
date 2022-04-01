@@ -1,17 +1,25 @@
 -- entry point into the playbit engine
 
+-- set globally
 pb = {}
 
-pb.app = require("playbit.app")
-pb.graphics = require("playbit.graphics")
-pb.image = require("playbit.image")
-pb.perf = require("playbit.perf")
-pb.input = require("playbit.input")
-pb.time = require("playbit.time")
-pb.util = require("playbit.util")
-pb.random = require("playbit.random")
-pb.geometry = require("playbit.geometry")
-pb.bitfield = require("playbit.bitfield")
-pb.vector = require("playbit.vector")
-pb.ease = require("playbit.ease")
-pb.debug = require("playbit.debug")
+pb.import = function(path)
+  --! if LOVE2D then
+  return require(string.gsub(path, "/", "."))
+  --! else
+  return playdate.file.run(path)
+  --! end
+end
+
+pb.util = pb.import("playbit/util")
+pb.time = pb.import("playbit/time")
+pb.app = pb.import("playbit/app")
+pb.graphics = pb.import("playbit/graphics")
+pb.image = pb.import("playbit/image")
+pb.perf = pb.import("playbit/perf")
+pb.input = pb.import("playbit/input")
+pb.random = pb.import("playbit/random")
+pb.geometry = pb.import("playbit/geometry")
+pb.vector = pb.import("playbit/vector")
+pb.ease = pb.import("playbit/ease")
+pb.debug = pb.import("playbit/debug")
