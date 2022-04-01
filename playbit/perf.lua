@@ -1,18 +1,18 @@
-local Perf = {}
+local module = {}
 
 local sampleStart = 0
 local frameSamples = {}
 
-function Perf.beginSample()
-  sampleStart = os.clock()
+function module.beginSample()
+  sampleStart = pb.time.getTime()
 end
 
-function Perf.endSample()
-  local endTime = os.clock()
+function module.endSample()
+  local endTime = pb.time.getTime()
   print((endTime - sampleStart) .. "ms")
 end
 
-function Perf.beginFrameSample(name)
+function module.beginFrameSample(name)
   --! if DEBUG then
   if frameSamples[name] == nil then
     frameSamples[name] = {
@@ -20,20 +20,19 @@ function Perf.beginFrameSample(name)
       lastDuration = 0
     }
   end
-
-  frameSamples[name].startTime = os.clock()
+  frameSamples[name].startTime = pb.time.getTime()
   --! end
 end
 
-function Perf.endFrameSample(name)
+function module.endFrameSample(name)
   --! if DEBUG then
-  local endTime = os.clock()
+  local endTime = pb.time.getTime()
   local startTime = frameSamples[name].startTime
   frameSamples[name].lastDuration = endTime - startTime
   --! end
 end
 
-function Perf.getFrameSample(name)
+function module.getFrameSample(name)
   --! if DEBUG then
   if not frameSamples[name] then
     return "--"
@@ -51,7 +50,7 @@ function Perf.getFrameSample(name)
   --! end
 end
 
-function Perf.getFps()
+function module.getFps()
   --! if LOVE2D then
   return love.timer.getFPS()
   --! elseif PLAYDATE then
@@ -60,8 +59,8 @@ function Perf.getFps()
   --! end
 end
 
-function Perf.getMemory()
+function module.getMemory()
   return collectgarbage("count"), 2
 end
 
-return Perf;
+return module

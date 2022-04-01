@@ -1,11 +1,21 @@
-local Time = {}
+local module = {}
 
-function Time.deltaTime()
+module.lastFrameTime = 0
+
+function module.getTime()
   --! if LOVE2D then
-  return love.timer.getDelta()
+  return love.timer.getTime()
   --! else
-  return 0
+  return playdate.getCurrentTimeMilliseconds()
   --! end
 end
 
-return Time
+function module.deltaTime()
+  --! if LOVE2D then
+  return love.timer.getDelta()
+  --! else
+  return (module.getTime() - module.lastFrameTime) / 60 / 30
+  --! end
+end
+
+return module
