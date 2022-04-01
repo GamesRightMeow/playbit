@@ -1,4 +1,4 @@
-local Input = {}
+local module = {}
 
 local keyToButton = {
   up = "up",
@@ -28,7 +28,7 @@ end
 
 local activeGamepad = nil
 
-function Input.update()
+function module.update()
   for k,v in pairs(buttonStates) do
     if buttonStates[k] == 1 then
       buttonStates[k] = 2
@@ -36,12 +36,12 @@ function Input.update()
   end
 end
 
-function Input.handeGamepadAdded(gamepad)
+function module.handleGamepadAdded(gamepad)
   -- always take most reset added gamepad as active gamepad
   activeGamepad = gamepad
 end
 
-function Input.handeGamepadRemoved(gamepad)
+function module.handleGamepadRemoved(gamepad)
   if activeGamepad == nil then
     return
   end
@@ -51,7 +51,7 @@ function Input.handeGamepadRemoved(gamepad)
   end
 end
 
-function Input.handleGamepadPressed(joystick, gamepadButton)
+function module.handleGamepadPressed(joystick, gamepadButton)
   local button = gamepadToButton[gamepadButton]
   if button == nil then
     return
@@ -64,7 +64,7 @@ function Input.handleGamepadPressed(joystick, gamepadButton)
   buttonStates[button] = 1
 end
 
-function Input.handleGamepadReleased(joystick, gamepadButton)
+function module.handleGamepadReleased(joystick, gamepadButton)
   local button = gamepadToButton[gamepadButton]
   if button == nil then
     return
@@ -77,7 +77,7 @@ function Input.handleGamepadReleased(joystick, gamepadButton)
   buttonStates[button] = 0
 end
 
-function Input.handleKeyPressed(key)
+function module.handleKeyPressed(key)
   local button = keyToButton[key]
   if button == nil then
     return
@@ -90,7 +90,7 @@ function Input.handleKeyPressed(key)
   buttonStates[button] = 1
 end
 
-function Input.handleKeyReleased(key)
+function module.handleKeyReleased(key)
   local button = keyToButton[key]
   if button == nil then
     return
@@ -104,17 +104,17 @@ function Input.handleKeyReleased(key)
 end
 
 --- Returns true when the specified button is held down.
-function Input.getButton(button)
+function module.getButton(button)
   return buttonStates[button] > 0
 end
 
 --- Returns true when the specified button was pressed in the last frame.
-function Input.getButtonDown(button)
+function module.getButtonDown(button)
   return buttonStates[button] == 1
 end
 
 --- Returns true if the crank is extended.
-function Input.isCrankExtended()
+function module.isCrankExtended()
   if not activeGamepad then
     -- TODO: test keyboard if no gamepad
     return false
@@ -130,7 +130,7 @@ function Input.isCrankExtended()
 end
 
 --- Returns the angle the crank is currently at in radians.
-function Input.getCrank()
+function module.getCrank()
   if not activeGamepad then
     -- TODO: test keyboard if no gamepad
     return 0
@@ -145,12 +145,12 @@ function Input.getCrank()
 end
 
 --- Returns the angle the crank is currently at in degrees.
-function Input.getCrankDeg()
-  local degrees = math.deg(Input.getCrank())
+function module.getCrankDeg()
+  local degrees = math.deg(module.getCrank())
   if degrees < 0 then
     return degrees + 360
   end
   return degrees
 end
 
-return Input
+return module

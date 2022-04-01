@@ -1,4 +1,4 @@
-local Debug = {}
+local module = {}
 
 local function drawLine(x1, y1, x2, y2, color)
   --! if LOVE2D then
@@ -28,17 +28,17 @@ local function drawCircle(x, y, radius, filled, color)
   pb.graphics.circle(x, y, radius, filled)
 end
 
-function Debug.assert(value, message)
+function module.assert(value, message)
   --! if ASSERT then
   assert(value, message)
   --! end
 end
 
 --! if DEBUG then
-Debug.debugShapes = {}
+module.debugShapes = {}
 --! end
 
-function Debug.circle(x, y, radius, filled, duration, color)
+function module.circle(x, y, radius, filled, duration, color)
   --! if DEBUG then
   if not color then
     color = 1
@@ -46,7 +46,7 @@ function Debug.circle(x, y, radius, filled, duration, color)
 
   if duration and duration ~= -1 then
     -- with duration
-    table.insert(Debug.debugShapes, { 
+    table.insert(module.debugShapes, { 
       type = "circle", 
       x = x, y = y, 
       radius = radius, 
@@ -61,7 +61,7 @@ function Debug.circle(x, y, radius, filled, duration, color)
   --! end
 end
 
-function Debug.line(x1, y1, x2, y2, duration, color)
+function module.line(x1, y1, x2, y2, duration, color)
   --! if DEBUG then
   if not color then
     color = 1
@@ -69,7 +69,7 @@ function Debug.line(x1, y1, x2, y2, duration, color)
   
   if duration and duration ~= -1 then
     -- with duration
-    table.insert(Debug.debugShapes, { 
+    table.insert(module.debugShapes, { 
       type = "line", 
       x1 = x1, y1 = y1, 
       x2 = x2, y2 = y2, 
@@ -83,13 +83,13 @@ function Debug.line(x1, y1, x2, y2, duration, color)
   --! end
 end
 
-function Debug.renderDebugShapes()
+function module.renderDebugShapes()
   --! if DEBUG then
-  local count = #pb.debug.debugShapes 
+  local count = #module.debugShapes 
   for i = count, 1, -1 do
-    local shape = pb.debug.debugShapes[i]
+    local shape = module.debugShapes[i]
     if shape.duration <= 0 then
-      table.remove(pb.debug.debugShapes, i)
+      table.remove(module.debugShapes, i)
     else
       shape.duration = shape.duration - pb.time.deltaTime()
       if shape.type == "line" then
@@ -103,4 +103,4 @@ function Debug.renderDebugShapes()
   --! end
 end
 
-return Debug
+return module

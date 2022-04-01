@@ -1,7 +1,7 @@
-local Geometry = {}
+local module = {}
 
 --- Gets the difference of two angles, wrapped around to the range -180 to 180.
-function Geometry.angleDiff(a, b)
+function module.angleDiff(a, b)
   local diff = b - a
 
   while (diff > 180) do
@@ -15,7 +15,7 @@ function Geometry.angleDiff(a, b)
   return diff
 end
 
-function Geometry.lineLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4)
+function module.lineLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4)
   -- line intercept math by Paul Bourke http://paulbourke.net/geometry/pointlineplane/
 
   -- Check if none of the lines are of length 0
@@ -45,4 +45,4 @@ function Geometry.lineLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4)
   return true, x, y
 end
 
-return Geometry
+return module

@@ -1,46 +1,46 @@
-local Vector = {}
+local module = {}
 
 local meta = {}
 meta.__index = meta
-Vector.__index = meta
+module.__index = meta
 
 function meta.__add(a, b)
   if type(a) == "number" then
-    return Vector.new(b.x + a, b.y + a)
+    return module.new(b.x + a, b.y + a)
   elseif type(b) == "number" then
-    return Vector.new(a.x + b, a.y + b)
+    return module.new(a.x + b, a.y + b)
   else
-    return Vector.new(a.x + b.x, a.y + b.y)
+    return module.new(a.x + b.x, a.y + b.y)
   end
 end
 
 function meta.__sub(a, b)
   if type(a) == "number" then
-    return Vector.new(a - b.x, a - b.y)
+    return module.new(a - b.x, a - b.y)
   elseif type(b) == "number" then
-    return Vector.new(a.x - b, a.y - b)
+    return module.new(a.x - b, a.y - b)
   else
-    return Vector.new(a.x - b.x, a.y - b.y)
+    return module.new(a.x - b.x, a.y - b.y)
   end
 end
 
 function meta.__mul(a, b)
   if type(a) == "number" then
-    return Vector.new(b.x * a, b.y * a)
+    return module.new(b.x * a, b.y * a)
   elseif type(b) == "number" then
-    return Vector.new(a.x * b, a.y * b)
+    return module.new(a.x * b, a.y * b)
   else
-    return Vector.new(a.x * b.x, a.y * b.y)
+    return module.new(a.x * b.x, a.y * b.y)
   end
 end
 
 function meta.__div(a, b)
   if type(a) == "number" then
-    return Vector.new(a / b.x, a / b.y)
+    return module.new(a / b.x, a / b.y)
   elseif type(b) == "number" then
-    return Vector.new(a.x / b, a.y / b)
+    return module.new(a.x / b, a.y / b)
   else
-    return Vector.new(a.x / b.x, a.y / b.y)
+    return module.new(a.x / b.x, a.y / b.y)
   end
 end
 
@@ -121,33 +121,33 @@ function meta:toRad()
 end
 
 -- Static functions
-function Vector.new(x, y)
+function module.new(x, y)
   return setmetatable({ x = x or 0, y = y or 0 }, meta)
 end
 
-function Vector.distance(x1, y1, x2, y2)
+function module.distance(x1, y1, x2, y2)
   local x = x1 - x2
   local y = y1 - y2
   return math.sqrt(x * x + y * y)
 end
 
-function Vector.len(x, y)
+function module.len(x, y)
   return math.sqrt(x * x + y * y)
 end
 
-function Vector.normalize(x, y)
+function module.normalize(x, y)
   local len = math.sqrt(x * x + y * y)
   x = x / len
   y = y / len
   return { x = x, y = y }
 end
 
-function Vector.cross(x1, y1, x2, y2)
+function module.cross(x1, y1, x2, y2)
   return x1 * y2 - y1 * x2
 end
 
-function Vector.dot(x1, y1, x2, y2)
+function module.dot(x1, y1, x2, y2)
   return x1 * x2 + y1 * y2
 end
 
-return Vector
+return module
