@@ -14,6 +14,7 @@ end
 pb.util = pb.import("playbit/util")
 pb.time = pb.import("playbit/time")
 pb.app = pb.import("playbit/app")
+pb.io = pb.import("playbit/io")
 pb.graphics = pb.import("playbit/graphics")
 pb.image = pb.import("playbit/image")
 pb.perf = pb.import("playbit/perf")
