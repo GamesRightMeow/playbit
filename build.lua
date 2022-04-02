@@ -4,6 +4,12 @@ local pp = require(folderOfThisFile.."LuaPreprocess.preprocess")
 
 local Build = {}
 
+function Build.listFiles(folder)
+  local dirCommand = io.popen("dir /a-D /S /B \""..folder.."\"")
+  local output = dirCommand:read("*a")
+  return output:gmatch("(.-)\n")
+end
+
 function Build.getFileExtension(path)
   return path:match("^.+(%..+)$")
 end
@@ -22,6 +28,15 @@ end
 
 function Build.copyFolder(src, dst)
   os.execute("xcopy /E /H /y " .. src .. " " .. dst)
+end
+
+function Build.getAbsolutePath(path)
+  local dirCommand = io.popen("cd")
+  return dirCommand:read("*l").."\\"..path
+end
+
+function Build.getRelativePath(path, folder)
+  return path:gsub(folder, "")
 end
 
 function Build.exportAseprite(inputFolder, outputFolder, ignoredLayers, verbose)
