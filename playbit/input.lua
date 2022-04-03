@@ -1,6 +1,6 @@
 local module = {}
 
---! if LOVE2d then
+--! if LOVE2D then
 local keyToButton = {
   up = "up",
   down = "down",
@@ -101,7 +101,7 @@ function module.getCrankPosition()
   --! end
 end
 
---! if LOVE2d then
+--! if LOVE2D then
 function module.handleGamepadAdded(gamepad)
   -- always take most reset added gamepad as active gamepad
   activeGamepad = gamepad
@@ -145,7 +145,7 @@ end
 --! end
 
 function module.handleKeyPressed(key)
-  --! if LOVE2d then
+  --! if LOVE2D then
   local button = keyToButton[key]
   if button == nil then
     return
@@ -162,7 +162,7 @@ function module.handleKeyPressed(key)
 end
 
 function module.handleKeyReleased(key)
-  --! if LOVE2d then
+  --! if LOVE2D then
   local button = keyToButton[key]
   if button == nil then
     return
