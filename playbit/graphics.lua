@@ -91,6 +91,7 @@ function module.circle(x, y, radius, isFilled, lineWidth)
 end
 
 --- Draws a rectangle.
+-- TODO: remove rotation from here - just do push/pop context before/after
 function module.rectangle(x, y, width, height, isFilled, angle, lineWidth)
   --! if LOVE2D then
   local mode = "line"
@@ -113,6 +114,12 @@ function module.rectangle(x, y, width, height, isFilled, angle, lineWidth)
   love.graphics.setLineStyle("rough")
   love.graphics.rectangle(mode, 0, 0, width, height)
   love.graphics.pop()
+  --! else
+  if isFilled then
+    playdate.graphics.fillRect(x, y, width, height) 
+  else
+    playdate.graphics.drawRect(x, y, width, height) 
+  end
   --! end
 end
 
