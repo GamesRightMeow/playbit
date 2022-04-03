@@ -240,4 +240,13 @@ function module.text(str, x, y, align)
   --! end
 end
 
+function module.getTextSize(str)
+  --! if LOVE2D then
+  local font = fonts[activeFontName]
+  return font:getWidth(str), font:getHeight()
+  --! else
+  return playdate.graphics.getTextSize(str)
+  --! end
+end
+
 return module
