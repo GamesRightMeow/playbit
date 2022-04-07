@@ -1,37 +1,60 @@
+-- does not support non-ascii chars
+
 local inputPath = arg[1]
 local outputPath = arg[2]
 
 local glyphs = {}
 
-function parseKerning(line)
-
+function isWhitespace(char)
+  local start = string.find(char, "%s")
+  return start ~= nil
 end
 
-function parseGlyph(line)
-  local char = string.sub(line, 1, 1)
-  local ascii = string.byte(char)
-  local start, ends = string.find(line, ".%s")
-  if not start then
-    start = "nil"
-  end
-  -- FIXME: how to detect a special char? They don't seem to be a single char?
-  -- maybe read line until whitespace, then use those chars to convert to ascii
-  print(char..":"..ascii..":"..start)
-  if (ascii >= 32 and ascii <= 126) then
-    -- print("glyph: "..ascii)
-    -- table.insert(glyphs, { char, width })
+-- https://sdk.play.date/1.9.3/Inside%20Playdate.html#_supported_characters
+function isAscii(char)
+  local code = string.byte(char)
+
+  -- space to tilde
+  if (code >= 32 and code <= 126) then
     return true
   end
+  
   return false
 end
 
-function parseTracking(line)
+function parseLine(line)
   local start, ends = string.find(line, "tracking=")
   if (start and ends) then
+    -- TODO: extract value
     print("tracking: "..start..ends)
-    return true
+    return
   end
-  return false
+
+  local start, ends = string.find(line, "space")
+  if (start and ends) then
+    -- TODO: extract value
+    print("space: "..start..ends)
+    return
+  end
+
+  local char1 = string.sub(line, 1, 1)
+  local char2 = string.sub(line, 2, 2)
+
+  if isWhitespace(char2) then  
+    -- if second char is whitespace, we can assume this line is a glyph
+    if isAscii(char1) then
+      -- TODO: extract value
+      print("glyph: "..char1.."="..string.byte(char1))
+      -- table.insert(glyphs, { char1, width })
+    end
+  else
+    -- otherwise assume is a kerning pair
+    if isAscii(char1) then
+      -- TODO: extract value
+      -- if the first char is supported, assume this is a kerning pair  
+      print("kerning: "..char1..char2)
+    end
+  end
 end
 
 -- https://sdk.play.date/1.9.3/Inside%20Playdate.html#_text
@@ -39,19 +62,11 @@ local inputFile = io.open(inputPath, "r")
 io.input(inputFile)
 local line = io.read()
 while line ~= nil do
-  if (parseTracking(line)) then
-  else
-    parseGlyph(line)
-  end
-
+  parseLine(line)
   line = io.read()
 end
 
-
-
--- TODO: use to convert chars to ASCII code
--- string.byte(" ")
-
+-- TODO: convert to BMFont file
 -- https://www.angelcode.com/products/bmfont/doc/file_format.html
 -- local outputFile = io.open(outputPath, "w+")
 -- io.output(outputFile)
