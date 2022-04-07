@@ -16,14 +16,15 @@ function module.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   --! end
 
-  pb.graphics.createFont(
-    "default",
-    "playbit/fonts/Roobert-9-Mono-Condensed",
-    " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
-    1
-  )
+  -- TODO: reenabled when I add a custom font for platbit, since I cant re-distribute PD fonts
+  -- pb.graphics.createFont(
+  --   "default",
+  --   "playbit/fonts/Roobert-9-Mono-Condensed",
+  --   " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+  --   1
+  -- )
 
-  pb.graphics.setFont("default")
+  -- pb.graphics.setFont("default")
 
   if module.onLoad then
     module.onLoad()
