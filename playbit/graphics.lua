@@ -7,14 +7,29 @@ local COLOR_WHITE = { r = 176 / 255, g = 174 / 255, b = 167 / 255 }
 local COLOR_BLACK = { r = 49 / 255, g = 47 / 255, b = 40 / 255 }
 
 module.playbitShader = love.graphics.newShader[[
-extern float WhiteFactor;
+extern int mode;
+extern vec3 targetColor;
 
-vec4 effect(vec4 vcolor, Image tex, vec2 texcoord, vec2 pixcoord)
+vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords )
 {
-    vec4 outputcolor = Texel(tex, texcoord) * vcolor;
-    outputcolor.rgb += vec3(WhiteFactor);
-    outputcolor.rgb = min(outputcolor.rgb, vec3(0.84313725490196, 0.83137254901961, 0.8));
+  vec4 outputcolor = Texel(tex, texcoord) * color;
+  if (mode == 0)
+  {
     return outputcolor;
+  }
+  else if (mode == 1)
+  {
+    if (outputcolor.a > 0)
+    {
+      // playdate white
+      return vec4(targetColor.r, targetColor.g, targetColor.b, 1);
+    }
+    else
+    {
+      // transparent
+      return vec4(0, 0, 0, 0);
+    }
+  }
 }
 ]]
 
@@ -225,23 +240,26 @@ end
 
 --- Draws a string.
 function module.text(str, x, y, align)
-  --! if LOVE2D then
-  local font = fonts[activeFontName]
-  
-  if module.drawMode == "fillWhite" then
-    module.playbitShader:send("WhiteFactor", 1)
-  elseif module.drawMode == "fillBlack" then
-    module.playbitShader:send("WhiteFactor", 0)
+  local width = module.getTextSize(str)
+  if align == "center" then
+    x = x - width * 0.5  
+  elseif align == "right" then
+    x = x - width
   end
 
-  -- printf() supports alignment, but it requires setting the max width which isn't always ideal
-  if align == "center" then
-    x = x - font:getWidth(str) * 0.5  
-  elseif align == "right" then
-    x = x - font:getWidth(str)
+  --! if LOVE2D then
+  if module.drawMode == "fillWhite" then
+    module.playbitShader:send("mode", 1)
+    module.playbitShader:sendColor("targetColor", { COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b })
+  elseif module.drawMode == "fillBlack" then
+    module.playbitShader:send("mode", 1)
+    module.playbitShader:sendColor("targetColor", { COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b })
   end
+  -- TODO: other fill modes
 
   love.graphics.print(str, x, y)
+
+  module.playbitShader:send("mode", 0)
   --! else
   playdate.graphics.drawText(str, x, y)
   --! end
