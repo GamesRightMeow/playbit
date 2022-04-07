@@ -3,7 +3,7 @@ local module = {}
 module.drawStats = false
 
 --! if LOVE2D then
-module.draw2x = true
+module.draw2x = false
 --! end
 
 -- TODO: add settings argument
