@@ -10,7 +10,7 @@ Limitations:
   * cannot determine texture width/height - must be provided
 
 Usage: 
-  `lua caps-to-bmfont.lua Roobert-11-Bold.fnt Roobert-11-Bold-table-22-32.png output.fnt 352 176`
+  `lua caps-to-bmfont.lua Roobert-11-Bold.fnt Roobert-11-Bold-table-22-22.png output.fnt 352 176`
 
 --]]
 
@@ -77,8 +77,23 @@ end
 
 function tableToStr(table)
   local result = ""
-  for key, value in pairs(table) do
-    result = result.." "..key.."="..value
+  if table[1] then
+    -- table is an array, don't prepend key name
+    for key, value in pairs(table) do
+      result = result..value..","
+    end
+    result = string.sub(result, 1, #result - 1)
+  else
+    -- otherwise prepend key name
+    for key, value in pairs(table) do
+      if type(value) == "table" then
+        result = result.." "..key.."="..tableToStr(value)
+      elseif type(value) == "string" then
+        result = result.." "..key.."=\""..value.."\""
+      else
+        result = result.." "..key.."="..value
+      end
+    end
   end
   return result
 end
@@ -88,37 +103,37 @@ function getGlyphSize(path)
   local start2, ends2 = string.find(path, ".png")
   local sizeStr = string.sub(path, ends1 + 1, start2 - 1)
   local start, ends = string.find(sizeStr, "-")
-  local width = string.sub(sizeStr, 1, start-1)
-  local height = string.sub(sizeStr, ends+1)
+  local width = tonumber(string.sub(sizeStr, 1, start-1))
+  local height = tonumber(string.sub(sizeStr, ends+1))
   return width, height
 end
 
-function getName(path)
+function getFileName(path)
   local name = path
   local nameReversed = string.reverse(name)
   local lastSlash = #name - string.find(nameReversed, "/")
   name = string.sub(name, lastSlash + 2)
-  name = string.gsub(name, ".fnt", "")
+  name = string.gsub(name, "%....", "")
   return name
 end
 
 function convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, inputImgHeight)
   local input = {
     tracking = 0,
-    glyphWidth = 0,
-    glyphHeight = 0,
+    tileWidth = 0,
+    tileHeight = 0,
     glyphs = {},
     kerning = {},
     name = "",
-    texWidth = inputImgWidth,
-    textHeight = inputImgHeight
+    texWidth = tonumber(inputImgWidth),
+    textHeight = tonumber(inputImgHeight)
   }
 
   -- determine name based on file
-  input.name = getName(inputFntPath)
+  input.name = getFileName(inputFntPath)
 
   -- set glyph size based on .png path
-  input.glyphWidth, input.glyphHeight = getGlyphSize(inputImgPath)
+  input.tileWidth, input.tileHeight = getGlyphSize(inputImgPath)
 
   -- parse Caps .fnt file
   local inputFile = io.open(inputFntPath, "r")
@@ -144,15 +159,15 @@ function convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, input
     stretchH = 100,
     smooth = 0,
     aa = 0,
-    padding = "0,0,0,0",
-    spacing = input.tracking..",0",
+    padding = { 0, 0, 0, 0 },
+    spacing = { 0, 0 },
     outline = 0
   }
   io.write("info"..tableToStr(info))
 
   local common = {
-    lineHeight = input.glyphHeight,
-    base = input.glyphHeight,
+    lineHeight = input.tileHeight,
+    base = input.tileHeight,
     scaleW = input.texWidth, 
     scaleH = input.texHeight,
     pages = 1,
@@ -166,23 +181,24 @@ function convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, input
 
   local page = {
     id = 0,
-    file = inputImgPath,
+    file = getFileName(inputImgPath)..".png",
   }
   io.write("\npage"..tableToStr(page))
 
   -- glyphs
-  local glyphsPerRow = input.texWidth / input.glyphWidth
+  local glyphsPerRow = input.texWidth / input.tileWidth
   io.write("\nchars count="..#input.glyphs)
   for i = 1, #input.glyphs, 1 do
+    local index = i - 1
     local glyph = {
       id = input.glyphs[i][1],
-      x = (i % glyphsPerRow) * input.glyphWidth,
-      y = math.floor(i / glyphsPerRow) * input.glyphHeight,
-      width = input.glyphWidth,
-      height = input.glyphHeight,
+      x = (index % glyphsPerRow) * input.tileWidth,
+      y = math.floor(index / glyphsPerRow) * input.tileHeight,
+      width = input.tileWidth,
+      height = input.tileHeight,
       xoffset = 0,
       yoffset = 0,
-      xadvance = 0,
+      xadvance = input.glyphs[i][2] + input.tracking,
       page = 0,
       chnl = 15,
     }
