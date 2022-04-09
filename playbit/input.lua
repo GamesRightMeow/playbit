@@ -28,6 +28,9 @@ for k,v in pairs(keyToButton) do
 end
 
 local activeGamepad = nil
+local crankPos = 0
+local lastCrankPos = 0
+local isCrankDocked = false
 --! else
 local buttonStates = {
   up = 0,
@@ -45,6 +48,7 @@ function module.update()
       buttonStates[k] = 2
     end
   end
+  lastCrankPos = crankPos
 end
 
 --- Returns true when the specified button is held down.
@@ -62,7 +66,7 @@ function module.isCrankDocked()
   --! if LOVE2D then
   if not activeGamepad then
     -- TODO: test keyboard if no gamepad
-    return true
+    return isCrankDocked
   end
 
   -- TODO: emulate on keyboard?
@@ -78,12 +82,22 @@ function module.isCrankDocked()
   --! end
 end
 
+function module.getCrankChange()
+  --! if LOVE2D then
+    local change = pb.geometry.angleDiff(lastCrankPos, crankPos)
+    -- TODO: how does the playdate accelerate this?
+    local acceleratedChange = change 
+    return change, acceleratedChange
+  --! else
+    return playdate.getCrankChange()
+  --! end
+end
+
 --- Returns the angle the crank is currently at in radians.
 function module.getCrankPosition()
   --! if LOVE2D then
   if not activeGamepad then
-    -- TODO: test keyboard if no gamepad
-    return 0
+    return crankPos
   end
 
   -- TODO: emulate on keyboard?
@@ -141,6 +155,28 @@ function module.handleGamepadReleased(joystick, gamepadButton)
   end
 
   buttonStates[button] = 0
+end
+
+function module.handleMousepressed(x, y, button, istouch, presses)
+  if button ~= 3 then
+    return
+  end
+  isCrankDocked = not isCrankDocked
+  crankPos = 0
+end
+
+function module.handleMouseWheel(x, y)
+  if isCrankDocked then
+    return
+  end
+
+  
+  crankPos = crankPos + y
+  if crankPos < 0 then
+    crankPos = 359
+  elseif crankPos > 359 then
+    crankPos = 0
+  end
 end
 --! end
 

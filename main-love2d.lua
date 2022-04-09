@@ -19,6 +19,14 @@ function love.draw()
   pb.app.render()
 end
 
+function love.mousepressed(x, y, button, istouch, presses)
+  pb.input.handleMousepressed(x, y, button, istouch, presses)
+end
+
+function love.wheelmoved(x, y)
+  pb.input.handleMouseWheel(x, y)
+end
+
 function love.joystickadded(joystick)
   pb.input.handleJoystickAdded(joystick)
 end
