@@ -57,8 +57,6 @@ function module.update()
   end
   --! end
 
-  pb.input.update();
-
   pb.perf.endFrameSample("__update")
 end
 
@@ -111,6 +109,8 @@ function module.render()
   --! if PLAYDATE then
   pb.time.lastFrameTime = pb.time.getTime()
   --! end
+
+  pb.input.update()
 end
 
 return module
