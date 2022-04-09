@@ -69,25 +69,43 @@ end
 --   end
 -- end
 
-function module.processFnt(fileContents)
-  capToBmfont()
+function module.defaultProcessor(input, output)
+  local inputFile = io.open(input, "rb")
+  local contents = inputFile:read("a")
+  inputFile:close()
+
+  module.createFolderIfNeeded(output)
+  local outputFile = io.open(output, "w+b")
+  outputFile:write(contents)
+  outputFile:close();
 end
 
-function module.processLua(fileContents)
+function module.fntProcessor(input, output)
+  capToBmfont(input, output)
+end
+
+function module.luaProcessor(input, output)
+  local inputFile = io.open(input, "r")
+  local contents = inputFile:read("a")
+  inputFile:close()
+
   -- remove comments so preprocess can...process them
   -- TODO: this is probably slow...is there a better way to handle this?
-  fileContents = fileContents:gsub("--!", "!")
+  contents = contents:gsub("--!", "!")
 
   -- run preprocess magic
   local processedLua, processedFileInfo = pp.processString {
-    code = fileContents,
+    code = contents,
   }
 
   if verbose then
     print("Processed " .. fullPath .. " " .. processedFileInfo.processedByteCount .. " bytes")
   end
 
-  return processedLua
+  module.createFolderIfNeeded(output)
+  local outputFile = io.open(output, "w+")
+  outputFile:write(processedLua)
+  outputFile:close();
 end
 
 function module.getProjectFolder()
@@ -109,27 +127,11 @@ function module.processFile(input, output, fileProcessors)
   local ext = module.getFileExtension(input)
   local processor = fileProcessors[ext]
 
-  -- if there is a file processor, we want the mode to be in plain text
-  -- other wise mode needs to be binary to copy files like images correctly
-  local writeMode = "w+b"
-  local readMode = "rb"
   if processor then
-    writeMode = "w+"
-    readMode = "r"
+    processor(input, output)
+  else
+    module.defaultProcessor(input, output)
   end
-
-  local inputFile = io.open(input, readMode)
-  local contents = inputFile:read("a")
-  inputFile:close()
-  
-  if processor then
-    contents = processor(contents)
-  end
-
-  module.createFolderIfNeeded(output)
-  local outputFile = io.open(output, writeMode)
-  outputFile:write(contents)
-  outputFile:close();
 end
 
 function module.processPath(projectFolder, buildFolder, inputPath, outputPath, fileProcessors)

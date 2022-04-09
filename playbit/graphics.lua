@@ -219,7 +219,7 @@ local fonts = {}
 local activeFontName = ""
 function module.createFont(name, path)
   --! if LOVE2D then
-  fonts[name] = love.graphics.newFont(path.."-love2d.fnt")
+  fonts[name] = love.graphics.newFont(path..".fnt")
   --! else
   fonts[name] = playdate.graphics.font.new(path)
   --! end

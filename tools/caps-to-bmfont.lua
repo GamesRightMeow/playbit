@@ -2,8 +2,8 @@
 Lua script that converts a Playdate Caps .fnt to a BMFont .fnt for usage in Love2d.
 
 Usage: 
-  `lua caps-to-bmfont.lua <input_caps_font_path> <input_caps_image_path> <output_bmf_font_path> <image_width> <image_height>`
-  `lua caps-to-bmfont.lua Roobert-11-Bold.fnt Roobert-11-Bold-table-22-22.png Roobert-BMFont.fnt 352 176`
+  `lua caps-to-bmfont.lua <input_caps_font_path> <input_caps_image_path> <output_bmf_font_path>`
+  `lua caps-to-bmfont.lua Roobert-11-Bold.fnt Roobert-11-Bold-table-22-22.png Roobert-BMFont.fnt`
 
 Designed around these specs:
   * https://sdk.play.date/1.9.3/Inside%20Playdate.html#_supported_characters
@@ -13,6 +13,7 @@ Designed around these specs:
 Limitations:
   * does not support non-ascii chars
   * cannot determine texture width/height - must be provided
+  * Windows only
 --]]
 
 function isWhitespace(char)
@@ -112,29 +113,39 @@ end
 function getFileName(path)
   local name = path
   local nameReversed = string.reverse(name)
-  local lastSlash = #name - string.find(nameReversed, "/")
+  local lastSlash = #name - string.find(nameReversed, "\\")
   name = string.sub(name, lastSlash + 2)
   name = string.gsub(name, "%....", "")
   return name
 end
 
-function convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, inputImgHeight)
+function getAtlasPath(input)
+  local inputNoExt = string.sub(input, 1, #input - 4)
+  local dirCommand = io.popen("dir /a-d /s /b \""..inputNoExt.."*.png\"")
+  return dirCommand:read("*a"):match("(.-)\n")
+end
+
+function convert(inputFntPath, outputFntPath)
   local input = {
     tracking = 0,
     tileWidth = 0,
     tileHeight = 0,
+    atlasPath = "",
     glyphs = {},
     kerning = {},
     name = "",
-    texWidth = tonumber(inputImgWidth),
-    textHeight = tonumber(inputImgHeight)
+    texWidth = 0,
+    textHeight = 0
   }
+
+  -- find atlas based on .fnt path
+  input.atlasPath = getAtlasPath(inputFntPath)
 
   -- determine name based on file
   input.name = getFileName(inputFntPath)
 
   -- set glyph size based on .png path
-  input.tileWidth, input.tileHeight = getGlyphSize(inputImgPath)
+  input.tileWidth, input.tileHeight = getGlyphSize(input.atlasPath)
 
   -- parse Caps .fnt file
   local inputFile = io.open(inputFntPath, "r")
@@ -144,6 +155,22 @@ function convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, input
     parseLine(line, input)
     line = io.read()
   end
+
+  --[[ 
+    Lua does not have any native way to read image size. 
+
+    However most fonts won't have less than 16 chars, and Caps
+    won't put more than 16 chars in a row. So we can infer the
+    image size based on this.
+  --]]
+
+  -- just in case, lets warn if I forget about this.
+  if #input.glyphs < 16 then
+    error("There are less than 16 characters in this font, so image size won't be correct")
+  end
+
+  input.texWidth = input.tileWidth * 16
+  input.textHeight = input.tileHeight * math.floor(#input.glyphs / 16)
 
   -- convert to BMFont .fnt file
   local outputFile = io.open(outputFntPath, "w+")
@@ -182,7 +209,7 @@ function convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, input
 
   local page = {
     id = 0,
-    file = getFileName(inputImgPath)..".png",
+    file = getFileName(input.atlasPath)..".png",
   }
   io.write("\npage"..tableToStr(page))
 
