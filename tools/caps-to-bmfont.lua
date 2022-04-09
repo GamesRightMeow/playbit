@@ -220,29 +220,4 @@ function convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, input
   io.close(outputFile)
 end
 
-local inputFntPath = arg[1]
-if not inputFntPath then
-  error("Input Caps font (.fnt) path not specified!")
-end
-
-local inputImgPath = arg[2]
-if not inputImgPath then
-  error("Input Caps image (.png) path not specified!")
-end
-
-local outputFntPath = arg[3]
-if not outputFntPath then
-  error("Output BMFont (.fnt) path not specified!")
-end
-
-local inputImgWidth = arg[4]
-if not inputImgWidth then
-  error("Image width not specified!")
-end
-
-local inputImgHeight = arg[5]
-if not inputImgHeight then
-  error("Image height not specified!")
-end
-
-convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, inputImgHeight)
+return convert
