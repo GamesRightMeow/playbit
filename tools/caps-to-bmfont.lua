@@ -121,7 +121,7 @@ end
 
 function getAtlasPath(input)
   local inputNoExt = string.sub(input, 1, #input - 4)
-  local dirCommand = io.popen("dir /a-d /s /b \""..inputNoExt.."*.png\"")
+  local dirCommand = io.popen("dir /a-d /s /b \""..inputNoExt.."-table-*.png\"")
   return dirCommand:read("*a"):match("(.-)\n")
 end
 
