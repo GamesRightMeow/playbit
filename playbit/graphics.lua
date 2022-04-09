@@ -261,7 +261,10 @@ function module.text(str, x, y, align)
 
   module.playbitShader:send("mode", 0)
   --! else
-  playdate.graphics.drawText(str, x, y)
+  -- this uses font:drawText() instead of graphics.drawText() to bypass text emphasis
+  -- so that * and _ are actually rendered
+  local font = playdate.graphics.getFont()
+  font:drawText(str, x, y)
   --! end
 end
 
