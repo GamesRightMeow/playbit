@@ -1,4 +1,9 @@
 --[[ 
+Lua script that converts a Playdate Caps .fnt to a BMFont .fnt for usage in Love2d.
+
+Usage: 
+  `lua caps-to-bmfont.lua <input_caps_font_path> <input_caps_image_path> <output_bmf_font_path> <image_width> <image_height>`
+  `lua caps-to-bmfont.lua Roobert-11-Bold.fnt Roobert-11-Bold-table-22-22.png Roobert-BMFont.fnt 352 176`
 
 Designed around these specs:
   * https://sdk.play.date/1.9.3/Inside%20Playdate.html#_supported_characters
@@ -8,10 +13,6 @@ Designed around these specs:
 Limitations:
   * does not support non-ascii chars
   * cannot determine texture width/height - must be provided
-
-Usage: 
-  `lua caps-to-bmfont.lua Roobert-11-Bold.fnt Roobert-11-Bold-table-22-22.png output.fnt 352 176`
-
 --]]
 
 function isWhitespace(char)
@@ -221,21 +222,27 @@ end
 
 local inputFntPath = arg[1]
 if not inputFntPath then
-  error("Input Caps .fnt file not specified!")
+  error("Input Caps font (.fnt) path not specified!")
 end
 
 local inputImgPath = arg[2]
 if not inputImgPath then
-  error("Input Caps .png file not specified!")
+  error("Input Caps image (.png) path not specified!")
 end
 
 local outputFntPath = arg[3]
 if not outputFntPath then
-  error("Output BMFont .fnt path not specified!")
+  error("Output BMFont (.fnt) path not specified!")
 end
 
--- optional
 local inputImgWidth = arg[4]
+if not inputImgWidth then
+  error("Image width not specified!")
+end
+
 local inputImgHeight = arg[5]
+if not inputImgHeight then
+  error("Image height not specified!")
+end
 
 convert(inputFntPath, inputImgPath, outputFntPath, inputImgWidth, inputImgHeight)
