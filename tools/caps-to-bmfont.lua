@@ -166,7 +166,7 @@ function convert(inputFntPath, outputFntPath)
 
   -- just in case, lets warn if I forget about this.
   if #input.glyphs < 16 then
-    error("There are less than 16 characters in this font, so image size won't be correct")
+    error("There are less than 16 characters in this font, so image size won't be correct: "..inputFntPath)
   end
 
   input.texWidth = input.tileWidth * 16

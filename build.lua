@@ -19,7 +19,7 @@ function module.createFolderIfNeeded(path)
   local pathReversed = string.reverse(path)
   local start, ends = string.find(pathReversed, "\\")
   local trimmedPath = string.sub(path, 1, #path - ends)
-  os.execute("IF NOT EXIST "..trimmedPath.." mkdir "..trimmedPath)
+  os.execute("IF NOT EXIST \""..trimmedPath.."\" mkdir \""..trimmedPath.."\"")
 end
 
 function module.getAbsolutePath(path)
@@ -77,7 +77,7 @@ function module.defaultProcessor(input, output)
   module.createFolderIfNeeded(output)
   local outputFile = io.open(output, "w+b")
   outputFile:write(contents)
-  outputFile:close();
+  outputFile:close()
 end
 
 function module.fntProcessor(input, output)
