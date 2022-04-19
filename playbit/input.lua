@@ -104,7 +104,6 @@ function module.getCrankPosition()
   local x = activeGamepad:getAxis(3)
   local y = activeGamepad:getAxis(4)
 
-  ---@diagnostic disable-next-line: deprecated
   local degrees = math.deg(math.atan2(-y, x))
   if degrees < 0 then
     return degrees + 360

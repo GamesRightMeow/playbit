@@ -27,7 +27,6 @@ function module.floatRange(min, max, precision)
 	local range = math.abs(max - min)
 	local offset = range * num
 	local randomnum = min + offset
-  ---@diagnostic disable-next-line: deprecated
 	return math.floor(randomnum * math.pow(10, precision) + 0.5) / math.pow(10, precision)
   --! else
   return 0
