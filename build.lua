@@ -37,39 +37,25 @@ function module.getRelativePath(path, folder)
   return path
 end
 
--- TODO: need to add this as file processor - does aseprite support returning the file?
--- function module.exportAseprite(inputFolder, outputFolder, ignoredLayers, verbose)
---   local dirCommand = io.popen("dir /a-D /S /B \"" .. inputFolder .. "\"")
---   local dirOutput = dirCommand:read("*a")
+function module.asepriteProcessor(input, output, options)
+  module.createFolderIfNeeded(output)
 
---   dirCommand = io.popen("cd")
---   local fullInputFolder = dirCommand:read("*l").."\\"..inputFolder
+  output = string.gsub(output, ".aseprite", ".png")
   
---   for fullPath in dirOutput:gmatch("(.-)\n") do 
---     if module.getFileExtension(fullPath) ~= ".aseprite" then
---       goto continue
---     end
+  local command = "\""..options.path.."\" -bv "
+  command = command..input
 
---     local relativeOutputPath = fullPath:gsub(fullInputFolder, ""):gsub(".aseprite", ".png")
---     relativeOutputPath = outputFolder .. relativeOutputPath
+  if options.ignoredLayers then
+    for i = 1, #options.ignoredLayers, 1 do
+      command = command.." --ignore-layer "..options.ignoredLayers[i]
+    end
+  end
 
---     -- create folder(s) first to fix errors when writing lua fila
---     module.createFolderIfNeeded(relativeOutputPath:match("(.*\\)"))
+  command = command.." --save-as "..output
+  io.popen(command, "w")
+end
 
---     -- TODO: expose param to set aseprite location
---     local command = "\"C:\\Program Files\\Aseprite\\Aseprite.exe\" -bv "
---     command = command..fullPath
---     for i = 1, #ignoredLayers, 1 do
---       command = command.." --ignore-layer "..ignoredLayers[i]
---     end
---     command = command.." --save-as "..relativeOutputPath
---     io.popen(command, "w")
-
---     ::continue::
---   end
--- end
-
-function module.defaultProcessor(input, output)
+function module.defaultProcessor(input, output, options)
   local inputFile = io.open(input, "rb")
   local contents = inputFile:read("a")
   inputFile:close()
@@ -80,7 +66,7 @@ function module.defaultProcessor(input, output)
   outputFile:close()
 end
 
-function module.fntProcessor(input, output)
+function module.fntProcessor(input, output, options)
   capToBmfont(input, output)
 end
 
@@ -128,9 +114,13 @@ function module.processFile(input, output, fileProcessors)
   local processor = fileProcessors[ext]
 
   if processor then
-    processor(input, output)
+    if type(processor) == "table" then
+      processor[1](input, output, processor[2])
+    else
+      processor(input, output, nil)
+    end
   else
-    module.defaultProcessor(input, output)
+    module.defaultProcessor(input, output, nil)
   end
 end
 
