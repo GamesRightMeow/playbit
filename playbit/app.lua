@@ -14,6 +14,11 @@ function module.load()
 
   --! if LOVE2D then
   love.graphics.setDefaultFilter("nearest", "nearest")
+  love.graphics.setLineWidth(1)
+  love.graphics.setLineStyle("rough")
+  --! else
+  -- love2d doesn't have a stoke location option, so set outside by default to match
+  playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
   --! end
 
   -- TODO: reenabled when I add a custom font for platbit, since I cant re-distribute PD fonts
@@ -70,8 +75,10 @@ function module.render()
 
   -- love requires that this is set every loop
   love.graphics.setFont(pb.graphics.getActiveFont())
-
   love.graphics.setShader(pb.graphics.playbitShader)
+
+  -- set every update to match behavior on playdate
+  pb.graphics.setColor(1)
   --! end
 
   --! if PLAYDATE then

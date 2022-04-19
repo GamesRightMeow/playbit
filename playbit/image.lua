@@ -24,9 +24,11 @@ function module.new(path)
   local img = setmetatable({}, meta)
 
   --! if LOVE2D then
-  img.data = love.graphics.newImage(path)
+  img.data = love.graphics.newImage(path..".png")
   --! elseif PLAYDATE then
-  img.data = playdate.graphics.module.new(path)
+  local data, error = playdate.graphics.image.new(path)
+  img.data = data
+  print(error)
   --! end
   return img
 end

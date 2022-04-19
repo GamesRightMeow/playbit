@@ -33,142 +33,11 @@ vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords )
 }
 ]]
 
---! else
+--! elseif PLAYDATE then
 import("CoreLibs/graphics")
 --! end
 
---- Sets the background color.
-function module.setBackgroundColor(color)
-  --! if LOVE2D then
-  if color == 1 then
-    love.graphics.setBackgroundColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b)
-  else
-    love.graphics.setBackgroundColor(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b)
-  end
-  --! else
-  if color == 1 then
-    playdate.graphics.setBackgroundColor(playdate.graphics.kColorWhite)
-  else
-    playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
-  end
-  --! end
-end
-
---- Sets the color used to draw.
-function module.setColor(color)
-  --! if LOVE2D then
-  if color == 1 then
-    love.graphics.setColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
-  else
-    love.graphics.setColor(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b, 1)
-  end
-  --! else
-  if color == 1 then
-    playdate.graphics.setColor(playdate.graphics.kColorWhite)
-  else
-    playdate.graphics.setColor(playdate.graphics.kColorBlack)
-  end
-  --! end
-end
-
 module.drawMode = "fillWhite"
-
--- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
-function module.setImageDrawMode(mode)
-  --! if LOVE2D then
-  -- TODO: set shader for images?
-  -- TODO: handle other states?
-  module.drawMode = mode
-  --! else
-  playdate.graphics.setImageDrawMode(mode)
-  --! end
-end
-
---- Draws a circle.
-function module.circle(x, y, radius, isFilled, lineWidth)
-  --! if LOVE2D then
-  local mode = "line"
-  if isFilled then
-    mode = "fill"
-  end
-
-  if lineWidth == nil then
-    lineWidth = 0.5
-  end
-
-  love.graphics.push()
-	love.graphics.translate(x, y)
-  love.graphics.setLineWidth(lineWidth)
-  love.graphics.setLineStyle("rough")
-  love.graphics.circle(mode, 0, 0, radius)
-  love.graphics.pop()
-  --! end
-end
-
---- Draws a rectangle.
--- TODO: remove rotation from here - just do push/pop context before/after
-function module.rectangle(x, y, width, height, isFilled, angle, lineWidth)
-  --! if LOVE2D then
-  local mode = "line"
-  if isFilled then
-    mode = "fill"
-  end
-
-  if not angle then
-    angle = 0
-  end
-
-  if not lineWidth then
-    lineWidth = 0.5
-  end
-
-  love.graphics.push()
-	love.graphics.translate(x, y)
-	love.graphics.rotate(angle)
-  love.graphics.setLineWidth(lineWidth)
-  love.graphics.setLineStyle("rough")
-  love.graphics.rectangle(mode, 0, 0, width, height)
-  love.graphics.pop()
-  --! else
-  if isFilled then
-    playdate.graphics.fillRect(x, y, width, height) 
-  else
-    playdate.graphics.drawRect(x, y, width, height) 
-  end
-  --! end
-end
-
-function module.line(x1, y1, x2, y2, lineWidth)
-  --! if LOVE2D then
-  if lineWidth == nil then
-    lineWidth = 0.5
-  end
-
-  love.graphics.push()
-  love.graphics.setLineWidth(lineWidth)
-  love.graphics.setLineStyle("rough")
-  love.graphics.line(x1, y1, x2, y2)
-  love.graphics.pop()
-  --! end
-end
-
-function module.texture(image, x, y, rotation, scaleX, scaleY, originX, originY)
-  --! if LOVE2D then
-  -- always render pure white so its not tinted
-  love.graphics.setColor(1, 1, 1, 1)
-
-  love.graphics.draw(
-    image.data, 
-    x, y, 
-    rotation, 
-    scaleX, scaleY,
-    originX, originY
-  )
-  --! elseif PLAYDATE then
-  -- TODO: scale, rotation, origin
-  image:draw(x, y, false)
-  --! end
-end
 
 -- Returns a new quad
 -- Love2D requires quads to draw parts of textures, but Playdate does not
@@ -193,23 +62,124 @@ function module.newSpritesheetQuad(index, image, cellWidth, cellHeight)
   )
 end
 
+--- Sets the background color.
+function module.setBackgroundColor(color)
+  --! if LOVE2D then
+  if color == 1 then
+    love.graphics.setBackgroundColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b)
+  else
+    love.graphics.setBackgroundColor(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b)
+  end
+  --! elseif PLAYDATE then
+  if color == 1 then
+    playdate.graphics.setBackgroundColor(playdate.graphics.kColorWhite)
+  else
+    playdate.graphics.setBackgroundColor(playdate.graphics.kColorBlack)
+  end
+  --! end
+end
+
+--- Sets the color used to draw.
+function module.setColor(color)
+  --! if LOVE2D then
+  if color == 1 then
+    love.graphics.setColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
+  else
+    love.graphics.setColor(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b, 1)
+  end
+  --! elseif PLAYDATE then
+  if color == 1 then
+    playdate.graphics.setColor(playdate.graphics.kColorWhite)
+  else
+    playdate.graphics.setColor(playdate.graphics.kColorBlack)
+  end
+  --! end
+end
+
+-- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
+function module.setImageDrawMode(mode)
+  --! if LOVE2D then
+  -- TODO: set shader for images?
+  -- TODO: handle other states?
+  module.drawMode = mode
+  --! elseif PLAYDATE then
+  playdate.graphics.setImageDrawMode(mode)
+  --! end
+end
+
+--- Draws a outlined circle.
+function module.circle(x, y, radius)
+  --! if LOVE2D then
+  love.graphics.circle("line", x, y, radius)
+  --! elseif PLAYDATE then
+  playdate.graphics.drawCircleAtPoint(x, y, radius)
+  --! end
+end
+
+--- Draws a filled circle.
+function module.fillCircle(x, y, radius)
+  --! if LOVE2D then
+  love.graphics.circle("fill", x, y, radius)
+  --! elseif PLAYDATE then
+  playdate.graphics.fillCircleAtPoint(x, y, radius)
+  --! end
+end
+
+-- Set the width of drawn lines.
+function module.setLineWidth(width)
+  --! if LOVE2D then
+  love.graphics.setLineWidth(width)
+  --! elseif PLAYDATE then
+  playdate.graphics.setLineWidth(width)
+  --! end
+end
+
+--- Draws a outlined rectangle.
+function module.rect(x, y, width, height)
+  --! if LOVE2D then
+  love.graphics.rectangle("line", x, y, width, height)
+  --! elseif PLAYDATE then
+  playdate.graphics.drawRect(x, y, width, height) 
+  --! end
+end
+
+--- Draws a filled rectangle.
+function module.fillRect(x, y, width, height)
+  --! if LOVE2D then
+  love.graphics.rectangle("fill", x, y, width, height)
+  --! elseif PLAYDATE then
+  playdate.graphics.fillRect(x, y, width, height) 
+  --! end
+end
+
+-- Draws a line.
+function module.line(x1, y1, x2, y2)
+  --! if LOVE2D then
+  love.graphics.line(x1, y1, x2, y2)
+  --! elseif PLAYDATE then
+  playdate.graphics.drawLine(x1, y1, x2, y2)
+  --! end
+end
+
+function module.texture(image, x, y)
+  --! if LOVE2D then
+  -- always render pure white so its not tinted
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.draw(image.data, x, y)
+  --! elseif PLAYDATE then
+  image.data:draw(x, y)
+  --! end
+end
+
 -- Renders a portion of an image as defined by a quad
-function module.sprite(image, quad, x, y, rotation, scaleX, scaleY, originX, originY)
+function module.sprite(image, quad, x, y)
   --! if LOVE2D then
   -- always render pure white so texture is not tinted
   love.graphics.setColor(1, 1, 1, 1)
 
-  love.graphics.draw(
-    image.data,
-    quad,
-    x, y, 
-    rotation, 
-    scaleX, scaleY,
-    originX, originY
-  )
+  love.graphics.draw(image.data, quad, x, y)
   --! elseif PLAYDATE then
-  -- TODO: scale, rotation, origin
-  image.data:draw(x, y, false, quad)
+  image.data:draw(x, y, playdate.graphics.kImageUnflipped, quad)
   --! end
 end
 
@@ -220,7 +190,7 @@ local activeFontName = ""
 function module.createFont(name, path)
   --! if LOVE2D then
   fonts[name] = love.graphics.newFont(path..".fnt")
-  --! else
+  --! elseif PLAYDATE then
   fonts[name] = playdate.graphics.font.new(path)
   --! end
 end
@@ -228,7 +198,7 @@ end
 function module.setFont(name)
   --! if LOVE2D then
   love.graphics.setFont(fonts[name])
-  --! else
+  --! elseif PLAYDATE then
   playdate.graphics.setFont(fonts[name])
   --! end
   activeFontName = name
@@ -260,7 +230,7 @@ function module.text(str, x, y, align)
   love.graphics.print(str, x, y)
 
   module.playbitShader:send("mode", 0)
-  --! else
+  --! elseif PLAYDATE then
   -- this uses font:drawText() instead of graphics.drawText() to bypass text emphasis
   -- so that * and _ are actually rendered
   local font = playdate.graphics.getFont()
@@ -272,7 +242,7 @@ function module.getTextSize(str)
   --! if LOVE2D then
   local font = fonts[activeFontName]
   return font:getWidth(str), font:getHeight()
-  --! else
+  --! elseif PLAYDATE then
   return playdate.graphics.getTextSize(str)
   --! end
 end
