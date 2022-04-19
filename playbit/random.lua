@@ -1,5 +1,11 @@
 local module = {}
 
+-- Returns a random value from the list
+function module.choose(list)
+  local index = module.intRange(1, #list)
+  return list[index]
+end
+
 --- Returns a random value between 0.0 and 1.0.
 function module.value()
   --! if LOVE2D then
