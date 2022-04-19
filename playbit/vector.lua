@@ -1,5 +1,9 @@
 local module = {}
 
+function module.angle(x, y)
+  return math.deg(math.atan2(-y, x))
+end
+
 function module.distance(x1, y1, x2, y2)
   local x = x1 - x2
   local y = y1 - y2
