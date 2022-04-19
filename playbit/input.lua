@@ -110,7 +110,8 @@ function module.getCrankPosition()
   end
   return degrees
   --! else
-  return playdate.getCrankPosition()
+  -- any reason why we'd need floating point numbers?
+  return math.floor(playdate.getCrankPosition())
   --! end
 end
 
