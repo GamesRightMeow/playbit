@@ -33,6 +33,8 @@ vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords )
 }
 ]]
 
+module.drawOffset = { x = 0, y = 0}
+
 --! elseif PLAYDATE then
 import("CoreLibs/graphics")
 --! end
@@ -60,6 +62,26 @@ function module.newSpritesheetQuad(index, image, cellWidth, cellHeight)
     cellWidth, cellHeight, 
     image:getWidth(), image:getHeight()
   )
+end
+
+function module.setDrawOffset(x, y)
+  --! if LOVE2D then
+  module.drawOffset.x = x
+  module.drawOffset.y = y
+  love.graphics.pop()
+  love.graphics.push()
+  love.graphics.translate(x, y)
+  --! elseif PLAYDATE then
+  playdate.graphics.setDrawOffset(x, y)
+  --! end
+end
+
+function module.getDrawOffset()
+  --! if LOVE2D then
+  return module.drawOffset.x, module.drawOffset.y
+  --! elseif PLAYDATE then
+  return playdate.graphics.getDrawOffset()
+  --! end
 end
 
 --- Sets the background color.

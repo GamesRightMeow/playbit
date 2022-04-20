@@ -79,15 +79,21 @@ function module.render()
 
   -- set every update to match behavior on playdate
   pb.graphics.setColor(1)
-  --! end
 
-  --! if PLAYDATE then
+  -- push main transform for draw offset
+  love.graphics.push()
+  --! elseif PLAYDATE then
   playdate.graphics.clear()
   --! end
 
   if module.onRender then
     module.onRender()
   end
+
+  --! if LOVE2D then
+  -- pop main transform for draw offset
+  love.graphics.pop()
+  --! end
 
   pb.perf.endFrameSample("__render")
 
@@ -113,7 +119,9 @@ function module.render()
   end
   --! end
 
-  --! if PLAYDATE then
+  --! if LOVE2D then
+  
+  --! elseif PLAYDATE then
   pb.time.lastFrameTime = pb.time.getTime()
   --! end
 
