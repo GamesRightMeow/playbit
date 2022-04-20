@@ -50,12 +50,14 @@ function module.getFrameSample(name)
   --! end
 end
 
+-- returns average FPS
 function module.getFps()
   --! if LOVE2D then
+  -- this is averged
   return love.timer.getFPS()
   --! elseif PLAYDATE then
-  -- TODO: calcualte FPS on playdate
-  return 0
+  -- TODO: this is not averaged
+  return math.floor(1.0 / pb.time.deltaTime())
   --! end
 end
 
