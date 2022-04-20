@@ -16,7 +16,9 @@ function module.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   love.graphics.setLineWidth(1)
   love.graphics.setLineStyle("rough")
+  math.randomseed(os.time())
   --! else
+  math.randomseed(playdate.getSecondsSinceEpoch())
   -- love2d doesn't have a stoke location option, so set outside by default to match
   playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
   --! end
