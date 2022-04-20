@@ -37,7 +37,7 @@ vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords )
 import("CoreLibs/graphics")
 --! end
 
-module.drawMode = "fillWhite"
+module.drawMode = "fillBlack"
 
 -- Returns a new quad
 -- Love2D requires quads to draw parts of textures, but Playdate does not
