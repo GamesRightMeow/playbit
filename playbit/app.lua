@@ -98,10 +98,10 @@ function module.render()
   pb.perf.endFrameSample("__render")
 
   --! if DEBUG then
-  -- TODO: consider putting these in dedicated system if more entity-specific features are added
   if module.drawStats then
+    -- TODO: render with playbit font...when added
     pb.graphics.setColor(1)
-    pb.graphics.rectangle(350, 0, 50, 41, true, 0)
+    pb.graphics.fillRect(350, 0, 50, 50)
 
     pb.graphics.setImageDrawMode("fillBlack")
 
