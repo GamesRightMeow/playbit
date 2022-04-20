@@ -95,6 +95,8 @@ function module.render()
   --! if LOVE2D then
   -- pop main transform for draw offset
   love.graphics.pop()
+  --! elseif PLAYDATE then
+  playdate.graphics.setDrawOffset(0,0)
   --! end
 
   pb.perf.endFrameSample("__render")
