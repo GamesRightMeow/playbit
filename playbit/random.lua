@@ -16,15 +16,9 @@ function module.intRange(min, max)
   return math.random(min, max)
 end
 
---- Returns a random float between min and max, using the specified precision (defaults to 3).
+--- Returns a random float between min and max
 function module.floatRange(min, max, precision)
-  -- math.random does not support floating point numbers
-	local precision = precision or 3
-	local num = module.value()
-	local range = math.abs(max - min)
-	local offset = range * num
-	local randomnum = min + offset
-	return math.floor(randomnum * math.pow(10, precision) + 0.5) / math.pow(10, precision)
+	return ((math.random() * (max - min)) + min)
 end
 
 return module
