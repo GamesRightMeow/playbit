@@ -123,11 +123,7 @@ function module.render()
   end
   --! end
 
-  --! if LOVE2D then
-  
-  --! elseif PLAYDATE then
   pb.time.lastFrameTime = pb.time.getTime()
-  --! end
 
   pb.input.update()
 end
