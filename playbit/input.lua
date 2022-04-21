@@ -169,9 +169,8 @@ function module.handleMouseWheel(x, y)
   if isCrankDocked then
     return
   end
-
-  
-  crankPos = crankPos + y
+  -- TODO: configure scroll sensitivity? acceleration?
+  crankPos = crankPos + y * 6
   if crankPos < 0 then
     crankPos = 359
   elseif crankPos > 359 then
