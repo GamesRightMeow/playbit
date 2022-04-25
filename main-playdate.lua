@@ -5,10 +5,6 @@ pb.app.load()
 
 function playdate.update()
   pb.app.update()
-
-  pb.app.render()
-
-  -- TODO: input
 end
 
 function playdate.AButtonDown()

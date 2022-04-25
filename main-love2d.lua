@@ -11,12 +11,8 @@ function love.load()
   pb.app.load()
 end
 
-function love.update()
-  pb.app.update()
-end
-
 function love.draw()
-  pb.app.render()
+  pb.app.update()
 end
 
 function love.mousepressed(x, y, button, istouch, presses)

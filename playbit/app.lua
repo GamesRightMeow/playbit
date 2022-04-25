@@ -39,7 +39,9 @@ function module.load()
 end
 
 function module.update()
+  --! if DEBUG then
   pb.perf.beginFrameSample("__update")
+  --! end
   
   if module.onUpdate then
     module.onUpdate()
@@ -64,11 +66,10 @@ function module.update()
   end
   --! end
 
+  --! if DEBUG then
   pb.perf.endFrameSample("__update")
-end
-
-function module.render()
   pb.perf.beginFrameSample("__render")
+  --! end
 
   --! if LOVE2D then
   if module.draw2x then
@@ -99,9 +100,9 @@ function module.render()
   playdate.graphics.setDrawOffset(0,0)
   --! end
 
+  --! if DEBUG then
   pb.perf.endFrameSample("__render")
 
-  --! if DEBUG then
   if module.drawStats then
     -- TODO: render with playbit font...when added
     pb.graphics.setColor(1)
