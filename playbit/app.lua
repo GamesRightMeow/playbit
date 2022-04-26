@@ -39,14 +39,6 @@ function module.load()
 end
 
 function module.update()
-  --! if DEBUG then
-  pb.perf.beginFrameSample("__update")
-  --! end
-  
-  if module.onUpdate then
-    module.onUpdate()
-  end
-
   --! if LOVE2D then
   
   --! if DEBUG then
@@ -64,11 +56,6 @@ function module.update()
       love.window.setMode(400, 240)
     end
   end
-  --! end
-
-  --! if DEBUG then
-  pb.perf.endFrameSample("__update")
-  pb.perf.beginFrameSample("__render")
   --! end
 
   --! if LOVE2D then
@@ -89,9 +76,7 @@ function module.update()
   playdate.graphics.clear()
   --! end
 
-  if module.onRender then
-    module.onRender()
-  end
+  module.onUpdate()
 
   --! if LOVE2D then
   -- pop main transform for draw offset
@@ -101,8 +86,6 @@ function module.update()
   --! end
 
   --! if DEBUG then
-  pb.perf.endFrameSample("__render")
-
   if module.drawStats then
     -- TODO: render with playbit font...when added
     pb.graphics.setColor(1)
