@@ -64,6 +64,10 @@ function module.update()
   --! end
 
   --! if LOVE2D then
+  -- render to canvas to allow 2x scaling
+  love.graphics.setCanvas(module.canvas)
+  love.graphics.clear()
+
   -- love requires that this is set every loop
   love.graphics.setFont(pb.graphics.getActiveFont())
   love.graphics.setShader(pb.graphics.playbitShader)
@@ -73,10 +77,9 @@ function module.update()
 
   -- push main transform for draw offset
   love.graphics.push()
-
-  -- render to canvas to allow 2x scaling
-  love.graphics.setCanvas(module.canvas)
-  love.graphics.clear()
+  if module.draw2x then
+    love.graphics.scale(2, 2)
+  end
   --! elseif PLAYDATE then
   playdate.graphics.clear()
   --! end
@@ -84,6 +87,9 @@ function module.update()
   module.onUpdate()
 
   --! if LOVE2D then
+  -- pop main transform for draw offset
+  love.graphics.pop()
+
   -- draw canvas
   love.graphics.setCanvas()
   if module.draw2x then
@@ -91,9 +97,6 @@ function module.update()
   else
     love.graphics.draw(module.canvas, 0, 0, 0, 1, 1)
   end
-
-  -- pop main transform for draw offset
-  love.graphics.pop()
   --! elseif PLAYDATE then
   playdate.graphics.setDrawOffset(0,0)
   --! end
