@@ -28,7 +28,6 @@ function module.new(path)
   --! elseif PLAYDATE then
   local data, error = playdate.graphics.image.new(path)
   img.data = data
-  print(error)
   --! end
   return img
 end
