@@ -57,7 +57,7 @@ function module.getFps()
   return love.timer.getFPS()
   --! elseif PLAYDATE then
   -- TODO: this is not averaged
-  return math.floor(1.0 / pb.time.deltaTime())
+  return math.floor(1.0 / pb.time.avgDeltaTime())
   --! end
 end
 

@@ -124,7 +124,7 @@ function module.update()
   end
   --! end
 
-  pb.time.lastFrameTime = pb.time.getTime()
+  pb.time.updateDeltaTime()
 
   pb.input.update()
 end
