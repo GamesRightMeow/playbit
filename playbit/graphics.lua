@@ -130,6 +130,7 @@ function module.setImageDrawMode(mode)
 end
 
 --- Draws a outlined circle.
+-- TODO: this did not appear to match cross plat
 function module.circle(x, y, radius)
   --! if LOVE2D then
   love.graphics.circle("line", x, y, radius)
