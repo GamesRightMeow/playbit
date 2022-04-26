@@ -4,6 +4,7 @@ module.drawStats = false
 
 --! if LOVE2D then
 module.draw2x = false
+module.canvas = {}
 --! end
 
 -- TODO: add settings argument
@@ -13,9 +14,12 @@ function module.load()
   pb.graphics.setColor(1)
 
   --! if LOVE2D then
-  love.graphics.setDefaultFilter("nearest", "nearest")
+  module.canvas = love.graphics.newCanvas()
+  module.canvas:setFilter("nearest", "nearest")
+
   love.graphics.setLineWidth(1)
   love.graphics.setLineStyle("rough")
+
   math.randomseed(os.time())
   --! else
   math.randomseed(playdate.getSecondsSinceEpoch())
@@ -59,19 +63,17 @@ function module.update()
   --! end
 
   --! if LOVE2D then
-  if module.draw2x then
-    love.graphics.scale(2, 2)
-  end
-
   -- love requires that this is set every loop
   love.graphics.setFont(pb.graphics.getActiveFont())
   love.graphics.setShader(pb.graphics.playbitShader)
-
+  
   -- set every update to match behavior on playdate
   pb.graphics.setColor(1)
 
   -- push main transform for draw offset
   love.graphics.push()
+  love.graphics.setCanvas(module.canvas)
+  
   --! elseif PLAYDATE then
   playdate.graphics.clear()
   --! end
@@ -79,6 +81,14 @@ function module.update()
   module.onUpdate()
 
   --! if LOVE2D then
+  -- draw canvas
+  love.graphics.setCanvas()
+  if module.draw2x then
+    love.graphics.draw(module.canvas, 0, 0, 0, 2, 2)
+  else
+    love.graphics.draw(module.canvas, 0, 0, 0, 1, 1)
+  end
+
   -- pop main transform for draw offset
   love.graphics.pop()
   --! elseif PLAYDATE then
