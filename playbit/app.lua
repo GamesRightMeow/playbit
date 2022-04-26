@@ -17,6 +17,7 @@ function module.load()
   module.canvas = love.graphics.newCanvas()
   module.canvas:setFilter("nearest", "nearest")
 
+  love.graphics.setDefaultFilter("nearest", "nearest")
   love.graphics.setLineWidth(1)
   love.graphics.setLineStyle("rough")
 
