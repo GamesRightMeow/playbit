@@ -72,8 +72,10 @@ function module.update()
 
   -- push main transform for draw offset
   love.graphics.push()
+
+  -- render to canvas to allow 2x scaling
   love.graphics.setCanvas(module.canvas)
-  
+  love.graphics.clear()
   --! elseif PLAYDATE then
   playdate.graphics.clear()
   --! end
