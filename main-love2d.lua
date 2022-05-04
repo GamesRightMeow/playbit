@@ -24,11 +24,11 @@ function love.wheelmoved(x, y)
 end
 
 function love.joystickadded(joystick)
-  pb.input.handleJoystickAdded(joystick)
+  pb.input.handleGamepadAdded(joystick)
 end
 
 function love.joystickremoved(joystick)
-  pb.input.handleJoystickRemoved(joystick)
+  pb.input.handleGamepadRemoved(joystick)
 end
 
 function love.gamepadreleased(joystick, button)
