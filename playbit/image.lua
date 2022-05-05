@@ -8,7 +8,7 @@ function meta:getWidth()
   --! if LOVE2D then
   return self.data:getWidth()
   --! elseif PLAYDATE then
-  return playdate.graphics.image:getSize()[1]
+  return self.data:getSize()
   --! end
 end
 
@@ -16,7 +16,8 @@ function meta:getHeight()
   --! if LOVE2D then
   return self.data:getHeight()
   --! elseif PLAYDATE then
-  return playdate.graphics.image:getSize()[2]
+  local w, h = self.data:getSize()
+  return h
   --! end
 end
 
