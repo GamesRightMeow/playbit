@@ -35,34 +35,14 @@ vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords )
 
 module.drawOffset = { x = 0, y = 0}
 
+-- don't want to deal with these, so just reason one
+module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
+
 --! elseif PLAYDATE then
 import("CoreLibs/graphics")
 --! end
 
 module.drawMode = "fillBlack"
-
--- Returns a new quad
--- Love2D requires quads to draw parts of textures, but Playdate does not
-function module.newQuad(x, y, width, height, textureWidth, textureHeight)
-  --! if LOVE2D then
-  return love.graphics.newQuad(x, y, width, height, textureWidth, textureHeight)
-  --! elseif PLAYDATE then
-  return playdate.geometry.rect.new(x, y, width, height)
-  --! end
-end
-
--- Returns a new quad for a sprite in a spritesheet
-function module.newSpritesheetQuad(index, image, cellWidth, cellHeight)
-  -- TODO: support non-square cells
-  local totalRows = (image:getWidth() / cellWidth)
-  local row = math.floor(index / totalRows)
-  local column = index % totalRows
-  return module.newQuad(
-    column * cellWidth, row * cellHeight, 
-    cellWidth, cellHeight, 
-    image:getWidth(), image:getHeight()
-  )
-end
 
 function module.setDrawOffset(x, y)
   --! if LOVE2D then
@@ -129,6 +109,23 @@ function module.setImageDrawMode(mode)
   --! end
 end
 
+--! if LOVE2D then
+local function setLoveDrawMode()
+  if module.drawMode == "fillWhite" then
+    module.playbitShader:send("mode", 1)
+    module.playbitShader:sendColor("targetColor", { COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b })
+  elseif module.drawMode == "fillBlack" then
+    module.playbitShader:send("mode", 1)
+    module.playbitShader:sendColor("targetColor", { COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b })
+  end
+  -- TODO: other fill modes
+end
+
+local function resetLoveDrawMode()
+  module.playbitShader:send("mode", 0)
+end
+--! end
+
 --- Draws a outlined circle.
 function module.circle(x, y, radius)
   --! if LOVE2D then
@@ -187,21 +184,30 @@ function module.texture(image, x, y)
   --! if LOVE2D then
   -- always render pure white so its not tinted
   love.graphics.setColor(1, 1, 1, 1)
+  setLoveDrawMode()
   love.graphics.draw(image.data, x, y)
+  resetLoveDrawMode()
   --! elseif PLAYDATE then
   image.data:draw(x, y)
   --! end
 end
 
--- Renders a portion of an image as defined by a quad
-function module.sprite(image, quad, x, y)
+-- Renders a portion of an image
+function module.textureQuad(image, x, y, qx, qy, qw, qh)
   --! if LOVE2D then
   -- always render pure white so texture is not tinted
   love.graphics.setColor(1, 1, 1, 1)
-
-  love.graphics.draw(image.data, quad, x, y)
+  module.quad:setViewport(qx, qy, qw, qh, image:getWidth(), image:getHeight())
+  setLoveDrawMode()
+  love.graphics.draw(image.data, module.quad, x, y)
+  resetLoveDrawMode()
   --! elseif PLAYDATE then
-  image.data:draw(x, y, playdate.graphics.kImageUnflipped, quad)
+  -- TODO: bug in playdate SDK where draw offset affect source rect
+  -- https://devforum.play.date/t/image-drawoffset-affects-sourcerect-instead-of-location/3778/6
+  local ox, oy = playdate.graphics.getDrawOffset()
+  playdate.graphics.setDrawOffset(0, 0)
+  image.data:draw(ox + x, oy + y, playdate.graphics.kImageUnflipped, qx, qy, qw, qh )
+  playdate.graphics.setDrawOffset(ox, oy)
   --! end
 end
 
@@ -240,14 +246,7 @@ function module.text(str, x, y, align)
   end
 
   --! if LOVE2D then
-  if module.drawMode == "fillWhite" then
-    module.playbitShader:send("mode", 1)
-    module.playbitShader:sendColor("targetColor", { COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b })
-  elseif module.drawMode == "fillBlack" then
-    module.playbitShader:send("mode", 1)
-    module.playbitShader:sendColor("targetColor", { COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b })
-  end
-  -- TODO: other fill modes
+  setLoveDrawMode()
 
   love.graphics.print(str, x, y)
 
