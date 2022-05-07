@@ -71,27 +71,11 @@ function module.fntProcessor(input, output, options)
 end
 
 function module.luaProcessor(input, output)
-  local inputFile = io.open(input, "r")
-  local contents = inputFile:read("a")
-  inputFile:close()
-
-  -- remove comments so preprocess can...process them
-  -- TODO: this is probably slow...is there a better way to handle this?
-  contents = contents:gsub("--!", "!")
-
-  -- run preprocess magic
-  local processedLua, processedFileInfo = pp.processString {
-    code = contents,
-  }
-
-  if verbose then
-    print("Processed " .. fullPath .. " " .. processedFileInfo.processedByteCount .. " bytes")
-  end
-
   module.createFolderIfNeeded(output)
-  local outputFile = io.open(output, "w+")
-  outputFile:write(processedLua)
-  outputFile:close();
+  local processedFileInfo = pp.processFile {
+    pathIn = input,
+    pathOut = output,
+  }
 end
 
 function module.getProjectFolder()

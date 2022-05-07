@@ -1,6 +1,6 @@
 local module = {}
 
---! if LOVE2D then
+!if LOVE2D then
 local keyToButton = {
   up = "up",
   down = "down",
@@ -31,7 +31,7 @@ local activeGamepad = nil
 local crankPos = 0
 local lastCrankPos = 0
 local isCrankDocked = false
---! else
+!else
 local buttonStates = {
   up = 0,
   down = 0,
@@ -40,7 +40,7 @@ local buttonStates = {
   a = 0,
   b = 0,
 }
---! end
+!end
 
 function module.update()
   for k,v in pairs(buttonStates) do
@@ -63,7 +63,7 @@ end
 
 --- Returns true if the crank is docked.
 function module.isCrankDocked()
-  --! if LOVE2D then
+!if LOVE2D then
   if not activeGamepad then
     -- TODO: test keyboard if no gamepad
     return isCrankDocked
@@ -77,25 +77,25 @@ function module.isCrankDocked()
   end
 
   return false
-  --! else
+!else
   return playdate.isCrankDocked()
-  --! end
+!end
 end
 
 function module.getCrankChange()
-  --! if LOVE2D then
+!if LOVE2D then
     local change = pb.geometry.angleDiff(lastCrankPos, crankPos)
     -- TODO: how does the playdate accelerate this?
     local acceleratedChange = change 
     return change, acceleratedChange
-  --! else
+!else
     return playdate.getCrankChange()
-  --! end
+!end
 end
 
 --- Returns the angle the crank is currently at in radians.
 function module.getCrankPosition()
-  --! if LOVE2D then
+!if LOVE2D then
   if not activeGamepad then
     return crankPos
   end
@@ -109,13 +109,13 @@ function module.getCrankPosition()
     return degrees + 360
   end
   return degrees
-  --! else
+!else
   -- any reason why we'd need floating point numbers?
   return math.floor(playdate.getCrankPosition())
-  --! end
+!end
 end
 
---! if LOVE2D then
+!if LOVE2D then
 function module.handleGamepadAdded(gamepad)
   -- always take most reset added gamepad as active gamepad
   activeGamepad = gamepad
@@ -177,17 +177,17 @@ function module.handleMouseWheel(x, y)
     crankPos = 0
   end
 end
---! end
+!end
 
 function module.handleKeyPressed(key)
-  --! if LOVE2D then
+!if LOVE2D then
   local button = keyToButton[key]
   if button == nil then
     return
   end
-  --! else
+!else
   local button = key
-  --! end
+!end
 
   if buttonStates[button] == nil then
     return
@@ -197,14 +197,14 @@ function module.handleKeyPressed(key)
 end
 
 function module.handleKeyReleased(key)
-  --! if LOVE2D then
+!if LOVE2D then
   local button = keyToButton[key]
   if button == nil then
     return
   end
-  --! else
+!else
   local button = key
-  --! end
+!end
 
   if buttonStates[button] == nil then
     return

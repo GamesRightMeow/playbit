@@ -4,11 +4,11 @@
 pb = {}
 
 pb.import = function(path)
-  --! if LOVE2D then
+!if LOVE2D then
   return require(string.gsub(path, "/", "."))
-  --! else
+!else
   return playdate.file.run(path)
-  --! end
+!end
 end
 
 pb.util = pb.import("playbit/util")

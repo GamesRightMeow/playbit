@@ -7,13 +7,13 @@ local avgDeltaTime = 0
 local avgDeltaTimeCount = 0
 
 function module.getTime()
-  --! if LOVE2D then
+!if LOVE2D then
   -- love2d returns time in seconds
   return love.timer.getTime()
-  --! else
+!else
   -- playdate returns time in milliseconds
   return playdate.getCurrentTimeMilliseconds() / 1000
-  --! end
+!end
 end
 
 function module.updateDeltaTime()

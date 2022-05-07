@@ -1,12 +1,12 @@
 local module = {}
 
 local function drawLine(x1, y1, x2, y2, color)
-  --! if LOVE2D then
+!if LOVE2D then
   -- render red in love, because we can and its easier to see
   love.graphics.setColor(1, 0.1, 0.1)
-  --! else
+!else
   pb.graphics.setColor(color)
-  --! end
+!end
 
   -- TODO: allow for non-camera aligned shapes
   local camera = pb.app.scene.camera
@@ -17,29 +17,29 @@ local function drawLine(x1, y1, x2, y2, color)
 end
 
 local function drawCircle(x, y, radius, filled, color)
-  --! if LOVE2D then
+!if LOVE2D then
   -- render red in love, because we can and its easier to see
   love.graphics.setColor(1, 0.1, 0.1)
-  --! else
+!else
   pb.graphics.setColor(color)
-  --! end
+!end
 
   -- TODO: allow for non-camera aligned shapes
   pb.graphics.circle(x, y, radius, filled)
 end
 
 function module.assert(value, message)
-  --! if ASSERT then
+!if ASSERT then
   assert(value, message)
-  --! end
+!end
 end
 
---! if DEBUG then
+!if DEBUG then
 module.debugShapes = {}
---! end
+!end
 
 function module.circle(x, y, radius, filled, duration, color)
-  --! if DEBUG then
+!if DEBUG then
   if not color then
     color = 1
   end
@@ -58,11 +58,11 @@ function module.circle(x, y, radius, filled, duration, color)
     -- immediate
     drawCircle(x, y, radius, filled, color)
   end
-  --! end
+!end
 end
 
 function module.line(x1, y1, x2, y2, duration, color)
-  --! if DEBUG then
+!if DEBUG then
   if not color then
     color = 1
   end
@@ -80,11 +80,11 @@ function module.line(x1, y1, x2, y2, duration, color)
     -- immediate
     drawLine(x1, y1, x2, y2, color)
   end
-  --! end
+!end
 end
 
 function module.renderDebugShapes()
-  --! if DEBUG then
+!if DEBUG then
   local count = #module.debugShapes 
   for i = count, 1, -1 do
     local shape = module.debugShapes[i]
@@ -100,7 +100,7 @@ function module.renderDebugShapes()
       -- TODO: other shapes
     end
   end
-  --! end
+!end
 end
 
 return module

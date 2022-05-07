@@ -2,10 +2,10 @@ local module = {}
 
 module.drawStats = false
 
---! if LOVE2D then
+!if LOVE2D then
 module.draw2x = false
 module.canvas = {}
---! end
+!end
 
 -- TODO: add settings argument
 function module.load()
@@ -13,7 +13,7 @@ function module.load()
   pb.graphics.setBackgroundColor(0)
   pb.graphics.setColor(1)
 
-  --! if LOVE2D then
+!if LOVE2D then
   module.canvas = love.graphics.newCanvas()
   module.canvas:setFilter("nearest", "nearest")
 
@@ -22,11 +22,11 @@ function module.load()
   love.graphics.setLineStyle("rough")
 
   math.randomseed(os.time())
-  --! else
+!else
   math.randomseed(playdate.getSecondsSinceEpoch())
   -- love2d doesn't have a stoke location option, so set outside by default to match
   playdate.graphics.setStrokeLocation(playdate.graphics.kStrokeOutside)
-  --! end
+!end
 
   -- TODO: reenabled when I add a custom font for platbit, since I cant re-distribute PD fonts
   -- pb.graphics.createFont(
@@ -44,14 +44,14 @@ function module.load()
 end
 
 function module.update()
-  --! if LOVE2D then
+!if LOVE2D then
   
-  --! if DEBUG then
+!if DEBUG then
   -- TODO: expose stat toggle in playdates menu?
   if pb.input.getButtonDown("debug_stats") then
     module.drawStats = not module.drawStats
   end
-  --! end
+!end
   
   if pb.input.getButtonDown("toggle_window_size") then
     module.draw2x = not module.draw2x
@@ -61,9 +61,9 @@ function module.update()
       love.window.setMode(400, 240)
     end
   end
-  --! end
+!end
 
-  --! if LOVE2D then
+!if LOVE2D then
   -- render to canvas to allow 2x scaling
   love.graphics.setCanvas(module.canvas)
   love.graphics.clear()
@@ -80,13 +80,13 @@ function module.update()
   if module.draw2x then
     love.graphics.scale(2, 2)
   end
-  --! elseif PLAYDATE then
+!elseif PLAYDATE then
   playdate.graphics.clear()
-  --! end
+!end
 
   module.onUpdate()
 
-  --! if LOVE2D then
+!if LOVE2D then
   -- pop main transform for draw offset
   love.graphics.pop()
 
@@ -97,11 +97,11 @@ function module.update()
   else
     love.graphics.draw(module.canvas, 0, 0, 0, 1, 1)
   end
-  --! elseif PLAYDATE then
+!elseif PLAYDATE then
   playdate.graphics.setDrawOffset(0,0)
-  --! end
+!end
 
-  --! if DEBUG then
+!if DEBUG then
   if module.drawStats then
     -- TODO: render with playbit font...when added
     pb.graphics.setColor(1)
@@ -121,7 +121,7 @@ function module.update()
     pb.graphics.text("M", 351, 33, "left")
     pb.graphics.text(math.ceil(pb.perf.getMemory()), 400, 33, "right")
   end
-  --! end
+!end
 
   pb.time.updateDeltaTime()
 
