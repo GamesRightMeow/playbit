@@ -1,0 +1,3 @@
+[submodule "LuaPreprocess"]
+	path = LuaPreprocess
+	url = https://github.com/ReFreezed/LuaPreprocess
