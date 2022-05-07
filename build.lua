@@ -51,6 +51,10 @@ function module.asepriteProcessor(input, output, options)
     end
   end
 
+  if options.scale then
+    command = command.." --scale "..options.scale
+  end
+
   command = command.." --save-as "..output
   io.popen(command, "w")
 end
