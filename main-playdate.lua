@@ -7,6 +7,10 @@ function playdate.update()
   pb.app.update()
 end
 
+function playdate.cranked(change, acceleratedChange)
+  pb.input.cranked(change, acceleratedChange)
+end
+
 function playdate.AButtonDown()
   pb.input.handleKeyPressed("a")
 end

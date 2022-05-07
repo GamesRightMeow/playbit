@@ -20,7 +20,8 @@ function love.mousepressed(x, y, button, istouch, presses)
 end
 
 function love.wheelmoved(x, y)
-  pb.input.handleMouseWheel(x, y)
+  -- TODO: what to pass acceleratedChange?
+  pb.input.cranked(y, 0)
 end
 
 function love.joystickadded(joystick)

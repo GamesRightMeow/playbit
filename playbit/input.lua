@@ -28,8 +28,6 @@ for k,v in pairs(keyToButton) do
 end
 
 local activeGamepad = nil
-local crankPos = 0
-local lastCrankPos = 0
 local isCrankDocked = false
 !else
 local buttonStates = {
@@ -41,6 +39,10 @@ local buttonStates = {
   b = 0,
 }
 !end
+
+local crankDir = -1
+local crankPos = 0
+local lastCrankPos = 0
 
 function module.update()
   for k,v in pairs(buttonStates) do
@@ -100,7 +102,6 @@ function module.getCrankPosition()
     return crankPos
   end
 
-  -- TODO: emulate on keyboard?
   local x = activeGamepad:getAxis(3)
   local y = activeGamepad:getAxis(4)
 
@@ -113,6 +114,14 @@ function module.getCrankPosition()
   -- any reason why we'd need floating point numbers?
   return math.floor(playdate.getCrankPosition())
 !end
+end
+
+function module.invertCrankRotation(enable)
+  if enable then
+    crankDir = -1
+  else
+    crankDir = 1
+  end
 end
 
 !if LOVE2D then
@@ -164,20 +173,26 @@ function module.handleMousepressed(x, y, button, istouch, presses)
   isCrankDocked = not isCrankDocked
   crankPos = 0
 end
+!end
 
-function module.handleMouseWheel(x, y)
+function module.cranked(change, acceleratedChange)
   if isCrankDocked then
     return
   end
-  -- TODO: configure scroll sensitivity? acceleration?
-  crankPos = crankPos + y * 6
+
+!if LOVE2D then
+  -- TODO: configure scroll sensitivity?
+  crankPos = crankPos + change * crankDir * 6
+!elseif PLAYDATE then
+  crankPos = crankPos + change * crankDir
+!end
+  
   if crankPos < 0 then
     crankPos = 359
   elseif crankPos > 359 then
     crankPos = 0
   end
 end
-!end
 
 function module.handleKeyPressed(key)
 !if LOVE2D then
@@ -185,7 +200,7 @@ function module.handleKeyPressed(key)
   if button == nil then
     return
   end
-!else
+!elseif PLAYDATE then
   local button = key
 !end
 
