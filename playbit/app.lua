@@ -41,9 +41,14 @@ function module.load()
   if module.onLoad then
     module.onLoad()
   end
+
+  -- update on start so we don't get a wild starting value on the first frame/update
+  pb.time.updateDeltaTime()
 end
 
 function module.update()
+  pb.time.updateDeltaTime()
+
 !if LOVE2D then
   
 !if DEBUG then
@@ -122,8 +127,6 @@ function module.update()
     pb.graphics.text(math.ceil(pb.perf.getMemory()), 400, 33, "right")
   end
 !end
-
-  pb.time.updateDeltaTime()
 
   pb.input.update()
 end
