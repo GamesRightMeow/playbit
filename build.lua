@@ -58,7 +58,8 @@ function module.asepriteProcessor(input, output, options)
   end
 
   if string.find(input, "-table-") then
-    command = command.." --sheet "..output
+    -- json isn't needed, but if its not saved, it fills the console
+    command = command.." --sheet "..output.." --data _tmp\\asprite.json"
   else
     command = command.." --save-as "..output
   end
