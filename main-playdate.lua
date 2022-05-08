@@ -1,3 +1,5 @@
+import("CoreLibs/graphics")
+import("CoreLibs/animation")
 import("playbit/pb")
 pb.import("scripts/game")
 

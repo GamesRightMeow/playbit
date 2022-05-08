@@ -85,7 +85,7 @@ module.drawColor = COLOR_WHITE
 module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 
 !elseif PLAYDATE then
-import("CoreLibs/graphics")
+
 !end
 
 module.drawMode = "fillBlack"
