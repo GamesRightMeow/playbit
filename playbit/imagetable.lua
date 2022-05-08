@@ -5,18 +5,19 @@ meta.__index = meta
 module.__index = meta
 
 function module.new(path, spriteWidth, spriteHeight)
-  local spritesheet = setmetatable({}, meta)
+  local imagetable = setmetatable({}, meta)
 !if LOVE2D then
   local image = pb.image.new(path.."-table-"..spriteWidth.."-"..spriteHeight)
-  spritesheet.image = image
-  spritesheet.rows = image:getWidth() / spriteWidth
-  spritesheet.columns = image:getHeight() / spriteHeight
-  spritesheet.spriteWidth = spriteWidth
-  spritesheet.spriteHeight = spriteHeight
+  imagetable.image = image
+  imagetable.rows = image:getWidth() / spriteWidth
+  imagetable.columns = image:getHeight() / spriteHeight
+  imagetable.length = imagetable.rows * imagetable.columns
+  imagetable.spriteWidth = spriteWidth
+  imagetable.spriteHeight = spriteHeight
 !elseif PLAYDATE then
-  spritesheet.imagetable = playdate.graphics.imagetable.new("textures/tiles")
+  imagetable.imagetable = playdate.graphics.imagetable.new(path)
 !end
-  return spritesheet
+  return imagetable
 end
 
 function meta:draw(n, x, y)
@@ -26,6 +27,14 @@ function meta:draw(n, x, y)
   pb.graphics.textureQuad(self.image, x, y, qx, qy, self.spriteWidth, self.spriteHeight)
 !elseif PLAYDATE then
   self.imagetable:drawImage(n, x, y)
+!end
+end
+
+function meta:getLength()
+!if LOVE2D then
+  return self.length
+!elseif PLAYDATE then
+  return self.imagetable:getLength()
 !end
 end
 

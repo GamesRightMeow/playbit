@@ -7,10 +7,10 @@ module.__index = meta
 -- TODO: is drawing with a nested array vs 1d array is faster on playdate?
 -- TODO: is the native playdate tilemap faster?
 
-function module.new(spritesheet, sizeX, sizeY)
+function module.new(imagetable, sizeX, sizeY)
   local tilemap = setmetatable({}, meta)
 !if LOVE2D then
-  tilemap.spritesheet = spritesheet
+  tilemap.imagetable = imagetable
   tilemap.sizeX = sizeY
   tilemap.length = sizeX * sizeY
   tilemap.tiles = {}
@@ -19,7 +19,7 @@ function module.new(spritesheet, sizeX, sizeY)
   end
 !elseif PLAYDATE then
   local tm = playdate.graphics.tilemap.new()
-  tm:setImageTable(spritesheet.imagetable)
+  tm:setImageTable(imagetable.imagetable)
   tm:setSize(sizeX, sizeY)
   tilemap.tilemap = tm
 !end
@@ -47,9 +47,9 @@ end
 function meta:draw(x, y)
 !if LOVE2D then
   for i = 1, self.length, 1 do
-    local tx = math.floor((i - 1) / self.sizeX) * self.spritesheet.spriteWidth
-    local ty = math.floor((i - 1) % self.sizeX) * self.spritesheet.spriteHeight
-    self.spritesheet:draw(self.tiles[i], tx, ty)
+    local tx = math.floor((i - 1) / self.sizeX) * self.imagetable.spriteWidth
+    local ty = math.floor((i - 1) % self.sizeX) * self.imagetable.spriteHeight
+    self.imagetable:draw(self.tiles[i], tx, ty)
   end
 !elseif PLAYDATE then
   self.tilemap:draw(x, y)
