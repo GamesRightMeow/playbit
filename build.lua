@@ -55,7 +55,12 @@ function module.asepriteProcessor(input, output, options)
     command = command.." --scale "..options.scale
   end
 
-  command = command.." --save-as "..output
+  if string.find(input, "-table-") then
+    command = command.." --sheet "..output
+  else
+    command = command.." --save-as "..output
+  end
+
   io.popen(command, "w")
 end
 
