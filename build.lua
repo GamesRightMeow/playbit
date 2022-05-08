@@ -18,8 +18,10 @@ end
 function module.createFolderIfNeeded(path)
   local pathReversed = string.reverse(path)
   local start, ends = string.find(pathReversed, "\\")
-  local trimmedPath = string.sub(path, 1, #path - ends)
-  os.execute("IF NOT EXIST \""..trimmedPath.."\" mkdir \""..trimmedPath.."\"")
+  if start and ends then
+    path = string.sub(path, 1, #path - ends)
+  end
+  os.execute("IF NOT EXIST \""..path.."\" mkdir \""..path.."\"")
 end
 
 function module.getAbsolutePath(path)
