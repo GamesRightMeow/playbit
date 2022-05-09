@@ -1,3 +1,6 @@
 [submodule "LuaPreprocess"]
 	path = LuaPreprocess
 	url = https://github.com/ReFreezed/LuaPreprocess
+[submodule "json"]
+	path = json
+	url = https://github.com/rxi/json.lua
