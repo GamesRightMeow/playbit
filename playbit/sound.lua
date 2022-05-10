@@ -2,6 +2,55 @@
 
 local module = {}
 
+module.sampleplayer = {}
+module.sampleplayer.meta = {}
+module.sampleplayer.meta.__index = module.sampleplayer.meta
+
+function module.sampleplayer.new(path)
+  local sample = setmetatable({}, module.sampleplayer.meta)
+!if LOVE2D then
+
+!elseif PLAYDATE then
+  sample.data = playdate.sound.sampleplayer.new(path)
+!end
+  return sample
+end
+
+function module.sampleplayer.meta:play(repeatCount, rate)
+!if LOVE2D then
+
+!elseif PLAYDATE then
+  self.data:play(repeatCount or 1, rate or 1)
+!end
+end
+
+function module.sampleplayer.meta:stop()
+!if LOVE2D then
+
+!elseif PLAYDATE then
+  self.data:stop()
+!end
+end
+
+function module.sampleplayer.meta:isPlaying()
+!if LOVE2D then
+
+!elseif PLAYDATE then
+  return self.data:isPlaying()
+!end
+end
+
+function module.sampleplayer.meta:setVolume(value)
+!if LOVE2D then
+
+!elseif PLAYDATE then
+  self.data:setVolume(value)
+!end
+end
+
+-- TODO: file player
+
+-- TODO: this doesn't match what's loaded in pulp
 function module.loadPulpSequence(path)
 !if LOVE2D then
 
