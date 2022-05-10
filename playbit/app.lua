@@ -20,6 +20,7 @@ function module.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   love.graphics.setLineWidth(1)
   love.graphics.setLineStyle("rough")
+  love.graphics.setShader(pb.graphics.playbitShader)
 
   math.randomseed(os.time())
 !else
@@ -75,7 +76,6 @@ function module.update()
 
   -- love requires that this is set every loop
   love.graphics.setFont(pb.graphics.getActiveFont())
-  love.graphics.setShader(pb.graphics.playbitShader)
   
   -- set every update to match behavior on playdate
   pb.graphics.setColor(1)
@@ -92,6 +92,11 @@ function module.update()
   module.onUpdate()
 
 !if LOVE2D then
+  -- not sure why, but we must make sure we reset back to the default mode (copy = 0) 
+  -- otherwise the other modes "stick" through till the next frame and don't get cleared
+  -- must also happen *here* - not tested, but maybe before pop() and canvas.draw()?
+  pb.graphics.setImageDrawMode("copy")
+
   -- pop main transform for draw offset
   love.graphics.pop()
 
@@ -102,6 +107,7 @@ function module.update()
   else
     love.graphics.draw(module.canvas, 0, 0, 0, 1, 1)
   end
+  
 !elseif PLAYDATE then
   playdate.graphics.setDrawOffset(0,0)
 !end
@@ -112,7 +118,7 @@ function module.update()
     pb.graphics.setColor(1)
     pb.graphics.fillRect(350, 0, 50, 50)
 
-    pb.graphics.setImageDrawMode("fillBlack")
+    -- pb.graphics.setImageDrawMode("fillBlack")
 
     pb.graphics.text("F", 351, 1, "left")
     pb.graphics.text(pb.perf.getFps(), 400, 1, "right")

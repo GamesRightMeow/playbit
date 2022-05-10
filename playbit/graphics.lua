@@ -88,8 +88,6 @@ module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 
 !end
 
-module.drawMode = "fillBlack"
-
 function module.setDrawOffset(x, y)
 !if LOVE2D then
   module.drawOffset.x = x
@@ -154,24 +152,17 @@ end
 -- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
 function module.setImageDrawMode(mode)
 !if LOVE2D then
-  module.drawMode = mode
+  if mode == "copy" then
+    module.playbitShader:send("mode", 0)
+  elseif mode == "fillWhite" then
+    module.playbitShader:send("mode", 1)
+  elseif mode == "fillBlack" then
+    module.playbitShader:send("mode", 2)
+  end
 !elseif PLAYDATE then
   playdate.graphics.setImageDrawMode(mode)
 !end
 end
-
-!if LOVE2D then
-local function setLoveDrawMode()
-  if module.drawMode == "copy" then
-    module.playbitShader:send("mode", 0)
-  elseif module.drawMode == "fillWhite" then
-    module.playbitShader:send("mode", 1)
-  elseif module.drawMode == "fillBlack" then
-    module.playbitShader:send("mode", 2)
-  end
-  -- TODO: other fill modes
-end
-!end
 
 --- Draws a outlined circle.
 function module.circle(x, y, radius)
@@ -232,7 +223,6 @@ function module.texture(image, x, y)
   -- always render pure white so its not tinted
   love.graphics.setColor(1, 1, 1, 1)
 
-  setLoveDrawMode()
   love.graphics.draw(image.data, x, y)
 
   love.graphics.setColor(module.drawColor.r, module.drawColor.g, module.drawColor.b, 1)
@@ -248,7 +238,6 @@ function module.textureQuad(image, x, y, qx, qy, qw, qh)
   love.graphics.setColor(1, 1, 1, 1)
 
   module.quad:setViewport(qx, qy, qw, qh, image:getWidth(), image:getHeight())
-  setLoveDrawMode()
   love.graphics.draw(image.data, module.quad, x, y)
 
   love.graphics.setColor(module.drawColor.r, module.drawColor.g, module.drawColor.b, 1)
@@ -297,7 +286,6 @@ function module.text(str, x, y, align)
   end
 
 !if LOVE2D then
-  setLoveDrawMode()
   love.graphics.print(str, x, y)
 !elseif PLAYDATE then
   -- this uses font:drawText() instead of graphics.drawText() to bypass text emphasis
