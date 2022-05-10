@@ -9,7 +9,7 @@ module.sampleplayer.meta.__index = module.sampleplayer.meta
 function module.sampleplayer.new(path)
   local sample = setmetatable({}, module.sampleplayer.meta)
 !if LOVE2D then
-
+  sample.data = love.audio.newSource(path, "static")
 !elseif PLAYDATE then
   sample.data = playdate.sound.sampleplayer.new(path)
 !end
@@ -18,7 +18,9 @@ end
 
 function module.sampleplayer.meta:play(repeatCount, rate)
 !if LOVE2D then
-
+  -- TODO: repeat count
+  self.data:setPitch(rate)
+  self.data:play()
 !elseif PLAYDATE then
   self.data:play(repeatCount or 1, rate or 1)
 !end
@@ -26,7 +28,7 @@ end
 
 function module.sampleplayer.meta:stop()
 !if LOVE2D then
-
+  self.data:stop()
 !elseif PLAYDATE then
   self.data:stop()
 !end
@@ -34,7 +36,7 @@ end
 
 function module.sampleplayer.meta:isPlaying()
 !if LOVE2D then
-
+  return self.data:isPlaying()
 !elseif PLAYDATE then
   return self.data:isPlaying()
 !end
@@ -42,7 +44,7 @@ end
 
 function module.sampleplayer.meta:setVolume(value)
 !if LOVE2D then
-
+  self.data:setVolume(value)
 !elseif PLAYDATE then
   self.data:setVolume(value)
 !end
