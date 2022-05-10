@@ -28,12 +28,6 @@ local function drawCircle(x, y, radius, filled, color)
   pb.graphics.circle(x, y, radius, filled)
 end
 
-function module.assert(value, message)
-!if ASSERT then
-  assert(value, message)
-!end
-end
-
 !if DEBUG then
 module.debugShapes = {}
 !end

@@ -130,6 +130,11 @@ end
 --- Sets the color used to draw.
 function module.setColor(color)
 !if LOVE2D then
+
+!if ASSERT then
+  assert(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported")
+!end
+
   if color == 1 then
     module.drawColor = COLOR_WHITE
     love.graphics.setColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
