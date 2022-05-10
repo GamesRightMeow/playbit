@@ -67,6 +67,12 @@ function module.asepriteProcessor(input, output, options)
   io.popen(command, "w")
 end
 
+function module.waveProcessor(input, output, options)
+  module.createFolderIfNeeded(output)
+  local command = "ffmpeg -i "..input.." -acodec adpcm_ima_wav "..output
+  io.popen(command, "w")
+end
+
 function module.defaultProcessor(input, output, options)
   local inputFile = io.open(input, "rb")
   local contents = inputFile:read("a")
