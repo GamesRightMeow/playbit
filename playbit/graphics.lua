@@ -231,8 +231,10 @@ function module.texture(image, x, y)
 !if LOVE2D then
   -- always render pure white so its not tinted
   love.graphics.setColor(1, 1, 1, 1)
+
   setLoveDrawMode()
   love.graphics.draw(image.data, x, y)
+
   love.graphics.setColor(module.drawColor.r, module.drawColor.g, module.drawColor.b, 1)
 !elseif PLAYDATE then
   image.data:draw(x, y)
@@ -244,9 +246,11 @@ function module.textureQuad(image, x, y, qx, qy, qw, qh)
 !if LOVE2D then
   -- always render pure white so texture is not tinted
   love.graphics.setColor(1, 1, 1, 1)
+
   module.quad:setViewport(qx, qy, qw, qh, image:getWidth(), image:getHeight())
   setLoveDrawMode()
   love.graphics.draw(image.data, module.quad, x, y)
+
   love.graphics.setColor(module.drawColor.r, module.drawColor.g, module.drawColor.b, 1)
 !elseif PLAYDATE then
   -- TODO: bug in playdate SDK where draw offset affect source rect
@@ -294,10 +298,7 @@ function module.text(str, x, y, align)
 
 !if LOVE2D then
   setLoveDrawMode()
-
   love.graphics.print(str, x, y)
-
-  module.playbitShader:send("mode", 0)
 !elseif PLAYDATE then
   -- this uses font:drawText() instead of graphics.drawText() to bypass text emphasis
   -- so that * and _ are actually rendered

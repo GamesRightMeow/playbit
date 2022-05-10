@@ -22,6 +22,7 @@ end
 
 function meta:draw(n, x, y)
 !if LOVE2D then
+  -- TODO: cache index calculation
   local qx = math.floor((n - 1) % self.rows) * self.spriteHeight
   local qy = math.floor((n - 1) / self.rows) * self.spriteWidth
   pb.graphics.textureQuad(self.image, x, y, qx, qy, self.spriteWidth, self.spriteHeight)
