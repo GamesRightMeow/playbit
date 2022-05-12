@@ -25,6 +25,14 @@ function module.loop.new(delay, imagetable, shouldLoop, startFrame, endFrame)
   return loop
 end
 
+function module.loop.meta:getFrame()
+  !if LOVE2D then
+    return self.frame
+  !elseif PLAYDATE then
+    return self.data.frame
+  !end
+end
+
 function module.loop.meta:resetLoop()
 !if LOVE2D then
   self.timer = self.delay
