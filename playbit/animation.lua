@@ -16,32 +16,61 @@ function module.loop.new(delay, imagetable, shouldLoop, startFrame, endFrame)
   loop.shouldLoop = shouldLoop
   loop.startFrame = startFrame or 1
   loop.endFrame = endFrame or imagetable:getLength()
+  loop.paused = false
 !elseif PLAYDATE then
-  loop.loop = playdate.graphics.animation.loop.new(delay, imagetable.imagetable, shouldLoop)
-  loop.loop.startFrame = startFrame or 1
-  loop.loop.endFrame = endFrame or imagetable:getLength()
+  loop.data = playdate.graphics.animation.loop.new(delay, imagetable.imagetable, shouldLoop)
+  loop.data.startFrame = startFrame or 1
+  loop.data.endFrame = endFrame or imagetable:getLength()
 !end
   return loop
+end
+
+function module.loop.meta:resetLoop()
+!if LOVE2D then
+  self.timer = self.delay
+  self.paused = false
+  self.frame = self.startFrame
+!elseif PLAYDATE then
+  self.data.paused = false
+  self.data.valid = false
+  self.data.frame = self.data.startFrame
+!end
+end
+
+function module.loop.meta:isLoopComplete()
+!if LOVE2D then
+  return self.frame == self.endFrame and self.paused
+!elseif PLAYDATE then
+  return not self.data:isValid()
+!end
 end
 
 function module.loop.meta:draw(x, y)
 !if LOVE2D then
   self.imagetable:draw(self.frame, x, y)
 
-  -- TODO: should this be updated independently of draw? what does the playdate do?
-  self.timer = self.timer - pb.time.deltaTime()
-  if self.timer <= 0 then
-    self.timer = self.delay
-    if self.frame + 1 > self.endFrame then
-      if self.shouldLoop then
-        self.frame = self.startFrame
+  if not self.paused then
+    self.timer = self.timer - pb.time.deltaTime()
+
+    if self.timer <= 0 then
+      if self.frame + 1 > self.endFrame then
+        if self.shouldLoop then
+          -- start over
+          self.timer = self.delay
+          self.frame = self.startFrame
+        else
+          -- no loop, done
+          self.paused = true
+        end
+      else
+        -- next frame
+        self.timer = self.delay
+        self.frame = self.frame + 1
       end
-    else
-      self.frame = self.frame + 1
     end
   end
 !elseif PLAYDATE then
-  self.loop:draw(x, y)
+  self.data:draw(x, y)
 !end
 end
 
