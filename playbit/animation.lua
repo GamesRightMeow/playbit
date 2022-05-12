@@ -7,8 +7,8 @@ module.loop.meta.__index = module.loop.meta
 function module.loop.new(delay, imagetable, shouldLoop, startFrame, endFrame)
   local loop = setmetatable({}, module.loop.meta)
 !if LOVE2D then
-  -- pd delay is in milliseconds (1 = 1000ms) and runs at 30fps (so 2x longer delay)
-  delay = delay / 1000 * 2
+  -- pd delay is in milliseconds (1 = 1000ms)
+  delay = delay / 1000
   loop.imagetable = imagetable
   loop.frame = startFrame or 1
   loop.timer = delay
