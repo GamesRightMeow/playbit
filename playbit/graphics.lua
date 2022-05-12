@@ -231,6 +231,26 @@ function module.texture(image, x, y)
 !end
 end
 
+function module.textureRotated(image, x, y, angle)
+  !if LOVE2D then
+    -- always render pure white so its not tinted
+    love.graphics.setColor(1, 1, 1, 1)
+  
+    -- playdate.image.drawRotated() draws the texture centered, so emulate that
+    love.graphics.push()
+    local w = image:getWidth() * 0.5
+    local h = image:getHeight() * 0.5
+    love.graphics.translate(x, y)
+    love.graphics.rotate(math.rad(angle))
+    love.graphics.draw(image.data, -w, -h)
+    love.graphics.pop()
+  
+    love.graphics.setColor(module.drawColor.r, module.drawColor.g, module.drawColor.b, 1)
+  !elseif PLAYDATE then
+    image.data:drawRotated(x, y, angle)
+  !end
+  end
+
 -- Renders a portion of an image
 function module.textureQuad(image, x, y, qx, qy, qw, qh)
 !if LOVE2D then
