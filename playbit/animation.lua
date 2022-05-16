@@ -1,5 +1,6 @@
 local module = {}
 
+-- TODO: playdate implements this in lua - can it be optimized?
 module.loop = {}
 module.loop.meta = {}
 module.loop.meta.__index = module.loop.meta
