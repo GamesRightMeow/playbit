@@ -90,10 +90,14 @@ end
 
 function module.luaProcessor(input, output)
   module.createFolderIfNeeded(output)
-  local processedFileInfo = pp.processFile {
+  local settings = {
     pathIn = input,
     pathOut = output,
   }
+  if not enableAssert then
+    settings.release = true
+  end
+  local processedFileInfo = pp.processFile(settings)
 end
 
 function module.getProjectFolder()
@@ -152,11 +156,11 @@ function module.build(options)
   local targetPlatform = options.platform
   local projectFolder = module.getProjectFolder()
   local processors = options.fileProcessors
+  enableAssert = options.assert
 
   -- built in env values
   pp.metaEnvironment.PLAYDATE = targetPlatform == "playdate"
   pp.metaEnvironment.LOVE2D = targetPlatform == "love2d"
-  pp.metaEnvironment.ASSERT = options.assert
   pp.metaEnvironment.DEBUG = options.debug
 
   -- any game specific env values
