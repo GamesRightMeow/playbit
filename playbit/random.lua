@@ -1,4 +1,6 @@
 local module = {}
+pb = pb or {}
+pb.random = module
 
 -- Returns a random value from the list
 function module.choose(list)
@@ -20,5 +22,3 @@ end
 function module.floatRange(min, max, precision)
 	return ((math.random() * (max - min)) + min)
 end
-
-return module

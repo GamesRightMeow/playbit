@@ -1,4 +1,6 @@
 local module = {}
+pb = pb or {}
+pb.time = module
 
 local lastFrameTime = 0
 local deltaTime = 0
@@ -35,6 +37,8 @@ function module.updateDeltaTime()
 
   -- set last frame to current
   lastFrameTime = timeNow
+  
+  return deltaTime
 end
 
 function module.avgDeltaTime()
@@ -44,5 +48,3 @@ end
 function module.deltaTime()
   return deltaTime
 end
-
-return module

@@ -1,4 +1,6 @@
 local module = {}
+pb = pb or {}
+pb.vector = module
 
 function module.angle(x, y)
   return math.deg(math.atan2(-y, x))
@@ -42,5 +44,3 @@ end
 function module.dot(x1, y1, x2, y2)
   return x1 * x2 + y1 * y2
 end
-
-return module

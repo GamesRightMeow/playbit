@@ -1,4 +1,6 @@
 local module = {}
+pb = pb or {}
+pb.ease = module
 
 -- Adapted from https://github.com/kikito/tween.lua.
 -- For all easing functions:
