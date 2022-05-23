@@ -1,4 +1,6 @@
 local module = {}
+pb = pb or {}
+pb.util = module
 
 --- rounds a number to the specified number of decimal places
 function module.round(num, numDecimalPlaces)
@@ -22,5 +24,3 @@ function module.sign(a)
     return 0
   end
 end
-
-return module
