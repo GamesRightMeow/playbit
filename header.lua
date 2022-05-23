@@ -40,22 +40,20 @@ playdate.graphics.setColor(0)
 math.randomseed(os.time())
 
 function love.draw()  
-  -- FIXME: fix when input reimplemented
-  -- if pb.input.getButtonDown("toggle_window_size") then
-  --   pb_draw2x = not pb_draw2x
-  --   if pb_draw2x then
-  --     love.window.setMode(800, 480)
-  --   else
-  --     love.window.setMode(400, 240)
-  --   end
-  -- end
+  if love.keyboard.isDown("f1") then
+    pb_draw2x = not pb_draw2x
+    if pb_draw2x then
+      love.window.setMode(800, 480)
+    else
+      love.window.setMode(400, 240)
+    end
+  end
 
   -- render to canvas to allow 2x scaling
   love.graphics.setCanvas(pb_canvas)
 
   -- love requires that this is set every loop
-  -- FIXME: fix when fonts reimplemented
-  -- love.graphics.setFont(pb.graphics.getActiveFont())
+  love.graphics.setFont(playdate.graphics.getFont().data)
   
   -- set every update to match behavior on playdate
   playdate.graphics.setColor(1)

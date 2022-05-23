@@ -7,8 +7,6 @@ module.__index = meta
 
 function module.new(path)
   local imagetable = setmetatable({}, meta)
-
-  -- FIXME: what if no folder?
   local folder = ""
   local pattern = path.."-table-"
 
