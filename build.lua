@@ -132,7 +132,7 @@ end
 
 function module.processPath(projectFolder, buildFolder, inputPath, outputPath, fileProcessors)
   local files = module.getFiles(inputPath)
-  if #files == 1 then
+  if module.getFileExtension(inputPath) then
     -- process single file
     local filePath = files[1]
     local outputFilePath = projectFolder.."\\"..buildFolder.."\\"..outputPath
