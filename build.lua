@@ -115,10 +115,9 @@ function module.getFiles(path)
   return result
 end
 
-function module.processFile(input, output, fileProcessors)
+function module.processFile(input, output, localProcessors, globalProcessors)
   local ext = module.getFileExtension(input)
-  local processor = fileProcessors[ext]
-
+  local processor = (localProcessors and localProcessors[ext]) or globalProcessors[ext]
   if processor then
     if type(processor) == "table" then
       processor[1](input, output, processor[2])
@@ -130,13 +129,13 @@ function module.processFile(input, output, fileProcessors)
   end
 end
 
-function module.processPath(projectFolder, buildFolder, inputPath, outputPath, fileProcessors)
+function module.processPath(projectFolder, buildFolder, inputPath, outputPath, localProcessors, globalProcessors)
   local files = module.getFiles(inputPath)
   if module.getFileExtension(inputPath) then
     -- process single file
     local filePath = files[1]
     local outputFilePath = projectFolder.."\\"..buildFolder.."\\"..outputPath
-    module.processFile(filePath, outputFilePath, fileProcessors)
+    module.processFile(filePath, outputFilePath, localProcessors, globalProcessors)
   else
     -- process files in folder recursively
     local fullInputPath = projectFolder.."\\"..inputPath
@@ -144,7 +143,7 @@ function module.processPath(projectFolder, buildFolder, inputPath, outputPath, f
       local filePath = files[i]
       local relativeFilePath = module.getRelativePath(filePath, fullInputPath)
       local outputFilePath = projectFolder.."\\"..buildFolder.."\\"..outputPath.."\\"..relativeFilePath
-      module.processFile(filePath, outputFilePath, fileProcessors)
+      module.processFile(filePath, outputFilePath, localProcessors, globalProcessors)
     end
   end
 end
@@ -155,7 +154,7 @@ function module.build(options)
   local enableVerbose = options.verbose == true
   local targetPlatform = options.platform
   local projectFolder = module.getProjectFolder()
-  local processors = options.fileProcessors
+  local globalProcessors = options.fileProcessors
   enableAssert = options.assert
 
   -- built in env values
@@ -180,7 +179,7 @@ function module.build(options)
   os.execute("mkdir "..buildFolder)
 
   for i = 1, #options.folders, 1 do
-    module.processPath(projectFolder, buildFolder, options.folders[i][1], options.folders[i][2], processors)
+    module.processPath(projectFolder, buildFolder, options.folders[i][1], options.folders[i][2], options.folders[i][3], globalProcessors)
   end
 
   local timeEnd = os.clock()
