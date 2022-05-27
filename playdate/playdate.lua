@@ -1,6 +1,8 @@
 local module = {}
 playdate = module
 
+require("playbit.geometry")
+
 function module.getCurrentTimeMilliseconds()
   return love.timer.getTime() * 1000
 end
