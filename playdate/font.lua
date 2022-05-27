@@ -23,12 +23,17 @@ function meta:drawText(str, x, y)
   love.graphics.print(str, x, y)
 end
 
+-- 0=left 1=right 2=center
 function meta:drawTextAligned(str, x, y, alignment)
-  error("drawTextAligned() not implemented")
-  --   local width = module.getTextSize(str)
-  --   if align == "center" then
-  --     x = x - width * 0.5  
-  --   elseif align == "right" then
-  --     x = x - width
-  --   end
+  local width = self:getWidth(str)
+  if alignment == 1 then
+    -- right
+    x = x - width
+  elseif alignment == 2 then
+    -- center
+    x = x - width * 0.5  
+  end
+  -- left, draw normally
+  
+  love.graphics.print(str, x, y)
 end
