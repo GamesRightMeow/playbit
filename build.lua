@@ -2,49 +2,17 @@
 local folderOfThisFile = (...):match("(.-)[^%.]+$")
 local pp = require(folderOfThisFile.."LuaPreprocess.preprocess")
 local capToBmfont = require(folderOfThisFile.."tools.caps-to-bmfont")
+local fs = require(folderOfThisFile.."tools.filesystem")
 
 local module = {}
 
-function module.listFiles(folder)
-  local dirCommand = io.popen("dir /a-D /S /B \""..folder.."\"")
-  local output = dirCommand:read("*a")
-  return output:gmatch("(.-)\n")
-end
-
-function module.getFileExtension(path)
-  return path:match("^.+%.(.+)$")
-end
-
-function module.createFolderIfNeeded(path)
-  local pathReversed = string.reverse(path)
-  local start, ends = string.find(pathReversed, "\\")
-  if start and ends then
-    path = string.sub(path, 1, #path - ends)
-  end
-  os.execute("IF NOT EXIST \""..path.."\" mkdir \""..path.."\"")
-end
-
-function module.getAbsolutePath(path)
-  local dirCommand = io.popen("cd")
-  return dirCommand:read("*l").."\\"..path
-end
-
-function module.getRelativePath(path, folder)
-  path = path:gsub(folder, "")
-  local char = string.sub(path, 1, 1)
-  if (char == "\\") then
-    -- trim leading slash
-    path = string.sub(path, 2)
-  end
-  return path
-end
-
 function module.asepriteProcessor(input, output, options)
-  module.createFolderIfNeeded(output)
+  fs.createFolderIfNeeded(output)
 
   output = string.gsub(output, ".aseprite", ".png")
   
-  local command = "\""..options.path.."\" -bv "
+  -- TODO: warn if aseprite not in path?
+  local command = "aseprite -bv "
   command = command..input
 
   if options.ignoredLayers then
@@ -59,7 +27,7 @@ function module.asepriteProcessor(input, output, options)
 
   if string.find(input, "-table-") then
     -- json isn't needed, but if its not saved, it fills the console
-    command = command.." --sheet "..output.." --data _tmp\\asprite.json"
+    command = command.." --sheet "..output.." --data _tmp/asprite.json"
   else
     command = command.." --save-as "..output
   end
@@ -68,7 +36,7 @@ function module.asepriteProcessor(input, output, options)
 end
 
 function module.waveProcessor(input, output, options)
-  module.createFolderIfNeeded(output)
+  fs.createFolderIfNeeded(output)
   local command = "ffmpeg -i "..input.." -acodec adpcm_ima_wav "..output
   io.popen(command, "w")
 end
@@ -78,7 +46,7 @@ function module.defaultProcessor(input, output, options)
   local contents = inputFile:read("a")
   inputFile:close()
 
-  module.createFolderIfNeeded(output)
+  fs.createFolderIfNeeded(output)
   local outputFile = io.open(output, "w+b")
   outputFile:write(contents)
   outputFile:close()
@@ -89,7 +57,7 @@ function module.fntProcessor(input, output, options)
 end
 
 function module.luaProcessor(input, output)
-  module.createFolderIfNeeded(output)
+  fs.createFolderIfNeeded(output)
   local settings = {
     pathIn = input,
     pathOut = output,
@@ -100,23 +68,8 @@ function module.luaProcessor(input, output)
   local processedFileInfo = pp.processFile(settings)
 end
 
-function module.getProjectFolder()
-  local cdCommand = io.popen("cd")
-  return cdCommand:read("*l")
-end
-
-function module.getFiles(path)
-  local dirCommand = io.popen("dir /a-d /s /b \""..path.."\"")
-  local files = dirCommand:read("*a"):gmatch("(.-)\n")
-  local result = {}
-  for path in files do 
-    table.insert(result, path)
-  end
-  return result
-end
-
 function module.processFile(input, output, localProcessors, globalProcessors)
-  local ext = module.getFileExtension(input)
+  local ext = fs.getFileExtension(input)
   local processor = (localProcessors and localProcessors[ext]) or globalProcessors[ext]
   if processor then
     if type(processor) == "table" then
@@ -130,19 +83,20 @@ function module.processFile(input, output, localProcessors, globalProcessors)
 end
 
 function module.processPath(projectFolder, buildFolder, inputPath, outputPath, localProcessors, globalProcessors)
-  local files = module.getFiles(inputPath)
-  if module.getFileExtension(inputPath) then
+  local files = fs.getFiles(inputPath)
+  -- TODO: this will misclassify files without an extension as a folder
+  if fs.getFileExtension(inputPath) then
     -- process single file
     local filePath = files[1]
-    local outputFilePath = projectFolder.."\\"..buildFolder.."\\"..outputPath
+    local outputFilePath = projectFolder.."/"..buildFolder.."/"..outputPath
     module.processFile(filePath, outputFilePath, localProcessors, globalProcessors)
   else
     -- process files in folder recursively
-    local fullInputPath = projectFolder.."\\"..inputPath
+    local fullInputPath = projectFolder.."/"..inputPath
     for i = 1, #files, 1 do
       local filePath = files[i]
-      local relativeFilePath = module.getRelativePath(filePath, fullInputPath)
-      local outputFilePath = projectFolder.."\\"..buildFolder.."\\"..outputPath.."\\"..relativeFilePath
+      local relativeFilePath = fs.getRelativePath(filePath, fullInputPath)
+      local outputFilePath = projectFolder.."/"..buildFolder.."/"..outputPath.."/"..relativeFilePath
       module.processFile(filePath, outputFilePath, localProcessors, globalProcessors)
     end
   end
@@ -153,7 +107,7 @@ function module.build(options)
 
   local enableVerbose = options.verbose == true
   local targetPlatform = options.platform
-  local projectFolder = module.getProjectFolder()
+  local projectFolder = fs.getProjectFolder()
   local globalProcessors = options.fileProcessors
   enableAssert = options.assert
 
@@ -171,15 +125,19 @@ function module.build(options)
 
   local buildFolder = "_game"
   if options.output then
-    buildFolder = options.output
+    buildFolder = fs.sanitizePath(options.output)
   end
 
   -- nuke old folder
-  os.execute("rmdir "..buildFolder.." /s /q")
-  os.execute("mkdir "..buildFolder)
+  -- TODO: does pdc support incremental builds?
+  fs.deleteDirectory(buildFolder)
+  fs.createDirectory(buildFolder)
 
   for i = 1, #options.folders, 1 do
-    module.processPath(projectFolder, buildFolder, options.folders[i][1], options.folders[i][2], options.folders[i][3], globalProcessors)
+    local input = fs.sanitizePath(options.folders[i][1])
+    local output = fs.sanitizePath(options.folders[i][2])
+    local folderProcessors = options.folders[i][3]
+    module.processPath(projectFolder, buildFolder, input, output, folderProcessors, globalProcessors)
   end
 
   local timeEnd = os.clock()

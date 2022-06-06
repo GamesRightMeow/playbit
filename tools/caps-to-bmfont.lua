@@ -15,6 +15,8 @@ Limitations:
   * cannot determine texture width/height - must be provided
   * Windows only
 --]]
+local folderOfThisFile = (...):match("(.-)[^%.]+$")
+local fs = require(folderOfThisFile..".filesystem")
 
 function isWhitespace(char)
   local start = string.find(char, "%s")
@@ -110,19 +112,17 @@ function getGlyphSize(path)
   return width, height
 end
 
-function getFileName(path)
-  local name = path
-  local nameReversed = string.reverse(name)
-  local lastSlash = #name - string.find(nameReversed, "\\")
-  name = string.sub(name, lastSlash + 2)
-  name = string.gsub(name, "%....", "")
-  return name
-end
-
 function getAtlasPath(input)
-  local inputNoExt = string.sub(input, 1, #input - 4)
-  local dirCommand = io.popen("dir /a-d /s /b \""..inputNoExt.."-table-*.png\"")
-  return dirCommand:read("*a"):match("(.-)\n")
+  local platform = fs.getPlatform()
+  if platform == fs.WINDOWS then
+    local inputNoExt = string.sub(input, 1, #input - 4)
+    local command = io.popen("dir /a-d /s /b \""..inputNoExt.."-table-*.png\"")
+    return command:read("*a"):match("(.-)\n")
+  elseif platform == fs.LINUX then
+    local inputNoExt = string.sub(input, 1, #input - 4)
+    local command = io.popen("find "..inputNoExt.."-table-*.png")
+    return command:read("*a"):match("(.-)\n")
+  end
 end
 
 function convert(inputFntPath, outputFntPath)
@@ -142,7 +142,7 @@ function convert(inputFntPath, outputFntPath)
   input.atlasPath = getAtlasPath(inputFntPath)
 
   -- determine name based on file
-  input.name = getFileName(inputFntPath)
+  input.name = fs.getFileName(inputFntPath)
 
   -- set glyph size based on .png path
   input.tileWidth, input.tileHeight = getGlyphSize(input.atlasPath)
@@ -209,7 +209,7 @@ function convert(inputFntPath, outputFntPath)
 
   local page = {
     id = 0,
-    file = getFileName(input.atlasPath)..".png",
+    file = fs.getFileName(input.atlasPath)..".png",
   }
   io.write("\npage"..tableToStr(page))
 
