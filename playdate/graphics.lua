@@ -185,3 +185,8 @@ function module.getTextSize(str)
   local font = module.activeFont
   return font:getWidth(str), font:getHeight()
 end
+
+function module.drawText(text, x, y, fontFamily, leadingAdjustment)
+  local font = module.activeFont
+  font:drawText(text, x, y, fontFamily, leadingAdjustment)
+end
