@@ -88,15 +88,15 @@ function module.processPath(projectFolder, buildFolder, inputPath, outputPath, l
   if fs.getFileExtension(inputPath) then
     -- process single file
     local filePath = files[1]
-    local outputFilePath = projectFolder.."/"..buildFolder.."/"..outputPath
+    local outputFilePath = fs.sanitizePath(projectFolder.."/"..buildFolder.."/"..outputPath)
     module.processFile(filePath, outputFilePath, localProcessors, globalProcessors)
   else
     -- process files in folder recursively
-    local fullInputPath = projectFolder.."/"..inputPath
+    local fullInputPath = fs.sanitizePath(projectFolder.."/"..inputPath)
     for i = 1, #files, 1 do
       local filePath = files[i]
       local relativeFilePath = fs.getRelativePath(filePath, fullInputPath)
-      local outputFilePath = projectFolder.."/"..buildFolder.."/"..outputPath.."/"..relativeFilePath
+      local outputFilePath = fs.sanitizePath(projectFolder.."/"..buildFolder.."/"..outputPath.."/"..relativeFilePath)
       module.processFile(filePath, outputFilePath, localProcessors, globalProcessors)
     end
   end
