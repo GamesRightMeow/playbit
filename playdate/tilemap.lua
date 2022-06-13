@@ -10,7 +10,6 @@ function module.new(imagetable, width, height)
   tilemap.imagetable = nil
   tilemap.width = 0
   tilemap.height = 0
-  tilemap.length = 0
   tilemap.tiles = {}
   return tilemap
 end
@@ -23,26 +22,33 @@ function meta:setSize(width, height)
   self.width = width
   self.height = height
   self.length = width * height
+
   -- TODO: this will clear the tilemap if set later, what does PD do?
-  for i = 1, self.length, 1 do
-    self.tiles[i] = 0
+  self.tiles = {}
+  for x = 1, self.width, 1 do
+    local column = {}
+    for y = 1, self.height, 1 do
+      column[y] = 0
+    end
+    self.tiles[x] = column
   end
 end
 
 function meta:setTileAtPosition(x, y, tile)
-  local index = self.width * (x - 1) + y
-  self.tiles[index] = tile
+  self.tiles[x][y] = tile
 end
 
 function meta:getTileAtPosition(x, y)
-  local index = self.width * (x - 1) + y
-  return self.tiles[index]
+  return self.tiles[x][y]
 end
 
 function meta:draw(x, y)
-  for i = 1, self.length, 1 do
-    local tx = x + math.floor((i - 1) / self.width) * self.imagetable.frameWidth
-    local ty = y + math.floor((i - 1) % self.width) * self.imagetable.frameHeight
-    self.imagetable:drawImage(self.tiles[i], tx, ty)
+  for tx = 1, self.width, 1 do
+    for ty = 1, self.height, 1 do
+      local index = self.tiles[tx][ty]
+      local dx = x + ((tx - 1) * self.imagetable.frameWidth)
+      local dy = y + ((ty - 1) * self.imagetable.frameHeight)
+      self.imagetable:drawImage(index, dx, dy)
+    end
   end
 end
