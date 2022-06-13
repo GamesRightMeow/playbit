@@ -9,8 +9,15 @@ local function detectPlatform()
     return
   end
 
-  -- FIXME: detect via commands 
-  platform = module.LINUX
+  local command = io.popen("ver")
+  local output = command:read("*a")
+  if output and string.match(output, "Microsoft Windows") then
+    platform = module.WINDOWS
+  else
+    -- TODO: actually do a test for Linux - does linux have a ver command?
+    platform = module.LINUX
+  end
+  -- TODO: MAC?
 end
 
 local function getSlash()
