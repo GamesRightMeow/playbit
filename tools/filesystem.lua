@@ -96,11 +96,15 @@ end
 function module.getRelativePath(path, folder)
   detectPlatform()
 
+  -- escape dashes do the following gsub doesn't interpret them as the special pattern char
+  folder = string.gsub(folder, "%-", "%%-")
+
+  -- remove folder
   path = path:gsub(folder, "")
+
+  -- trim leading slash
   local char = string.sub(path, 1, 1)
-  
   if (char == getSlash()) then
-    -- trim leading slash
     path = string.sub(path, 2)
   end
   return path
