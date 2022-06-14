@@ -26,13 +26,13 @@ require("playdate.sound")
 
 local lastDrawMode = "copy"
 local pb_draw2x = false
-local pb_canvas = love.graphics.newCanvas()
-pb_canvas:setFilter("nearest", "nearest")
+
+playdate.graphics._canvas:setFilter("nearest", "nearest")
 
 love.graphics.setDefaultFilter("nearest", "nearest")
 love.graphics.setLineWidth(1)
 love.graphics.setLineStyle("rough")
-love.graphics.setShader(playdate.graphics.shader)
+love.graphics.setShader(playdate.graphics._shader)
 
 playdate.graphics.setBackgroundColor(1)
 playdate.graphics.setColor(0)
@@ -50,7 +50,7 @@ function love.draw()
   end
 
   -- render to canvas to allow 2x scaling
-  love.graphics.setCanvas(pb_canvas)
+  love.graphics.setCanvas(playdate.graphics._canvas)
 
   -- love requires that this is set every loop
   love.graphics.setFont(playdate.graphics.getFont().data)
@@ -70,7 +70,7 @@ function love.draw()
   -- Not sure why, but we must reset to the default mode (copy = 0) otherwise
   -- modes "stick" through till the next frame and seems to apply to clear().
   -- Must also happen *here* - not tested, but maybe before pop() and canvas.draw()?
-  lastDrawMode = playdate.graphics.drawMode
+  lastDrawMode = playdate.graphics._drawMode
   playdate.graphics.setImageDrawMode("copy")
 
   -- pop main transform for draw offset
@@ -79,9 +79,10 @@ function love.draw()
   -- draw canvas
   love.graphics.setCanvas()
   if pb_draw2x then
-    love.graphics.draw(pb_canvas, 0, 0, 0, 2, 2)
+    -- FIXME: 2x rendering doesn't work when using contexts (scale is all wrong)
+    love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, 2, 2)
   else
-    love.graphics.draw(pb_canvas, 0, 0, 0, 1, 1)
+    love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, 1, 1)
   end
 
   -- update emulated input

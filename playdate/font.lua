@@ -21,6 +21,7 @@ end
 
 function meta:drawText(str, x, y)
   love.graphics.print(str, x, y)
+  playdate.graphics._updateContext()
 end
 
 -- 0=left 1=right 2=center
@@ -36,4 +37,5 @@ function meta:drawTextAligned(str, x, y, alignment)
   -- left, draw normally
   
   love.graphics.print(str, x, y)
+  playdate.graphics._updateContext()
 end

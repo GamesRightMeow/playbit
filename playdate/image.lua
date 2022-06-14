@@ -33,7 +33,7 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
   local r, g, b = love.graphics.getColor()
   love.graphics.setColor(1, 1, 1, 1)
 
-  @@ASSERT(not flip or flip == 0, "flip not implemented!")
+  @@ASSERT(not flip or flip == 0, "Flip not implemented.")
   
   if qx and qy and qw and qh then
     local w, h = self:getSize()
@@ -44,6 +44,8 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
   end
 
   love.graphics.setColor(r, g, b, 1)
+
+  playdate.graphics._updateContext()
 end
 
 function meta:drawRotated(x, y, angle)
@@ -61,4 +63,6 @@ function meta:drawRotated(x, y, angle)
   love.graphics.pop()
 
   love.graphics.setColor(r, g, b, 1)
+
+  playdate.graphics._updateContext()
 end
