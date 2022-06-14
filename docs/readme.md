@@ -1,11 +1,11 @@
 # Playbit
-Playbit is framework for creating cross-platform Playdate games from a single Lua codebase. To accomplish this, it has two key components
-* A reimplemention the Playdate API in Love2D.
-* A build system that utilizes a [preprocessor](https://github.com/ReFreezed/LuaPreprocess/) to strip/inject platform dependent code.
+Playbit is framework for creating cross-platform [Playdate](https://play.date/) games from a single [Lua](https://www.lua.org/) codebase. To accomplish this, it has two key components
+* A reimplemention the [Playdate API](https://sdk.play.date/Inside%20Playdate.html) in [Love2D](https://love2d.org/).
+* A build system that utilizes [LuaPreprocess](https://github.com/ReFreezed/LuaPreprocess/) to strip/inject platform dependent code.
 
 **⚠ IMPORTANT:** This project is in active development and has not reached a stable 1.0 release yet. Use in a production environment at your own risk. 
 
-## Current Features
+## Key Features
 * Partial reimplementation of Playdate API in Love2D
 * Custom build scripts
 * Custom preprocessor flags
