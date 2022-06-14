@@ -19,7 +19,6 @@ Playbit is framework for creating cross-platform [Playdate](https://play.date/) 
 Listed below are key issues; for a full list see [the issue tracker](). 
 
 <!-- TODO: link to Github issues when opened -->
-* Lua intellisense plugins/extensions incorrectly flags [metaprogram statements](http://luapreprocess.refreezed.com/docs/#how-to-metaprogram)
 * Playdate API is not fully reimplemented
 * Build script does not support Mac
 * Build-time creation of [.love-file and platform executables](https://love2d.org/wiki/Game_Distribution)
