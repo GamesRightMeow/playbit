@@ -12,8 +12,7 @@ Designed around these specs:
 
 Limitations:
   * does not support non-ascii chars
-  * cannot determine texture width/height - must be provided
-  * Windows only
+  * glyph atlas must have 16 chars per row
 --]]
 local folderOfThisFile = (...):match("(.-)[^%.]+$")
 local fs = require(folderOfThisFile..".filesystem")
