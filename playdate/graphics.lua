@@ -211,23 +211,27 @@ function module:_updateContext()
 
   -- love2d doesn't allow calling newImageData() when canvas is active
   love.graphics.setCanvas()
-  local imageData = activeContext.canvas:newImageData()
-  love.graphics.setCanvas(activeContext.canvas)
+  local imageData = activeContext._canvas:newImageData()
+  love.graphics.setCanvas(activeContext._canvas)
 
   -- update image
-  activeContext.image.data:replacePixels(imageData)
+  activeContext.data:replacePixels(imageData)
 end
 
 function module.pushContext(image)
   -- TODO: PD docs say image is optional, but not passing an image just results in drawing to last context?
   @@ASSERT(image, "Missing image parameter.")
 
+  -- create canvas if it doesn't exist
+  if not image._canvas then
+    image._canvas = love.graphics.newCanvas(image:getSize())
+  end
+  
   -- push context
-  local canvas = love.graphics.newCanvas(image:getSize())
-  table.insert(module._contextStack, { image = image, canvas = canvas })
+  table.insert(module._contextStack, image)
 
   -- update current render target
-  love.graphics.setCanvas(canvas)
+  love.graphics.setCanvas(image._canvas)
 end
 
 function module.popContext()
@@ -240,6 +244,6 @@ function module.popContext()
     love.graphics.setCanvas(module._canvas)
   else
     local activeContext = module._contextStack[#module._contextStack]
-    love.graphics.setCanvas(activeContext.canvas)
+    love.graphics.setCanvas(activeContext._canvas)
   end
 end
