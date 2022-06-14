@@ -5,9 +5,6 @@ local meta = {}
 meta.__index = meta
 module.__index = meta
 
--- don't want to deal with these, so just reuse one
-module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
-
 function module.new(widthOrPath, height, bgcolor)
   @@ASSERT(bgcolor == nil, "Parameter 'bgcolor' is not implemented.")
   local img = setmetatable({}, meta)
@@ -37,8 +34,8 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
   
   if qx and qy and qw and qh then
     local w, h = self:getSize()
-    module.quad:setViewport(qx, qy, qw, qh, w, h)
-    love.graphics.draw(self.data, module.quad, x, y)
+    playdate.graphics._quad:setViewport(qx, qy, qw, qh, w, h)
+    love.graphics.draw(self.data, playdate.graphics._quad, x, y)
   else
     love.graphics.draw(self.data, x, y)
   end

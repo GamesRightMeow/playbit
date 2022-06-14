@@ -85,6 +85,8 @@ module._activeFont = {}
 module._drawMode = "copy"
 module._canvas = love.graphics.newCanvas()
 module._contextStack = {}
+-- shared quad to reduce gc
+module._quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 
 function module.setDrawOffset(x, y)
   module._drawOffset.x = x
