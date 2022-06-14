@@ -10,9 +10,8 @@ Here are some resources to help you get started with open source contributions:
 - [Collaborating with pull requests](https://docs.github.com/github/collaborating-with-pull-requests)
 
 ## Issues
+<!-- TODO: tags, assignment -->
 
-### Create a new issue
+## Lua style guide
 
-### Solve an issue
-
-## Style Guide
+## Markdown style guide

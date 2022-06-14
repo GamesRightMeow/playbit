@@ -15,8 +15,8 @@ Playbit is framework for creating cross-platform [Playdate](https://play.date/) 
 * Macro support (via LuaPreprocess's [macros](http://luapreprocess.refreezed.com/docs/extra-functionality/#insert-func))
 * Compile asserts out for release builds (via LuaPreprocess's [ASSERT() macro](http://luapreprocess.refreezed.com/docs/api/#assert))
 
-## Known issues/limitations
-Listed below are key limitations; for a full list see  open [issues](). If you'd like to help improve/solve/fix an issue, please see the [Contributing guide](contributing.md).
+## Known issues
+Listed below are key issues; for a full list see [the issue tracker](). 
 
 <!-- TODO: link to Github issues when opened -->
 * Lua intellisense plugins/extensions incorrectly flags [metaprogram statements](http://luapreprocess.refreezed.com/docs/#how-to-metaprogram)
@@ -27,7 +27,9 @@ Listed below are key limitations; for a full list see  open [issues](). If you'd
   * Only ASCII characters are supported
   * The glyph atlas must have 16 glyphs per row
 
-## Documentation
-If you're new, see [Getting Started](getting-started.md).
+Most of these exist only because they haven't been addressed. If you'd like to help improve/solve/fix an issue, please see the [Contributing guide](contributing.md).
 
-For documentation on installation, usage, and other features see the [docs folder](/docs/).
+There are, however, some fundamental limitations due to the nature of this framework. To learn more, see [Playbit limitations](limitations.md).
+
+## Documentation
+Documentation can be found in the [docs](/docs/) folder. If you're new, it's recommended that you first read [Getting Started](getting-started.md).
