@@ -3,16 +3,18 @@ function IMPORT(path)
   if PLAYDATE then
     return outputLuaTemplate("import(?)", path)
   elseif LOVE2D then
+    if string.match(path, "^CoreLibs/") then
+      -- ignore these imports, since the playdate namespace is already reimplemented in the global namespace
+      return
+    end
+
     path = string.gsub(path, "/", ".")
     return outputLuaTemplate("require(?)", path)
   end
 end
 )
 
-!if PLAYDATE then
-import("CoreLibs/graphics")
-import("CoreLibs/animation")
-!elseif LOVE2D then
+!if LOVE2D then
 require("playdate.playdate")
 require("playdate.graphics")
 require("playdate.image")
