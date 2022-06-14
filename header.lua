@@ -60,9 +60,6 @@ function love.draw()
 
   -- push main transform for draw offset
   love.graphics.push()
-  if pb_draw2x then
-    love.graphics.scale(2, 2)
-  end
 
   playdate.graphics.setImageDrawMode(lastDrawMode)
   playdate.update()
@@ -79,7 +76,6 @@ function love.draw()
   -- draw canvas
   love.graphics.setCanvas()
   if pb_draw2x then
-    -- FIXME: 2x rendering doesn't work when using contexts (scale is all wrong)
     love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, 2, 2)
   else
     love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, 1, 1)
