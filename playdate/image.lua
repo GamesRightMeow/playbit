@@ -41,7 +41,6 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
   end
 
   love.graphics.setColor(r, g, b, 1)
-
   playdate.graphics._updateContext()
 end
 
@@ -60,6 +59,22 @@ function meta:drawRotated(x, y, angle)
   love.graphics.pop()
 
   love.graphics.setColor(r, g, b, 1)
+  playdate.graphics._updateContext()
+end
 
+function meta:drawScaled(x, y, scale, yscale)
+  yscale = yscale or scale
+
+  -- always render pure white so its not tinted
+  local r, g, b = love.graphics.getColor()
+  love.graphics.setColor(1, 1, 1, 1)
+
+  love.graphics.push()
+  love.graphics.translate(x, y)
+  love.graphics.scale(scale, yscale)
+  love.graphics.draw(self.data, 0, 0)
+  love.graphics.pop()
+
+  love.graphics.setColor(r, g, b, 1)
   playdate.graphics._updateContext()
 end
