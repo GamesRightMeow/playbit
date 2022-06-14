@@ -8,9 +8,19 @@ module.__index = meta
 -- don't want to deal with these, so just reuse one
 module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 
-function module.new(path)
+function module.new(widthOrPath, height, bgcolor)
+  @@ASSERT(bgcolor == nil, "Parameter 'bgcolor' is not implemented.")
   local img = setmetatable({}, meta)
-  img.data = love.graphics.newImage(path..".png")
+
+  if height then
+    -- creating empty image with dimensions
+    local imageData = love.image.newImageData(widthOrPath, height)
+    img.data = love.graphics.newImage(imageData)  
+  else
+    -- creating image from file
+    img.data = love.graphics.newImage(widthOrPath..".png")  
+  end
+
   return img
 end
 
