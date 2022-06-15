@@ -25,6 +25,7 @@ require("playdate.animation")
 require("playdate.file")
 require("playdate.json")
 require("playdate.sound")
+require("playdate.easing")
 
 local lastDrawMode = "copy"
 local pb_draw2x = false

@@ -19,6 +19,6 @@ function module.intRange(min, max)
 end
 
 --- Returns a random float between min and max
-function module.floatRange(min, max, precision)
-	return ((math.random() * (max - min)) + min)
+function module.floatRange(min, max)
+	return (math.random() * (max - min)) + min
 end

@@ -105,7 +105,6 @@ end
 function module.build(options)
   local timeStart = os.clock()
 
-  local enableVerbose = options.verbose == true
   local targetPlatform = options.platform
   local projectFolder = fs.getProjectFolder()
   local globalProcessors = options.fileProcessors
