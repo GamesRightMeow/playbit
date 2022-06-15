@@ -1,8 +1,7 @@
 # Adding Playbit to your project
 
 ## For new projects
-<!-- TODO: template link -->
-For new projects it's recommended that you create a repo from the [Playbit project template]().
+For new projects it's recommended that you create a repo from the [Playbit project template](https://github.com/GamesRightMeow/playbit-template).
 
 ## For existing projects
 
