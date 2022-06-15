@@ -15,14 +15,16 @@ function module.asepriteProcessor(input, output, options)
   local command = "aseprite -bv "
   command = command..input
 
-  if options.ignoredLayers then
-    for i = 1, #options.ignoredLayers, 1 do
-      command = command.." --ignore-layer "..options.ignoredLayers[i]
+  if options then
+    if options.ignoredLayers then
+      for i = 1, #options.ignoredLayers, 1 do
+        command = command.." --ignore-layer "..options.ignoredLayers[i]
+      end
     end
-  end
 
-  if options.scale then
-    command = command.." --scale "..options.scale
+    if options.scale then
+      command = command.." --scale "..options.scale
+    end
   end
 
   if string.find(input, "-table-") then
