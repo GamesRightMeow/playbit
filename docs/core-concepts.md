@@ -1,7 +1,7 @@
 # Core concepts
 
 ## Playbit header
-The file [header.lua](/header.lua), referred to as "header", contains boiler plate code that allows your Playdate code to run under Love2d. The header must be added to the top of `main.lua` with a [LuaPreprocess insert]() `@@"playbit/header.lua"`
+The file [header.lua](/header.lua), referred to as _the header_, contains boiler plate code that allows your Playdate code to run under Love2d. The header must be added to the top of `main.lua` with a [LuaPreprocess insert]() `@@"playbit/header.lua"`
 
 ## Macros
 

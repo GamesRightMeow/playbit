@@ -9,9 +9,4 @@ Here are some resources to help you get started with open source contributions:
 - [Set up Git](https://docs.github.com/get-started/quickstart/set-up-git)
 - [Collaborating with pull requests](https://docs.github.com/github/collaborating-with-pull-requests)
 
-## Issues
-<!-- TODO: tags, assignment -->
-
-## Lua style guide
-
-## Markdown style guide
+TODO: issues, style guide, etc
