@@ -1,5 +1,8 @@
 !(
 function IMPORT(path)
+  -- path comes in with quotes, remove them
+  path = path:sub(2, #path - 1)
+
   if PLAYDATE then
     return outputLuaTemplate("import(?)", path)
   elseif LOVE2D then
