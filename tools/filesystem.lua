@@ -141,11 +141,11 @@ function module.getFiles(path)
     end
     return result
   elseif platform == module.LINUX then
-    local command = io.popen("find "..path.." -type f")
+    local command = io.popen("find \""..path.."\" -type f")
     local lines = command:read("*a"):gmatch("(.-)\n")
     local result = {}
     for line in lines do 
-      local command = io.popen("readlink -f "..line)
+      local command = io.popen("readlink -f \""..line.."\"")
       local path = command:read("*a"):match("(.-)\n")
       table.insert(result, path)
     end
