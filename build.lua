@@ -15,14 +15,16 @@ function module.asepriteProcessor(input, output, options)
   local command = "aseprite -bv "
   command = command..input
 
-  if options.ignoredLayers then
-    for i = 1, #options.ignoredLayers, 1 do
-      command = command.." --ignore-layer "..options.ignoredLayers[i]
+  if options then
+    if options.ignoredLayers then
+      for i = 1, #options.ignoredLayers, 1 do
+        command = command.." --ignore-layer "..options.ignoredLayers[i]
+      end
     end
-  end
 
-  if options.scale then
-    command = command.." --scale "..options.scale
+    if options.scale then
+      command = command.." --scale "..options.scale
+    end
   end
 
   if string.find(input, "-table-") then
@@ -132,10 +134,10 @@ function module.build(options)
   fs.deleteDirectory(buildFolder)
   fs.createDirectory(buildFolder)
 
-  for i = 1, #options.folders, 1 do
-    local input = fs.sanitizePath(options.folders[i][1])
-    local output = fs.sanitizePath(options.folders[i][2])
-    local folderProcessors = options.folders[i][3]
+  for i = 1, #options.files, 1 do
+    local input = fs.sanitizePath(options.files[i][1])
+    local output = fs.sanitizePath(options.files[i][2])
+    local folderProcessors = options.files[i][3]
     module.processPath(projectFolder, buildFolder, input, output, folderProcessors, globalProcessors)
   end
 
