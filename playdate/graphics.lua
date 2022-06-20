@@ -197,6 +197,7 @@ function module.getTextSize(str)
 end
 
 function module.drawText(text, x, y, fontFamily, leadingAdjustment)
+  @@ASSERT(text ~= nil, "Text is nil")
   local font = module._activeFont
   font:drawText(text, x, y, fontFamily, leadingAdjustment)
   module._updateContext()
