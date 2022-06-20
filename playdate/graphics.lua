@@ -183,7 +183,19 @@ function module.drawLine(x1, y1, x2, y2)
 end
 
 function module.drawArc(x, y, radius, startAngle, endAngle)
-  love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle - 90), math.rad(endAngle - 90), 8)
+  -- 0 degrees is 270 when drawing an arc on PD...
+  startAngle = startAngle - 90
+  endAngle = endAngle - 90
+
+  if startAngle == endAngle then
+    -- if startAngle and endAngle are the same, PD draws a full circle
+    love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle + 360), 16)
+  elseif startAngle > endAngle then
+    -- love2d adjusts for when the startAngle is larger, but PD does not, so we need to compensate
+    love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle + 360), 16)
+  else
+    love.graphics.arc("line", "open", x, y, radius, math.rad(endAngle), math.rad(startAngle), 16)
+  end
   module._updateContext()
 end
 
