@@ -182,6 +182,11 @@ function module.drawLine(x1, y1, x2, y2)
   module._updateContext()
 end
 
+function module.drawArc(x, y, radius, startAngle, endAngle)
+  love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle - 90), math.rad(endAngle - 90), 8)
+  module._updateContext()
+end
+
 function module.setFont(font)
   module._activeFont = font
   love.graphics.setFont(font.data)
