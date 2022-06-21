@@ -199,6 +199,11 @@ function module.drawArc(x, y, radius, startAngle, endAngle)
   module._updateContext()
 end
 
+function module.drawPixel(x, y)
+  love.graphics.points(x, y)
+  module._updateContext()
+end
+
 function module.setFont(font)
   module._activeFont = font
   love.graphics.setFont(font.data)
