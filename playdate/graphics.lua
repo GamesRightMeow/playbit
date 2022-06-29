@@ -87,6 +87,7 @@ module._canvas = love.graphics.newCanvas()
 module._contextStack = {}
 -- shared quad to reduce gc
 module._quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
+module._lastClearColor = COLOR_WHITE
 
 function module.setDrawOffset(x, y)
   module._drawOffset.x = x
@@ -104,11 +105,10 @@ function module.setBackgroundColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
   if color == 1 then
     module._backgroundColor = COLOR_WHITE
-    love.graphics.setBackgroundColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b)
   else
     module._backgroundColor = COLOR_BLACK
-    love.graphics.setBackgroundColor(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b)
   end
+  -- don't actually set love's bg color here since doing so immediately sets the color, and this is not consistent with PD
 end
 
 function module.setColor(color)
@@ -126,14 +126,17 @@ function module.clear(color)
   if not color then
     local c = module._backgroundColor
     love.graphics.clear(c.r, c.g, c.b, 1)
+    module._lastClearColor = c
   else
     @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
     if color == 1 then
       module._drawColor = COLOR_WHITE
       love.graphics.clear(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
+      module._lastClearColor = COLOR_WHITE
     else
       module._drawColor = COLOR_BLACK
       love.graphics.clear(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b, 1)
+      module._lastClearColor = COLOR_BLACK
     end
   end
   module._updateContext()

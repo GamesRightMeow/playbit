@@ -32,6 +32,7 @@ require("playdate.easing")
 
 local lastDrawMode = "copy"
 local pb_draw2x = false
+local firstFrame = true
 
 playdate.graphics._canvas:setFilter("nearest", "nearest")
 
@@ -57,6 +58,16 @@ function love.draw()
 
   -- render to canvas to allow 2x scaling
   love.graphics.setCanvas(playdate.graphics._canvas)
+
+  --[[ 
+    Love2d won't allow a canvas to be set outside of the draw function, so we need to do this on the first frame of draw.
+    Otherwise setting the bg color outside of playdate.update() won't be consistent with PD.
+  --]]
+  if firstFrame then
+    local c = playdate.graphics._lastClearColor
+    love.graphics.clear(c.r, c.g, c.b, 1)
+    firstFrame = false
+  end
 
   -- love requires that this is set every loop
   love.graphics.setFont(playdate.graphics.getFont().data)
