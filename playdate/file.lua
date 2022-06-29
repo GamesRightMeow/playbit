@@ -49,3 +49,12 @@ function meta:readline()
 
   return line
 end
+
+function module.getSize(path)
+  local info = love.filesystem.getInfo(path)
+  return info.size
+end
+
+function meta:read(numberOfBytes)
+  return self._data:read(numberOfBytes)
+end
