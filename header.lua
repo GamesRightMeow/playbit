@@ -74,6 +74,7 @@ function love.draw()
 
   -- push main transform for draw offset
   love.graphics.push()
+  love.graphics.translate(playdate.graphics._drawOffset.x, playdate.graphics._drawOffset.y)
 
   playdate.graphics.setImageDrawMode(lastDrawMode)
   playdate.update()
