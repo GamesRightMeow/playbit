@@ -71,9 +71,6 @@ function love.draw()
 
   -- love requires that this is set every loop
   love.graphics.setFont(playdate.graphics.getFont().data)
-  
-  -- set every update to match behavior on playdate
-  playdate.graphics.setColor(1)
 
   -- push main transform for draw offset
   love.graphics.push()
@@ -90,13 +87,22 @@ function love.draw()
   -- pop main transform for draw offset
   love.graphics.pop()
 
-  -- draw canvas
+  -- pop canvas
   love.graphics.setCanvas()
+
+  -- always render pure white so its not tinted
+  local r, g, b = love.graphics.getColor()
+  love.graphics.setColor(1, 1, 1, 1)
+
+  -- draw canvas to screen
   if pb_draw2x then
     love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, 2, 2)
   else
     love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, 1, 1)
   end
+
+  -- reset back to set color
+  love.graphics.setColor(r, g, b, 1)
 
   -- update emulated input
   playdate.updateInput()

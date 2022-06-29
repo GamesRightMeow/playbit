@@ -130,11 +130,9 @@ function module.clear(color)
   else
     @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
     if color == 1 then
-      module._drawColor = COLOR_WHITE
       love.graphics.clear(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
       module._lastClearColor = COLOR_WHITE
     else
-      module._drawColor = COLOR_BLACK
       love.graphics.clear(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b, 1)
       module._lastClearColor = COLOR_BLACK
     end
