@@ -1,9 +1,9 @@
 -- Love2d implementation heavily based on https://github.com/superzazu/denver.lua
 
-local sampleplayer = {}
 playdate.sound = {}
-playdate.sound.sampleplayer = sampleplayer
 
+local sampleplayer = {}
+playdate.sound.sampleplayer = sampleplayer
 sampleplayer.meta = {}
 sampleplayer.meta.__index = sampleplayer.meta
 
@@ -39,6 +39,42 @@ function sampleplayer.meta:isPlaying()
 end
 
 function sampleplayer.meta:setVolume(value)
+  self.data:setVolume(value)
+end
+
+local fileplayer = {}
+playdate.sound.fileplayer = fileplayer
+fileplayer.meta = {}
+fileplayer.meta.__index = fileplayer.meta
+
+function fileplayer.new(path, bufferSize)
+  -- TODO: is there a way to use bufferSize to control Love2D chunks?
+  local sample = setmetatable({}, fileplayer.meta)
+  sample.data = love.audio.newSource(path..".wav", "stream")
+  return sample
+end
+
+function fileplayer.meta:play(repeatCount)
+  if repeatCount then
+    -- TODO: specific repeat count
+    if repeatCount == 0 then
+      -- loop endlessly
+      self.data:setLooping(true)
+    end
+  end
+
+  self.data:play()
+end
+
+function fileplayer.meta:stop()
+  self.data:stop()
+end
+
+function fileplayer.meta:isPlaying()
+  return self.data:isPlaying()
+end
+
+function fileplayer.meta:setVolume(value)
   self.data:setVolume(value)
 end
 
