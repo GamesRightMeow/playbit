@@ -15,7 +15,18 @@ end
 
 function sampleplayer.meta:play(repeatCount, rate)
   -- TODO: repeat count
-  self.data:setPitch(rate)
+  if rate then
+    self.data:setPitch(rate)
+  end
+
+  if repeatCount then
+    -- TODO: specific repeat count
+    if repeatCount == 0 then
+      -- loop endlessly
+      self.data:setLooping(true)
+    end
+  end
+
   self.data:play()
 end
 
