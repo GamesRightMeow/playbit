@@ -9,7 +9,7 @@ sampleplayer.meta.__index = sampleplayer.meta
 
 function sampleplayer.new(path)
   local sample = setmetatable({}, sampleplayer.meta)
-  sample.data = love.audio.newSource(path, "static")
+  sample.data = love.audio.newSource(path..".wav", "static")
   return sample
 end
 
