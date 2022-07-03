@@ -2,7 +2,9 @@ extern int mode;
 
 const vec4 WHITE =        vec4(176.0f / 255.0f, 174.0f / 255.0f, 167.0f / 255.0f, 1);
 const vec4 BLACK =        vec4( 49.0f / 255.0f,  47.0f / 255.0f,  40.0f / 255.0f, 1);
-const vec4 TRANSPARENT =  vec4(        0,         0,         0, 0);
+
+const vec4 TRANSPARENT =  vec4(0, 0, 0, 0);
+const vec4 DEBUG =  vec4(1, 0, 0, 0.5);
 
 vec3 rgb2hsv(vec3 c)
 {
@@ -15,54 +17,56 @@ vec3 rgb2hsv(vec3 c)
     return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords )
+vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords)
 {
   vec4 outputcolor = Texel(tex, texcoord) * color;
-  if (mode == 0) // --------------- "copy"
+  if (mode == 1)                      // ---------- "fillWhite"
+  {
+    return (outputcolor.a > 0) ? WHITE : TRANSPARENT;
+  }
+  else if (mode == 2)                 // ---------- "fillBlack"
+  {
+    return (outputcolor.a > 0) ? BLACK : TRANSPARENT;
+  }
+  // else if (mode == 2)                 // ---------- "XOR"
+  // {
+  //   // TODO: XOR drawmode
+  // }
+  // else if (mode == 3)                 // ---------- "NXOR"
+  // {
+  //   // TODO: NXOR drawmode
+  // }
+  // else if (mode == 4)                 // ---------- "whiteTransparent"
+  // {
+  //   // TODO: whiteTransparent drawmode
+  // }
+  // else if (mode == 5)                 // ---------- "blackTransparent"
+  // {
+  //   // TODO: blackTransparent drawmode
+  // }
+  // else if (mode == 6)                 // ---------- "inverted"
+  // {
+  //   // TODO: inverted drawmode
+  // }
+  else if (mode == 7)                 // ---------- "debug"
+  {
+    // choose white or black based on saturation
+    float saturation = rgb2hsv(vec3(outputcolor)).z;
+    // ideally this value is 0.5f (halfway) not sure why this doesn't work?
+    return (saturation >= 0.45f) ? DEBUG : TRANSPARENT;
+  }
+  else                                // ---------- "copy" (default)
   {
     if (outputcolor.a > 0)
     {
       // choose white or black based on saturation
       float saturation = rgb2hsv(vec3(outputcolor)).z;
       // ideally this value is 0.5f (halfway) not sure why this doesn't work?
-      if (saturation >= 0.45f)
-      {
-        return WHITE;
-      }
-      else
-      {
-        return BLACK;
-      }
+      return (saturation >= 0.45f) ? WHITE : BLACK;
     }
     else
     {
       // transparent pixel
-      return TRANSPARENT;
-    }
-  }
-  else if (mode == 1) // ---------- "fillWhite"
-  {
-    if (outputcolor.a > 0)
-    {
-      // replace with playdate white
-      return WHITE;
-    }
-    else
-    {
-      // leave transparent pixel
-      return TRANSPARENT;
-    }
-  }
-  else if (mode == 2) // ---------- "fillBlack"
-  {
-    if (outputcolor.a > 0)
-    {
-      // replace with playdate black
-      return BLACK;
-    }
-    else
-    {
-      // leave transparent pixel
       return TRANSPARENT;
     }
   }

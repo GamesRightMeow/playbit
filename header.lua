@@ -52,7 +52,6 @@ playdate.graphics._canvas:setFilter("nearest", "nearest")
 love.graphics.setDefaultFilter("nearest", "nearest")
 love.graphics.setLineWidth(1)
 love.graphics.setLineStyle("rough")
-love.graphics.setShader(playdate.graphics._shader)
 
 playdate.graphics.setBackgroundColor(1)
 playdate.graphics.setColor(0)
@@ -71,6 +70,7 @@ function love.draw()
 
   -- render to canvas to allow 2x scaling
   love.graphics.setCanvas(playdate.graphics._canvas)
+  love.graphics.setShader(playdate.graphics._shader)
 
   --[[ 
     Love2d won't allow a canvas to be set outside of the draw function, so we need to do this on the first frame of draw.
@@ -89,13 +89,20 @@ function love.draw()
   love.graphics.push()
   love.graphics.translate(playdate.graphics._drawOffset.x, playdate.graphics._drawOffset.y)
 
+  -- main update
   playdate.graphics.setImageDrawMode(lastDrawMode)
   playdate.update()
+  lastDrawMode = playdate.graphics._drawMode
+
+  -- debug draw
+  if playdate.debugDraw then
+    playdate.graphics._shader:send("mode", 7)
+    playdate.debugDraw()
+  end
 
   -- Not sure why, but we must reset to the default mode (copy = 0) otherwise
   -- modes "stick" through till the next frame and seems to apply to clear().
   -- Must also happen *here* - not tested, but maybe before pop() and canvas.draw()?
-  lastDrawMode = playdate.graphics._drawMode
   playdate.graphics.setImageDrawMode("copy")
 
   -- pop main transform for draw offset
@@ -103,6 +110,9 @@ function love.draw()
 
   -- pop canvas
   love.graphics.setCanvas()
+
+  -- clear shader so that canvas is rendered normally
+  love.graphics.setShader()
 
   -- always render pure white so its not tinted
   local r, g, b = love.graphics.getColor()
