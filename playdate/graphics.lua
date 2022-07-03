@@ -18,6 +18,15 @@ module._contextStack = {}
 module._quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 module._lastClearColor = COLOR_WHITE
 
+module.kDrawModeCopy = 0
+module.kDrawModeWhiteTransparent = 1
+module.kDrawModeBlackTransparent = 2
+module.kDrawModeFillWhite = 3
+module.kDrawModeFillBlack = 4
+module.kDrawModeXOR = 5
+module.kDrawModeNXOR = 6
+module.kDrawModeInverted = 7
+
 function module.setDrawOffset(x, y)
   module._drawOffset.x = x
   module._drawOffset.y = y
@@ -72,11 +81,11 @@ end
 -- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
 function module.setImageDrawMode(mode)
   module._drawMode = mode
-  if mode == "copy" then
+  if mode == module.kDrawModeCopy or mode == "copy" then
     module._shader:send("mode", 0)
-  elseif mode == "fillWhite" then
+  elseif mode == module.kDrawModeFillWhite or mode == "fillWhite" then
     module._shader:send("mode", 1)
-  elseif mode == "fillBlack" then
+  elseif mode == module.kDrawModeFillBlack or mode == "fillBlack" then
     module._shader:send("mode", 2)
   else
     error("Draw mode '"..mode.."' not implemented.")
