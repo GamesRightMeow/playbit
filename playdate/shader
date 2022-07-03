@@ -1,0 +1,69 @@
+extern int mode;
+
+const vec4 WHITE =        vec4(176.0f / 255.0f, 174.0f / 255.0f, 167.0f / 255.0f, 1);
+const vec4 BLACK =        vec4( 49.0f / 255.0f,  47.0f / 255.0f,  40.0f / 255.0f, 1);
+const vec4 TRANSPARENT =  vec4(        0,         0,         0, 0);
+
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords )
+{
+  vec4 outputcolor = Texel(tex, texcoord) * color;
+  if (mode == 0) // --------------- "copy"
+  {
+    if (outputcolor.a > 0)
+    {
+      // choose white or black based on saturation
+      float saturation = rgb2hsv(vec3(outputcolor)).z;
+      // ideally this value is 0.5f (halfway) not sure why this doesn't work?
+      if (saturation >= 0.45f)
+      {
+        return WHITE;
+      }
+      else
+      {
+        return BLACK;
+      }
+    }
+    else
+    {
+      // transparent pixel
+      return TRANSPARENT;
+    }
+  }
+  else if (mode == 1) // ---------- "fillWhite"
+  {
+    if (outputcolor.a > 0)
+    {
+      // replace with playdate white
+      return WHITE;
+    }
+    else
+    {
+      // leave transparent pixel
+      return TRANSPARENT;
+    }
+  }
+  else if (mode == 2) // ---------- "fillBlack"
+  {
+    if (outputcolor.a > 0)
+    {
+      // replace with playdate black
+      return BLACK;
+    }
+    else
+    {
+      // leave transparent pixel
+      return TRANSPARENT;
+    }
+  }
+}
