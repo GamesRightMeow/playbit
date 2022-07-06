@@ -29,6 +29,8 @@ require("playdate.file")
 require("playdate.json")
 require("playdate.sound")
 require("playdate.easing")
+require("playdate.frameTimer")
+require("playdate.timer")
 
 -- load pdxinfo into memory
 playdate.metadata = {}
