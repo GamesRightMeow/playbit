@@ -40,12 +40,34 @@ function module.new(path)
   local frameHeight = tonumber(matches())
   local actualPath = folder.."/"..actualFilename
 
-  local image = playdate.graphics.image.new(actualPath)
-  local w, h = image:getSize()
-  imagetable.image = image
-  imagetable.rows = w / frameWidth
-  imagetable.columns = h / frameHeight
-  imagetable.length = imagetable.rows * imagetable.columns
+  -- load atlas
+  local atlas = love.image.newImageData(actualPath..".png")
+  
+  -- create a separate image for each frame
+  local w = atlas:getWidth()
+  local h = atlas:getHeight()
+  local rows = h / frameHeight
+  local columns = w / frameWidth
+
+  imagetable.images = {}
+  for c = 0, columns - 1, 1 do
+    for r = 0, rows - 1, 1 do
+      
+      local imageData = love.image.newImageData(frameWidth, frameHeight)
+      for x = 0, frameWidth - 1, 1 do
+        for y = 0, frameHeight - 1, 1 do
+          local r, g, b, a = atlas:getPixel(x + (c * frameWidth), y + (r * frameHeight))
+          imageData:setPixel(x, y, r, g, b, a)
+        end
+      end
+
+      local image = playdate.graphics.image.new(frameWidth, frameHeight)
+      image.data:replacePixels(imageData)
+      table.insert(imagetable.images, image)
+    end
+  end
+  
+  imagetable.length = rows * columns
   imagetable.frameWidth = frameWidth
   imagetable.frameHeight = frameHeight
 
@@ -53,10 +75,11 @@ function module.new(path)
 end
 
 function meta:drawImage(n, x, y, flip)
-  -- TODO: cache index calculation
-  local qx = math.floor((n - 1) % self.rows) * self.frameHeight
-  local qy = math.floor((n - 1) / self.rows) * self.frameWidth
-  self.image:draw(x, y, flip, qx, qy, self.frameWidth, self.frameHeight)
+  self.images[n]:draw(x, y, flip)
+end
+
+function meta:getImage(n)
+  return self.images[n]
 end
 
 function meta:getLength()
