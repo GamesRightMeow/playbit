@@ -44,3 +44,7 @@ Evaluates to `true` when `debug` in your build script is set to `true`. Use this
 
 <!-- TODO: meta programming? -->
 
+## Build scripts
+A _build script_ is a Lua script that you run to build your project for a particular platform or configuration. 
+
+For more information, see the [Build Scripts](build-scripts.md)

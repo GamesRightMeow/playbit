@@ -1,5 +1,5 @@
 # Build scripts
-A _build script_ is a Lua script that you run to build your project. For example:
+A _build script_ is a Lua script that you run to build your project for a particular platform or configuration. For example:
 
 ```lua
 -- include the main build script
