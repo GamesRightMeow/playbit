@@ -117,7 +117,7 @@ function getAtlasPath(input)
     local inputNoExt = string.sub(input, 1, #input - 4)
     local command = io.popen("dir /a-d /s /b \""..inputNoExt.."-table-*.png\"")
     return command:read("*a"):match("(.-)\n")
-  elseif platform == fs.LINUX then
+  else
     local inputNoExt = string.sub(input, 1, #input - 4)
     local command = io.popen("find "..inputNoExt.."-table-*.png")
     return command:read("*a"):match("(.-)\n")

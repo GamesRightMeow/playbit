@@ -12,8 +12,15 @@ function module.asepriteProcessor(input, output, options)
   output = string.gsub(output, ".aseprite", ".png")
   
   -- TODO: warn if aseprite not in path?
-  local command = "aseprite -bv "
-  command = command..input
+  local aseprite_bin = "aseprite"
+  local aseprite_flags = " -bv "
+  if fs.getPlatform() == fs.MACOS then
+    aseprite_bin = "/Applications/Aseprite.app/Contents/MacOS/aseprite"
+  end
+  local aseprite_version = io.popen(aseprite_bin.." --version", "r"):read("*a")
+  assert(string.match(aseprite_version, "Aseprite"), "aseprite binary not found in path")
+
+  local command = aseprite_bin..aseprite_flags..input
 
   if options then
     if options.ignoredLayers then
