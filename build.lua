@@ -62,6 +62,7 @@ function module.defaultProcessor(input, output, options)
 end
 
 function module.fntProcessor(input, output, options)
+  fs.createFolderIfNeeded(output)
   capToBmfont(input, output)
 end
 
