@@ -5,14 +5,27 @@ module.LINUX = 1
 module.MACOS = 2
 local platform = -1
 
+local function run(command, failure_msg)
+  local handle = io.popen(command)
+  local output = handle:read("*a") -- returns "" if no stdout
+  local success, _, ret_code = handle:close()
+  if failure_msg and ret_code ~= 0 then
+    assert(false, "RUN: '"..command.."' failed. "..failure_msg)
+  end
+  return output, ret_code
+end
+
 local function detectPlatform()
   if platform == -1 then
-    if string.match(os.getenv('OS') or "", "Windows") then
+    if package.config:sub(1,1) == '\\' then
       platform = module.WINDOWS
-    elseif string.match(os.getenv('OSTYPE') or "", "darwin") then
-      platform = module.MACOS
-    elseif string.match(os.getenv('OSTYPE') or "", "linux") then
-      platform = module.LINUX
+    else
+      local uname, _ = run("uname -s")
+      if uname:match("Darwin") then
+        platform = module.MACOS
+      elseif uname == "Linux" then
+        platform = module.LINUX
+      end
     end
     assert(platform >= 0, "Could not detect operating system. Giving up.")
   end
@@ -119,11 +132,16 @@ function module.getFiles(path)
     end
     return result
   else
+    local readlink_cmd = "readlink"
+    if platform == module.MACOS then
+      readlink_cmd = "greadlink"
+      run("which greadlink", "GNU readlink not found. Install with: brew install coreutils")
+    end
     local command = io.popen("find \""..path.."\" -type f")
     local lines = command:read("*a"):gmatch("(.-)\n")
     local result = {}
     for line in lines do 
-      local command = io.popen("readlink -f \""..line.."\"")
+      local command = io.popen(readlink_cmd.." -f \""..line.."\"")
       local path = command:read("*a"):match("(.-)\n")
       table.insert(result, path)
     end
