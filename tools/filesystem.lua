@@ -31,6 +31,8 @@ local function detectPlatform()
   end
   return platform
 end
+
+-- immediately call so that platform is detected when first imported
 detectPlatform()
 
 function module.getPlatform()
