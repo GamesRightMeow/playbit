@@ -22,7 +22,6 @@ Playbit is a framework for creating cross-platform [Playdate](https://play.date/
 Listed below are key issues; for a full list see [the issue tracker](). 
 
 * Playdate API is not fully reimplemented
-* Poorly tested Mac support (Have a Mac? [Help get this fixed](https://github.com/GamesRightMeow/playbit/issues/1)!)
 * Build-time creation of [.love-file and platform executables](https://love2d.org/wiki/Game_Distribution)
 * Fonts
   * Only ASCII characters are supported
