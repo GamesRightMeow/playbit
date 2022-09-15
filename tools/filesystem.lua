@@ -20,7 +20,7 @@ local function detectPlatform()
     if package.config:sub(1,1) == '\\' then
       platform = module.WINDOWS
     else
-      local uname, _ = run("uname -s")
+      local uname = run("uname -s")
       if uname:match("Darwin") then
         platform = module.MACOS
       elseif uname:match("Linux") then
