@@ -23,7 +23,7 @@ local function detectPlatform()
       local uname, _ = run("uname -s")
       if uname:match("Darwin") then
         platform = module.MACOS
-      elseif uname == "Linux" then
+      elseif uname:match("Linux") then
         platform = module.LINUX
       end
     end
