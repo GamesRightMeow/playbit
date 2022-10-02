@@ -134,16 +134,15 @@ function module.getFiles(path)
     end
     return result
   else
-    local readlink_cmd = "readlink"
+    local readlink_cmd = "readlink -f"
     if platform == module.MACOS then
-      readlink_cmd = "greadlink"
-      run("which greadlink", "GNU readlink not found. Install with: brew install coreutils")
+      readlink_cmd = "python3 -c 'import pathlib; import sys; print(pathlib.Path(sys.argv[1]).resolve())'"
     end
     local command = io.popen("find \""..path.."\" -type f")
     local lines = command:read("*a"):gmatch("(.-)\n")
     local result = {}
     for line in lines do 
-      local command = io.popen(readlink_cmd.." -f \""..line.."\"")
+      local command = io.popen(readlink_cmd.." \""..line.."\"")
       local path = command:read("*a"):match("(.-)\n")
       table.insert(result, path)
     end
