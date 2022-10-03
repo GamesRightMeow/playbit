@@ -42,6 +42,14 @@ function sampleplayer.meta:setVolume(value)
   self.data:setVolume(value)
 end
 
+function sampleplayer.meta:setOffset(value)
+  self.data:seek(value)
+end
+
+function sampleplayer.meta:getOffset()
+  return self.data:tell()
+end
+
 local fileplayer = {}
 playdate.sound.fileplayer = fileplayer
 fileplayer.meta = {}
