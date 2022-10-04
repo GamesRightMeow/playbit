@@ -2,52 +2,60 @@ local module = {}
 
 module.WINDOWS = 0
 module.LINUX = 1
+module.MACOS = 2
 local platform = -1
 
-local function detectPlatform()
-  if platform > -1 then
-    return
+local function run(command, failure_msg)
+  local handle = io.popen(command)
+  local output = handle:read("*a") -- returns "" if no stdout
+  local success, _, ret_code = handle:close()
+  if failure_msg and ret_code ~= 0 then
+    assert(false, "RUN: '"..command.."' failed. "..failure_msg)
   end
+  return output, ret_code
+end
 
-  local command = io.popen("ver")
-  local output = command:read("*a")
-  if output and string.match(output, "Microsoft Windows") then
-    platform = module.WINDOWS
-  else
-    -- TODO: actually do a test for Linux - does linux have a ver command?
-    platform = module.LINUX
+local function detectPlatform()
+  if platform == -1 then
+    if package.config:sub(1,1) == '\\' then
+      platform = module.WINDOWS
+    else
+      local uname = run("uname -s")
+      if uname:match("Darwin") then
+        platform = module.MACOS
+      elseif uname:match("Linux") then
+        platform = module.LINUX
+      end
+    end
+    assert(platform >= 0, "Could not detect operating system. Giving up.")
   end
-  -- TODO: MAC?
+  return platform
+end
+
+-- immediately call so that platform is detected when first imported
+detectPlatform()
+
+function module.getPlatform()
+  return platform
 end
 
 local function getSlash()
-  detectPlatform()
-
   if platform == module.WINDOWS then
     return "\\"
-  elseif platform == module.LINUX then
+  else
     return "/"
   end
 end
 
-function module.getPlatform()
-  detectPlatform()
-  return platform
-end
-
 function module.sanitizePath(path)
-  detectPlatform()
-  
   if platform == module.WINDOWS then
     return string.gsub(path, "/", "\\")
-  elseif platform == module.LINUX then
+  else
     return string.gsub(path, "\\", "/")
   end
 end
 
 function module.getFileName(path)
-  detectPlatform()
-
   local name = path
   local nameReversed = string.reverse(name)
   local lastSlash = #name - string.find(nameReversed, getSlash())
@@ -61,28 +69,19 @@ function module.getFileExtension(path)
 end
 
 function module.deleteDirectory(path)
-  detectPlatform()
-
+  assert(path ~= "/", "Not gonna recursively delete /. Giving up.")
   if platform == module.WINDOWS then
     os.execute("rmdir "..path.." /s /q")
-  elseif platform == module.LINUX then
+  else
     os.execute("rm -rf "..path)
-  end 
+  end
 end
 
 function module.createDirectory(path)
-  detectPlatform()
-
-  if platform == module.WINDOWS then
-    os.execute("mkdir "..path)
-  elseif platform == module.LINUX then
-    os.execute("mkdir "..path)
-  end 
+  os.execute("mkdir "..path)
 end
 
 function module.createFolderIfNeeded(path)
-  detectPlatform()
-
   if platform == module.WINDOWS then
     local pathReversed = string.reverse(path)
     local start, ends = string.find(pathReversed, "\\")
@@ -90,7 +89,7 @@ function module.createFolderIfNeeded(path)
       path = string.sub(path, 1, #path - ends)
     end
     os.execute("IF NOT EXIST \""..path.."\" mkdir \""..path.."\"")
-  elseif platform == module.LINUX then
+  else
     local pathReversed = string.reverse(path)
     local start, ends = string.find(pathReversed, "/")
     if start and ends then
@@ -101,8 +100,6 @@ function module.createFolderIfNeeded(path)
 end
 
 function module.getRelativePath(path, folder)
-  detectPlatform()
-
   -- escape dashes do the following gsub doesn't interpret them as the special pattern char
   folder = string.gsub(folder, "%-", "%%-")
 
@@ -118,20 +115,16 @@ function module.getRelativePath(path, folder)
 end
 
 function module.getProjectFolder()
-  detectPlatform()
-
   if platform == module.WINDOWS then
     local command = io.popen("cd")
     return command:read("*l")
-  elseif platform == module.LINUX then
+  else
     local command = io.popen("pwd")
     return command:read("*l")
   end
 end
 
 function module.getFiles(path)
-  detectPlatform()
-
   if platform == module.WINDOWS then
     local command = io.popen("dir /a-d /s /b \""..path.."\"")
     local files = command:read("*a"):gmatch("(.-)\n")
@@ -140,12 +133,16 @@ function module.getFiles(path)
       table.insert(result, file)
     end
     return result
-  elseif platform == module.LINUX then
+  else
+    local readlink_cmd = "readlink -f"
+    if platform == module.MACOS then
+      readlink_cmd = "python3 -c 'import pathlib; import sys; print(pathlib.Path(sys.argv[1]).resolve())'"
+    end
     local command = io.popen("find \""..path.."\" -type f")
     local lines = command:read("*a"):gmatch("(.-)\n")
     local result = {}
     for line in lines do 
-      local command = io.popen("readlink -f \""..line.."\"")
+      local command = io.popen(readlink_cmd.." \""..line.."\"")
       local path = command:read("*a"):match("(.-)\n")
       table.insert(result, path)
     end

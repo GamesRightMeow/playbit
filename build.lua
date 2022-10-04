@@ -10,10 +10,18 @@ function module.asepriteProcessor(input, output, options)
   fs.createFolderIfNeeded(output)
 
   output = string.gsub(output, ".aseprite", ".png")
-  
   -- TODO: warn if aseprite not in path?
-  local command = "aseprite -bv "
-  command = command..input
+  local aseprite_bin = "aseprite"
+  local aseprite_flags = " -bv "
+  if fs.getPlatform() == fs.MACOS then
+    if io.popen("/usr/bin/which aseprite", "r"):read("*a") == "" then
+      aseprite_bin = io.popen("find /Applications/Aseprite.app -name aseprite", "r"):read("*a"):gsub("\n", "")
+    end
+  end
+  local aseprite_version = io.popen(aseprite_bin.." --version", "r"):read("*a")
+  assert(string.match(aseprite_version, "Aseprite"), "aseprite binary not found in path")
+
+  local command = aseprite_bin..aseprite_flags..input
 
   if options then
     if options.ignoredLayers then
@@ -55,6 +63,7 @@ function module.defaultProcessor(input, output, options)
 end
 
 function module.fntProcessor(input, output, options)
+  fs.createFolderIfNeeded(output)
   capToBmfont(input, output)
 end
 
