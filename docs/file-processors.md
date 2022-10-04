@@ -43,7 +43,7 @@ Exports [Aseprite](https://www.aseprite.org/) files (.aseprite). Aseprite must b
 
 The aseprite executable must either be added to your system path or specified using the **path** variable below.
 
-It has the following options:
+Optional parameters:
 - **path:** If set, this path is used to call Aseprite from the command-line instead of relying on your system path. Defaults to `nil`.
 - **scale:** Sets the [scale](https://www.aseprite.org/docs/cli/#scale) to export the image at. Defaults to `1.0`.
 - **ignoredLayers:** [Hides layers by name](https://www.aseprite.org/docs/cli/#ignore-layer) from the exported image. Defaults to `{}`.
@@ -69,11 +69,21 @@ Uses [LuaPreprocess](https://github.com/ReFreezed/LuaPreprocess) to run your met
 ### Wave
 ```lua
 fileProcessors = {
-  wav = build.waveProcessor,
+  wav = {
+    build.waveProcessor,
+    {
+      path = "C:/Program Files/Aseprite/Aseprite.exe"
+    }
+  }
 }
 ```
 
-Converts .wav files to the [Playdate-supported IMA ADPCM](https://sdk.play.date/1.11.1/Inside%20Playdate.html#M-sound) format. [FFmpeg](https://www.ffmpeg.org/) must be installed and added to your path.
+Converts .wav files to the [Playdate-supported IMA ADPCM](https://sdk.play.date/1.11.1/Inside%20Playdate.html#M-sound) format. [FFmpeg](https://www.ffmpeg.org/) must be installed for this to work. 
+
+The FFmpeg executable must either be added to your system path or specified using the **path** variable below.
+
+Optional parameters:
+- **path:** If set, this path is used to call FFmpeg from the command-line instead of relying on your system path. Defaults to `nil`.
 
 ### Custom
 

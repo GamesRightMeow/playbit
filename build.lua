@@ -48,7 +48,15 @@ end
 
 function module.waveProcessor(input, output, options)
   fs.createFolderIfNeeded(output)
-  local command = "ffmpeg -i "..input.." -ar 44100 -acodec adpcm_ima_wav "..output
+
+  local ffmpegPath = "ffmpeg"
+  if options then
+    if options.path then
+      ffmpegPath = "\""..fs.sanitizePath(options.path).."\""
+    end
+  end
+
+  local command = ffmpegPath.." -i "..input.." -ar 44100 -acodec adpcm_ima_wav "..output
   io.popen(command, "w")
 end
 
