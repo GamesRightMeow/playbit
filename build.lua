@@ -10,15 +10,16 @@ function module.asepriteProcessor(input, output, options)
   fs.createFolderIfNeeded(output)
 
   output = string.gsub(output, ".aseprite", ".png")
+
   -- TODO: warn if aseprite not in path?
-  local asepriteBin = "aseprite"
+  local asepritePath = "aseprite"
   local asepriteFlags = " -bv "
-  local asepriteVersion = io.popen(asepriteBin.." --version", "r"):read("*a")
-  assert(string.match(asepriteVersion, "Aseprite"), "aseprite binary not found in path")
-
-  local command = asepriteBin..asepriteFlags..input
-
+  
   if options then
+    if options.path then
+      asepritePath = "\""..fs.sanitizePath(options.path).."\""
+    end
+
     if options.ignoredLayers then
       for i = 1, #options.ignoredLayers, 1 do
         command = command.." --ignore-layer "..options.ignoredLayers[i]
@@ -29,6 +30,11 @@ function module.asepriteProcessor(input, output, options)
       command = command.." --scale "..options.scale
     end
   end
+
+  local asepriteVersion = io.popen(asepritePath.." --version", "r"):read("*a")
+  assert(string.match(asepriteVersion, "Aseprite"), "aseprite binary not found")
+
+  local command = asepritePath..asepriteFlags..input
 
   if string.find(input, "-table-") then
     -- json isn't needed, but if its not saved, it fills the console

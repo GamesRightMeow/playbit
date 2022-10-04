@@ -62,6 +62,7 @@ fileProcessors = {
   aseprite = {
     build.asepriteProcessor,
     {
+      path = "C:/Program Files/Aseprite/Aseprite.exe",
       scale = 2,
       ignoredLayers = {
         "bg",
@@ -72,9 +73,12 @@ fileProcessors = {
 }
 ```
 
-Exports [Aseprite](https://www.aseprite.org/) files (.aseprite). Aseprite must be installed and added to your path.
+Exports [Aseprite](https://www.aseprite.org/) files (.aseprite). Aseprite must be installed for this to work. 
+
+The aseprite executable must either be added to your system path or specified using the **path** variable below.
 
 It has the following options:
+- **path:** If set, this path is used to call Aseprite from the command-line instead of relying on your system path. Defaults to `nil`.
 - **scale:** Sets the [scale](https://www.aseprite.org/docs/cli/#scale) to export the image at. Defaults to `1.0`.
 - **ignoredLayers:** [Hides layers by name](https://www.aseprite.org/docs/cli/#ignore-layer) from the exported image. Defaults to `{}`.
 
