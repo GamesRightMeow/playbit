@@ -11,12 +11,12 @@ function module.asepriteProcessor(input, output, options)
 
   output = string.gsub(output, ".aseprite", ".png")
   -- TODO: warn if aseprite not in path?
-  local aseprite_bin = "aseprite"
-  local aseprite_flags = " -bv "
-  local aseprite_version = io.popen(aseprite_bin.." --version", "r"):read("*a")
-  assert(string.match(aseprite_version, "Aseprite"), "aseprite binary not found in path")
+  local asepriteBin = "aseprite"
+  local asepriteFlags = " -bv "
+  local asepriteVersion = io.popen(asepriteBin.." --version", "r"):read("*a")
+  assert(string.match(asepriteVersion, "Aseprite"), "aseprite binary not found in path")
 
-  local command = aseprite_bin..aseprite_flags..input
+  local command = asepriteBin..asepriteFlags..input
 
   if options then
     if options.ignoredLayers then
