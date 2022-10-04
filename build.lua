@@ -13,11 +13,6 @@ function module.asepriteProcessor(input, output, options)
   -- TODO: warn if aseprite not in path?
   local aseprite_bin = "aseprite"
   local aseprite_flags = " -bv "
-  if fs.getPlatform() == fs.MACOS then
-    if io.popen("/usr/bin/which aseprite", "r"):read("*a") == "" then
-      aseprite_bin = io.popen("find /Applications/Aseprite.app -name aseprite", "r"):read("*a"):gsub("\n", "")
-    end
-  end
   local aseprite_version = io.popen(aseprite_bin.." --version", "r"):read("*a")
   assert(string.match(aseprite_version, "Aseprite"), "aseprite binary not found in path")
 
