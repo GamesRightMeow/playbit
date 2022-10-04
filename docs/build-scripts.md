@@ -42,103 +42,6 @@ build.build({
 
 Then run via CLI with `lua mybuildscript.lua`
 
-## Introduction to file processors
-File processors are functions that handle files with a specific extension. There are several built in file processors, including a fallback file processor that simply copies the file.
-
-### Default/fallback
-```lua
-fileProcessors = {
-  txt = build.defaultProcessor,
-}
-```
-
-The default processor simply copies a file from the input path to the output path.
-
-You can manually assign an extension to the default processor. However if a processor is not found, the build system will always fallback to this processor.
-
-### Aseprite
-```lua
-fileProcessors = {
-  aseprite = {
-    build.asepriteProcessor,
-    {
-      scale = 2,
-      ignoredLayers = {
-        "bg",
-        "placeholder",
-      },
-    }
-  }
-}
-```
-
-Exports [Aseprite](https://www.aseprite.org/) files (.aseprite). Aseprite must be installed and added to your path.
-
-It has the following options:
-- **scale:** Sets the [scale](https://www.aseprite.org/docs/cli/#scale) to export the image at. Defaults to `1.0`.
-- **ignoredLayers:** [Hides layers by name](https://www.aseprite.org/docs/cli/#ignore-layer) from the exported image. Defaults to `{}`.
-
-### Fnt
-```lua
-fileProcessors = {
-  fnt = build.fntProcessor,
-}
-```
-
-Converts [Caps](https://play.date/caps/) fonts to [BMFonts](https://www.angelcode.com/products/bmfont/) for use in Love2d.
-
-### Lua
-```lua
-fileProcessors = {
-  lua = build.luaProcessor,
-}
-```
-
-Uses [LuaPreprocess](https://github.com/ReFreezed/LuaPreprocess) to run your metaprogram and strip platform-dependent code.
-
-### Wave
-```lua
-fileProcessors = {
-  wav = build.waveProcessor,
-}
-```
-
-Converts .wav files to the [Playdate-supported IMA ADPCM](https://sdk.play.date/1.11.1/Inside%20Playdate.html#M-sound) format. [FFmpeg](https://www.ffmpeg.org/) must be installed and added to your path.
-
-### Custom
-
-You can also create your own file processor, simply by defining a function in a build script.
-
-```lua
-local build = require("playbit.build")
-local fs = require("playbit.tools.filesystem")
-
--- appends "hello world" to the end of text files
-local function textProcessor(input, output, options)
-  local inputFile = io.open(input, "rb")
-  local contents = inputFile:read("a")
-  inputFile:close()
-
-  contents = contents.."\nhello world!"
-
-  fs.createFolderIfNeeded(output)
-  local outputFile = io.open(output, "w+b")
-  outputFile:write(contents)
-  outputFile:close()
-end
-
-build.build({ 
-  fileProcessors = {
-    txt = txtProcessor,
-  },
-})
-```
-
-File processor functions require three parameters:
-- **input:** a string of the absolute file path to the source file.
-- **output:** a string of the absolute file path to the destination file.
-- **options:** an object that contains key-value pairs that contains processor-specific settings.
-
 ## Settings
 
 ### assert
@@ -151,7 +54,7 @@ Sets the value of the [DEBUG preprocessor flag](core-concepts.md#debug). A value
 An array of strings that represent boolean flags. If a flag is in this list, it has a value of `true`. Use this to add custom preprocessor flags.
 
 ### fileProcessors
-An object that defines the _global_ [file processors](#introduction-to-file-processors).
+An object that defines the _global_ [file processors](file-processors.md).
 
 Each key in the list represents the extension you want to associate the processor with e.g. for `.lua` files you should use `lua` as the key.
 
@@ -204,7 +107,7 @@ Each item-array can either be:
       { "src/textures", "textures" }
     }
     ``` 
-2. A 3-element array where the first two elements are as above, but the third element is a fileProcessor object. The build system will look for a processor here first, before checking the [global processors](#fileprocessors). This is useful when you need to define a specific file processor for specific files/folders. 
+2. A 3-element array where the first two elements are as above, but the third element is a fileProcessor object. The build system will look for a file processor here first, before checking the [global file processors](#fileprocessors). This is useful when you need to define a specific file processor for specific files/folders. 
     ```lua
     files = {
       { "src/textures/items", "textures/items" },

@@ -10,12 +10,16 @@ function module.asepriteProcessor(input, output, options)
   fs.createFolderIfNeeded(output)
 
   output = string.gsub(output, ".aseprite", ".png")
-  
-  -- TODO: warn if aseprite not in path?
-  local command = "aseprite -bv "
-  command = command..input
 
+  -- TODO: warn if aseprite not in path?
+  local asepritePath = "aseprite"
+  local asepriteFlags = " -bv "
+  
   if options then
+    if options.path then
+      asepritePath = "\""..fs.sanitizePath(options.path).."\""
+    end
+
     if options.ignoredLayers then
       for i = 1, #options.ignoredLayers, 1 do
         command = command.." --ignore-layer "..options.ignoredLayers[i]
@@ -26,6 +30,11 @@ function module.asepriteProcessor(input, output, options)
       command = command.." --scale "..options.scale
     end
   end
+
+  local asepriteVersion = io.popen(asepritePath.." --version", "r"):read("*a")
+  assert(string.match(asepriteVersion, "Aseprite"), "aseprite binary not found")
+
+  local command = asepritePath..asepriteFlags..input
 
   if string.find(input, "-table-") then
     -- json isn't needed, but if its not saved, it fills the console
@@ -39,7 +48,15 @@ end
 
 function module.waveProcessor(input, output, options)
   fs.createFolderIfNeeded(output)
-  local command = "ffmpeg -i "..input.." -ar 44100 -acodec adpcm_ima_wav "..output
+
+  local ffmpegPath = "ffmpeg"
+  if options then
+    if options.path then
+      ffmpegPath = "\""..fs.sanitizePath(options.path).."\""
+    end
+  end
+
+  local command = ffmpegPath.." -i "..input.." -ar 44100 -acodec adpcm_ima_wav "..output
   io.popen(command, "w")
 end
 
@@ -55,6 +72,7 @@ function module.defaultProcessor(input, output, options)
 end
 
 function module.fntProcessor(input, output, options)
+  fs.createFolderIfNeeded(output)
   capToBmfont(input, output)
 end
 
