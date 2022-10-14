@@ -6,6 +6,18 @@ local fs = require(folderOfThisFile.."tools.filesystem")
 
 local module = {}
 
+-- TODO: move file processors to separate file
+
+function module.skipFile(input, output, options)
+  if options then
+    if not options.silent then
+      print("Skipping: "..input)
+    end
+  else
+    print("Skipping: "..input)
+  end
+end
+
 function module.asepriteProcessor(input, output, options)
   fs.createFolderIfNeeded(output)
 

@@ -22,6 +22,23 @@ The default processor simply copies a file from the input path to the output pat
 
 You can manually assign an extension to the default processor. However if a processor is not found, the build system will always fallback to this processor.
 
+### Skip File
+```lua
+fileProcessors = {
+  cfg = {
+    build.skipFile,
+    {
+      silent = true
+    }
+  }
+}
+```
+
+The skip file processor can be used to skip files you don't want copied. Useful for project files that you want next to assets, but not something you want in your final build.
+
+Optional parameters:
+- **silent:** If true, silences the log that is printed when a file is skipped. Defaults to `false`.
+
 ### Aseprite
 ```lua
 fileProcessors = {
