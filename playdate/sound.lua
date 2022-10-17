@@ -50,6 +50,14 @@ function sampleplayer.meta:getOffset()
   return self.data:tell()
 end
 
+function sampleplayer.meta:setRate(rate)
+  self.data:setPitch(rate)
+end
+
+function sampleplayer.meta:getRate(rate)
+  self.data:getPitch()
+end
+
 local fileplayer = {}
 playdate.sound.fileplayer = fileplayer
 fileplayer.meta = {}
@@ -84,6 +92,14 @@ end
 
 function fileplayer.meta:setVolume(value)
   self.data:setVolume(value)
+end
+
+function fileplayer.meta:setRate(rate)
+  self.data:setPitch(rate)
+end
+
+function fileplayer.meta:getRate(rate)
+  self.data:getPitch()
 end
 
 -- TODO: fileplayer
