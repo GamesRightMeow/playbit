@@ -197,3 +197,19 @@ function module.updateInput()
   end
   lastCrankPos = crankPos
 end
+
+-- ██╗     ██╗   ██╗ █████╗ 
+-- ██║     ██║   ██║██╔══██╗
+-- ██║     ██║   ██║███████║
+-- ██║     ██║   ██║██╔══██║
+-- ███████╗╚██████╔╝██║  ██║
+-- ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
+                         
+function table.indexOfElement(table, element)
+  for i = 1, #table do
+    if table[i] == element then
+      return i
+    end
+  end
+  return nil
+end
