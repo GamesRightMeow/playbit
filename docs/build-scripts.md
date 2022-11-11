@@ -10,6 +10,7 @@ build.build({
   debug = true,
   platform = "love2d",
   output = "_game",
+  clearBuildFolder = true,
   fileProcessors = {
     lua = build.luaProcessor,
     fnt = build.fntProcessor,
@@ -46,6 +47,12 @@ Then run via CLI with `lua mybuildscript.lua`
 
 ### assert
 A boolean value where a value of `false` compiles out `@@ASSERT` macros.
+
+### clearBuildFolder
+
+A boolean value where a value of `true` causes the build folder to be deleted (if it exists) before building.
+
+Set this to `false` for custom build scripts where you want to do a smaller rebuild i.e. only update level files.
 
 ### debug
 Sets the value of the [DEBUG preprocessor flag](core-concepts.md#debug). A value of `true` indicates the build is a non-production build. Currently only affects [perf.lua](/playbit/perf.lua) but can be used to control what builds your own developer tools are enabled in.

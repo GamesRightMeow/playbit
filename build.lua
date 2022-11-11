@@ -159,10 +159,11 @@ function module.build(options)
     buildFolder = fs.sanitizePath(options.output)
   end
 
-  -- nuke old folder
-  -- TODO: does pdc support incremental builds?
-  fs.deleteDirectory(buildFolder)
-  fs.createDirectory(buildFolder)
+  if options.clearBuildFolder then
+    -- clear contents of old folder
+    fs.deleteDirectory(buildFolder)
+    fs.createDirectory(buildFolder)
+  end
 
   for i = 1, #options.files, 1 do
     local input = fs.sanitizePath(options.files[i][1])
