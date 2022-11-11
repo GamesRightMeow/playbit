@@ -33,3 +33,5 @@ There are, however, some fundamental limitations due to the nature of this frame
 
 ## Documentation
 Documentation can be found in the [docs](/docs/) folder. If you're new, it's recommended that you first read [Getting Started](getting-started.md).
+
+If you want to jump straight in, create a new repository using the [Playbit template](https://github.com/GamesRightMeow/playbit-template).
