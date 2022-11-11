@@ -24,3 +24,4 @@ The following are not required for _general_ use of Playbit, but required if you
 1. [Learn about core concepts](core-concepts.md)
 1. [Add Playbit to your project](add-playbit.md)
 1. [Configure build scripts](build-scripts.md)
+1. [Build & run your project](build-and-run.md)
