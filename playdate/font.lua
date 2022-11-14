@@ -20,7 +20,10 @@ function meta:getHeight()
 end
 
 function meta:drawText(str, x, y)
+  local currentFont = love.graphics.getFont()
+  love.graphics.setFont(self.data)
   love.graphics.print(str, x, y)
+  love.graphics.setFont(currentFont)
   playdate.graphics._updateContext()
 end
 
@@ -36,6 +39,9 @@ function meta:drawTextAligned(str, x, y, alignment)
   end
   -- left, draw normally
   
+  local currentFont = love.graphics.getFont()
+  love.graphics.setFont(self.data)
   love.graphics.print(str, x, y)
+  love.graphics.setFont(currentFont)
   playdate.graphics._updateContext()
 end
