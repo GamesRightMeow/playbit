@@ -102,5 +102,17 @@ function fileplayer.meta:getRate(rate)
   self.data:getPitch()
 end
 
+function fileplayer.meta:setOffset(value)
+  self.data:seek(value)
+end
+
+function fileplayer.meta:getOffset()
+  return self.data:tell()
+end
+
+function fileplayer.meta:getLength()
+  return self.data:getDuration("seconds")
+end
+
 -- TODO: fileplayer
 -- TODO: synth
