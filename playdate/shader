@@ -1,6 +1,10 @@
-// https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl
+// https://www.khronos.org/opengl/wiki/OpenGL_Shading_Language
+// https://registry.khronos.org/OpenGL-Refpages/gl4/index.php
+
+#pragma language glsl3
 
 extern int mode;
+extern int pattern[64];
 
 // color constants that match playdate colors
 const vec4 WHITE =        vec4(176.0f / 255.0f, 174.0f / 255.0f, 167.0f / 255.0f, 1);
@@ -19,9 +23,9 @@ vec3 rgb2hsv(vec3 c)
     return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords)
+vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
 {
-  vec4 outputcolor = Texel(tex, texcoord) * color;
+  vec4 outputcolor = Texel(tex, tex_coords) * color;
   if (mode == 1)                          // ---------- "fillWhite"
   {
     return (outputcolor.a > 0) ? WHITE : TRANSPARENT;
@@ -50,12 +54,29 @@ vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 screen_coords)
   // {
   //   // TODO: inverted drawmode
   // }
-  else if (mode == 7)                 // ---------- "debug"
+  else if (mode == 7)                     // ---------- "debug"
   {
+    // this mode does not exist on PD - this is to implement playdate.debugDraw()
+
     // choose white or black based on saturation
     float saturation = rgb2hsv(vec3(outputcolor)).z;
     // ideally this value is 0.5f (halfway) not sure why this doesn't work?
     return (saturation >= 0.45f) ? DEBUG : TRANSPARENT;
+  }
+  else if (mode == 8)                     // ---------- "pattern"
+  {
+    // this mode does not exist on PD - this is to implement playdate.graphics.setPattern()
+
+    // Use mod() to get the position of the current pixel within the 8x8 pattern
+    int x = int(mod(screen_coords.x, 8.0));
+    int y = int(mod(screen_coords.y, 8.0));
+
+    // Use "x" and "y" multiplied by "w" to index into the pattern array
+    if (pattern[x + y * 8] == 1) {
+      return WHITE;
+    } else {
+      return BLACK;
+    }
   }
   else                                    // ---------- "copy" (default)
   {

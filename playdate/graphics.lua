@@ -9,6 +9,7 @@ local COLOR_BLACK = { r = 49 / 255, g = 47 / 255, b = 40 / 255 }
 module._shader = love.graphics.newShader("playdate/shader")
 module._drawOffset = { x = 0, y = 0}
 module._drawColor = COLOR_WHITE
+module._drawPattern = nil
 module._backgroundColor = COLOR_BLACK
 module._activeFont = {}
 module._drawMode = "copy"
@@ -51,6 +52,7 @@ end
 
 function module.setColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
+  module._drawPattern = nil
   if color == 1 then
     module._drawColor = COLOR_WHITE
     love.graphics.setColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
@@ -58,6 +60,25 @@ function module.setColor(color)
     module._drawColor = COLOR_BLACK
     love.graphics.setColor(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b, 1)
   end
+end
+
+function module.setPattern(pattern)
+  module._drawPattern = pattern
+
+  -- bitshifting does not work in shaders, so do it here in Lua
+  local pixels = {}
+  for i = 1, 8 do
+    for j = 7, 0, -1 do
+      local b = bit.lshift(1, j)
+      if bit.band(pattern[i], b) == b then
+        table.insert(pixels, 1)
+      else
+        table.insert(pixels, 0)
+      end
+    end
+  end
+  
+  module._shader:send("pattern", unpack(pixels))
 end
 
 function module.clear(color)
@@ -93,7 +114,7 @@ function module.setImageDrawMode(mode)
 end
 
 function module.drawCircleAtPoint(x, y, radius)
-  module._shader:send("mode", 0)
+  module._shader:send("mode", 8)
 
   love.graphics.circle("line", x, y, radius)
   module._updateContext()
@@ -102,7 +123,7 @@ function module.drawCircleAtPoint(x, y, radius)
 end
 
 function module.fillCircleAtPoint(x, y, radius)
-  module._shader:send("mode", 0)
+  module._shader:send("mode", 8)
 
   love.graphics.circle("fill", x, y, radius)
   module._updateContext()
@@ -115,7 +136,7 @@ function module.setLineWidth(width)
 end
 
 function module.drawRect(x, y, width, height)
-  module._shader:send("mode", 0)
+  module._shader:send("mode", 8)
 
   love.graphics.rectangle("line", x, y, width, height)
   module._updateContext()
@@ -124,7 +145,7 @@ function module.drawRect(x, y, width, height)
 end
 
 function module.fillRect(x, y, width, height)
-  module._shader:send("mode", 0)
+  module._shader:send("mode", 8)
 
   love.graphics.rectangle("fill", x, y, width, height)
   module._updateContext()
@@ -133,7 +154,7 @@ function module.fillRect(x, y, width, height)
 end
 
 function module.drawLine(x1, y1, x2, y2)
-  module._shader:send("mode", 0)
+  module._shader:send("mode", 8)
 
   love.graphics.line(x1, y1, x2, y2)
   module._updateContext()
@@ -142,7 +163,7 @@ function module.drawLine(x1, y1, x2, y2)
 end
 
 function module.drawArc(x, y, radius, startAngle, endAngle)
-  module._shader:send("mode", 0)
+  module._shader:send("mode", 8)
 
   -- 0 degrees is 270 when drawing an arc on PD...
   startAngle = startAngle - 90
@@ -163,7 +184,7 @@ function module.drawArc(x, y, radius, startAngle, endAngle)
 end
 
 function module.drawPixel(x, y)
-  module._shader:send("mode", 0)
+  module._shader:send("mode", 8)
 
   love.graphics.points(x, y)
   module._updateContext()
