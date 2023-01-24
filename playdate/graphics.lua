@@ -93,13 +93,21 @@ function module.setImageDrawMode(mode)
 end
 
 function module.drawCircleAtPoint(x, y, radius)
+  module._shader:send("mode", 0)
+
   love.graphics.circle("line", x, y, radius)
   module._updateContext()
+
+  module.setImageDrawMode(module._drawMode)
 end
 
 function module.fillCircleAtPoint(x, y, radius)
+  module._shader:send("mode", 0)
+
   love.graphics.circle("fill", x, y, radius)
   module._updateContext()
+
+  module.setImageDrawMode(module._drawMode)
 end
 
 function module.setLineWidth(width)
@@ -107,21 +115,35 @@ function module.setLineWidth(width)
 end
 
 function module.drawRect(x, y, width, height)
+  module._shader:send("mode", 0)
+
   love.graphics.rectangle("line", x, y, width, height)
   module._updateContext()
+
+  module.setImageDrawMode(module._drawMode)
 end
 
 function module.fillRect(x, y, width, height)
+  module._shader:send("mode", 0)
+
   love.graphics.rectangle("fill", x, y, width, height)
   module._updateContext()
+
+  module.setImageDrawMode(module._drawMode)
 end
 
 function module.drawLine(x1, y1, x2, y2)
+  module._shader:send("mode", 0)
+
   love.graphics.line(x1, y1, x2, y2)
   module._updateContext()
+
+  module.setImageDrawMode(module._drawMode)
 end
 
 function module.drawArc(x, y, radius, startAngle, endAngle)
+  module._shader:send("mode", 0)
+
   -- 0 degrees is 270 when drawing an arc on PD...
   startAngle = startAngle - 90
   endAngle = endAngle - 90
@@ -136,11 +158,17 @@ function module.drawArc(x, y, radius, startAngle, endAngle)
     love.graphics.arc("line", "open", x, y, radius, math.rad(endAngle), math.rad(startAngle), 16)
   end
   module._updateContext()
+
+  module.setImageDrawMode(module._drawMode)
 end
 
 function module.drawPixel(x, y)
+  module._shader:send("mode", 0)
+
   love.graphics.points(x, y)
   module._updateContext()
+
+  module.setImageDrawMode(module._drawMode)
 end
 
 function module.setFont(font)
