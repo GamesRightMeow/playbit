@@ -213,3 +213,98 @@ function table.indexOfElement(table, element)
   end
   return nil
 end
+
+-- printTable(...) is just like print but formats tables
+local insert = table.insert
+local sort   = table.sort
+local concat = table.concat
+local function repeatString(s,t)
+	local chars = {}
+	for i=1,t do
+		chars[i] = s
+	end
+	return concat(chars)
+end
+
+-- based on compareAnyTypes from http://lua-users.org/wiki/SortedIteration
+local function sortAny(val1, val2)
+    local type1,type2 = type(val1), type(val2)
+    local num1,num2  = tonumber(val1), tonumber(val2)
+    
+    if num1 and num2 then
+        return num1 < num2
+    elseif type1 ~= type2 then
+        return type1 < type2
+    elseif type1 == 'string'  then
+        return val1 < val2
+    elseif type1 == 'boolean' then
+        return val1
+    else
+        return tostring(val1) < tostring(val2)
+    end
+end
+
+-- from https://www.lua.org/pil/19.3.html
+local function pairsByKey(t, f)
+	local a = {}
+	for n in pairs(t) do insert(a, n) end
+	sort(a, f or sortAny)
+	local i = 0 -- iterator variable
+	local iter = function() -- iterator function
+		i = i + 1
+		if a[i] == nil then return nil
+		else return a[i], t[a[i]] end
+	end
+	return iter
+end
+
+local encounteredTables = nil -- {}
+local function tableToString(o,path,t)
+	path = path or '/'
+	if encounteredTables[o] then
+		return 'reference: '..encounteredTables[o]
+	end
+	encounteredTables[o] = path
+	
+	t = t or 1
+	local lines = {'{'}
+	local tabs = repeatString('\t', t)
+	t = t + 1
+	
+	local line = #lines + 1
+	for k,v in pairsByKey(o) do
+		local ktype = type(k)
+		local vtype = type(v)
+		
+		local key = ''
+		if ktype ~= 'number' then
+			key = '['..tostring(k)..'] = '
+		end
+		
+		local value
+		if vtype == 'table' then
+			value = tableToString(v, path..k..'/', t)
+		else
+			value = tostring(v)
+		end
+		lines[line] = tabs..key..value..','
+		
+		line = line + 1
+	end
+	lines[line] = repeatString('\t', t-2)..'}'
+	return concat(lines, '\n')
+end
+
+function printTable(...)
+	encounteredTables = {}
+	local args = {...}
+	for i=1,#args do
+		local a = args[i]
+		if type(a) == 'table' then
+			-- encounteredTables[a] = '/'..i
+			args[i] = tableToString(a)
+		end
+	end
+	print(unpack(args))
+	encounteredTables = nil
+end
