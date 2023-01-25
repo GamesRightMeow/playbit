@@ -44,8 +44,7 @@ if love.filesystem.getInfo("pdxinfo") then
     playdate.metadata[key] = value
   end
 end
-  
-local lastDrawMode = "copy"
+
 local pb_draw2x = false
 local firstFrame = true
 
@@ -92,9 +91,8 @@ function love.draw()
   love.graphics.translate(playdate.graphics._drawOffset.x, playdate.graphics._drawOffset.y)
 
   -- main update
-  playdate.graphics.setImageDrawMode(lastDrawMode)
+  playdate.graphics.setImageDrawMode(playdate.graphics._drawMode)
   playdate.update()
-  lastDrawMode = playdate.graphics._drawMode
 
   -- debug draw
   if playdate.debugDraw then
@@ -105,7 +103,7 @@ function love.draw()
   -- Not sure why, but we must reset to the default mode (copy = 0) otherwise
   -- modes "stick" through till the next frame and seems to apply to clear().
   -- Must also happen *here* - not tested, but maybe before pop() and canvas.draw()?
-  playdate.graphics.setImageDrawMode("copy")
+  playdate.graphics._shader:send("mode", 0)
 
   -- pop main transform for draw offset
   love.graphics.pop()
