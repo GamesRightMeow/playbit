@@ -6,10 +6,11 @@ local COLOR_WHITE = { r = 176 / 255, g = 174 / 255, b = 167 / 255 }
 -- #312f28
 local COLOR_BLACK = { r = 49 / 255, g = 47 / 255, b = 40 / 255 }
 
+local PATTERN_DEFAULT = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }
+
 module._shader = love.graphics.newShader("playdate/shader")
 module._drawOffset = { x = 0, y = 0}
 module._drawColor = COLOR_WHITE
-module._drawPattern = nil
 module._backgroundColor = COLOR_BLACK
 module._activeFont = {}
 module._drawMode = "copy"
@@ -52,7 +53,9 @@ end
 
 function module.setColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
-  module._drawPattern = nil
+  -- reset pattern, as per PD behavior
+  module.setPattern(PATTERN_DEFAULT)
+
   if color == 1 then
     module._drawColor = COLOR_WHITE
     love.graphics.setColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
