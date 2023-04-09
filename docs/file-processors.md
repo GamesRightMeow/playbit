@@ -89,7 +89,7 @@ fileProcessors = {
   wav = {
     build.waveProcessor,
     {
-      path = "C:/Program Files/Aseprite/Aseprite.exe"
+      path = "C:/ffmpeg/bin/ffmpeg.exe"
     }
   }
 }
