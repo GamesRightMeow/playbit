@@ -33,7 +33,7 @@ function module.asepriteProcessor(input, output, options)
   local asepriteVersion = io.popen(asepritePath.." --version", "r"):read("*a")
   assert(string.match(asepriteVersion, "Aseprite"), "aseprite binary not found")
 
-  local command = asepritePath..asepriteFlags..input
+  local command = asepritePath..asepriteFlags.."\""..input.."\""
 
   if options then
     if options.ignoredLayers then
@@ -49,9 +49,9 @@ function module.asepriteProcessor(input, output, options)
 
   if string.find(input, "-table-") then
     -- json isn't needed, but if its not saved, it fills the console
-    command = command.." --sheet "..output.." --data _tmp/asprite.json"
+    command = command.." --sheet \""..output.."\" --data _tmp/asprite.json"
   else
-    command = command.." --save-as "..output
+    command = command.." --save-as \""..output.."\""
   end
 
   io.popen(command, "w")
@@ -67,7 +67,7 @@ function module.waveProcessor(input, output, options)
     end
   end
 
-  local command = ffmpegPath.." -i "..input.." -ar 44100 -acodec adpcm_ima_wav "..output
+  local command = ffmpegPath.." -i \""..input.."\" -ar 44100 -acodec adpcm_ima_wav \""..output.."\""
   io.popen(command, "w")
 end
 
