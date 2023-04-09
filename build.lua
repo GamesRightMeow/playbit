@@ -1,4 +1,3 @@
--- this build script was only designed to run on Windows!
 local folderOfThisFile = (...):match("(.-)[^%.]+$")
 local pp = require(folderOfThisFile.."LuaPreprocess.preprocess")
 local capToBmfont = require(folderOfThisFile.."tools.caps-to-bmfont")
