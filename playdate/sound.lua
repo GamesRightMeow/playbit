@@ -1,5 +1,3 @@
--- Love2d implementation heavily based on https://github.com/superzazu/denver.lua
-
 playdate.sound = {}
 
 local sampleplayer = {}
