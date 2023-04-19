@@ -96,8 +96,9 @@ function love.draw()
 
   -- debug draw
   if playdate.debugDraw then
-    playdate.graphics._shader:send("mode", 7)
+    playdate.graphics._shader:send("debugDraw", true)
     playdate.debugDraw()
+    playdate.graphics._shader:send("debugDraw", false)
   end
 
   -- Not sure why, but we must reset to the default mode (copy = 0) otherwise

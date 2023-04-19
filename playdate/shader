@@ -4,6 +4,7 @@
 #pragma language glsl3
 
 extern int mode;
+extern bool debugDraw;
 extern int pattern[64];
 
 // color constants that match playdate colors
@@ -28,11 +29,39 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
   vec4 outputcolor = Texel(tex, tex_coords) * color;
   if (mode == 1)                          // ---------- "fillWhite"
   {
-    return (outputcolor.a > 0) ? WHITE : TRANSPARENT;
+    if (outputcolor.a > 0) 
+    {
+      if (debugDraw)
+      {
+        return DEBUG;
+      }
+      else
+      {
+        return WHITE;
+      }
+    }
+    else
+    {
+      return TRANSPARENT;
+    }
   }
   else if (mode == 2)                     // ---------- "fillBlack"
   {
-    return (outputcolor.a > 0) ? BLACK : TRANSPARENT;
+    if (outputcolor.a > 0) 
+    {
+      if (debugDraw)
+      {
+        return DEBUG;
+      }
+      else
+      {
+        return BLACK;
+      }
+    }
+    else
+    {
+      return TRANSPARENT;
+    }
   }
   // else if (mode == 2)                  // ---------- "XOR"
   // {
@@ -54,14 +83,9 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
   // {
   //   // TODO: inverted drawmode
   // }
-  else if (mode == 7)                     // ---------- "debug"
+  else if (mode == 7)                     // ---------- ???
   {
-    // this mode does not exist on PD - this is to implement playdate.debugDraw()
-
-    // choose white or black based on saturation
-    float saturation = rgb2hsv(vec3(outputcolor)).z;
-    // ideally this value is 0.5f (halfway) not sure why this doesn't work?
-    return (saturation >= 0.45f) ? DEBUG : TRANSPARENT;
+    // unused
   }
   else if (mode == 8)                     // ---------- "pattern"
   {
@@ -73,7 +97,14 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
 
     // Use "x" and "y" multiplied by "w" to index into the pattern array
     if (pattern[x + y * 8] == 1) {
-      return WHITE;
+      if (debugDraw)
+      {
+        return DEBUG;
+      }
+      else
+      {
+        return WHITE;
+      }
     } else {
       return BLACK;
     }
@@ -85,7 +116,21 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
       // choose white or black based on saturation
       float saturation = rgb2hsv(vec3(outputcolor)).z;
       // ideally this value is 0.5f (halfway) not sure why this doesn't work?
-      return (saturation >= 0.45f) ? WHITE : BLACK;
+      if (saturation >= 0.45f)
+      {
+        if (debugDraw)
+        {
+          return DEBUG;
+        }
+        else
+        {
+          return WHITE;
+        }
+      }
+      else
+      {
+        return BLACK;
+      }
     }
     else
     {
