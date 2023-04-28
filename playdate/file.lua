@@ -11,7 +11,19 @@ module.kFileAppend = 8
 
 function module.listFiles(path)
   path = path or "/"
-  return love.filesystem.getDirectoryItems(path)
+
+  local files = love.filesystem.getDirectoryItems(path)
+
+  -- PD appends a '/' for folder, but love2d doesn't
+  for i = 1, #files do
+		local file = path.."/"..files[i]
+		local info = love.filesystem.getInfo(file)
+    if info.type == "directory" then
+      files[i] = files[i].."/"
+    end
+	end
+
+  return files
 end
 
 function module.open(path, mode)
