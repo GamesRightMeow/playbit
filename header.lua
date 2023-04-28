@@ -45,7 +45,6 @@ if love.filesystem.getInfo("pdxinfo") then
   end
 end
 
-local pb_draw2x = false
 local firstFrame = true
 
 playdate.graphics._canvas:setFilter("nearest", "nearest")
@@ -59,14 +58,21 @@ playdate.graphics.setColor(0)
 
 math.randomseed(os.time())
 
-function love.draw()  
-  if love.keyboard.isDown("f1") then
-    pb_draw2x = not pb_draw2x
-    if pb_draw2x then
-      love.window.setMode(800, 480)
-    else
-      love.window.setMode(400, 240)
-    end
+playbit = {}
+
+--- Sets the scale of the screen in Love2D
+---@param scale number
+playbit.screenScale = 1
+playbit.newScreenScale = 1
+function playbit.setScreenScale(scale)
+  playbit.newScreenScale = scale
+end
+
+function love.draw()
+  -- must be changed first, love2d doesn't like changing res with canvas active
+  if playbit.newScreenScale ~= playbit.screenScale then
+    playbit.screenScale = playbit.newScreenScale
+    love.window.setMode(400 * playbit.screenScale, 240 * playbit.screenScale)
   end
 
   -- render to canvas to allow 2x scaling
@@ -120,11 +126,7 @@ function love.draw()
   love.graphics.setColor(1, 1, 1, 1)
 
   -- draw canvas to screen
-  if pb_draw2x then
-    love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, 2, 2)
-  else
-    love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, 1, 1)
-  end
+  love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, playbit.screenScale, playbit.screenScale)
 
   -- reset back to set color
   love.graphics.setColor(r, g, b, 1)
