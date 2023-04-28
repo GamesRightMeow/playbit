@@ -120,7 +120,7 @@ Converts a JSON file to a [PDXINFO](https://sdk.play.date/Inside%20Playdate.html
 Optional parameters:
 - **incrementBuildNumber:** If true, the buildNumber will automatically be incremented before building. The source JSON file will also be updated, so that you can commit and track this change in source control. Defaults to `false`.
 
-### Custom
+## Custom
 
 You can also create your own file processor, simply by defining a function in a build script.
 
