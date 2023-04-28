@@ -10,6 +10,7 @@ Playbit includes out-of-the-box file processors for common file types:
 - [Caps fonts](#caps-fonts) (.fnt and paired .png)
 - [Lua](#lua) (.lua)
 - [Wave](#wave) (.wav)
+- [PDXINFO](#pdxinfo) (.json)
 
 ### Default/fallback
 ```lua
