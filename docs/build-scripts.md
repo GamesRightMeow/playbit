@@ -61,7 +61,7 @@ Sets the value of the [DEBUG preprocessor flag](core-concepts.md#debug). A value
 An array of strings that represent boolean flags. If a flag is in this list, it has a value of `true`. Use this to add custom preprocessor flags.
 
 ### fileProcessors
-An object that defines the _global_ [file processors](file-processors.md).
+An object that defines the _global_ file processors. To learn more about file processors, see [File Processors](file-processors.md).
 
 Each key in the list represents the extension you want to associate the processor with e.g. for `.lua` files you should use `lua` as the key.
 
