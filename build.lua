@@ -2,6 +2,7 @@ local folderOfThisFile = (...):match("(.-)[^%.]+$")
 local pp = require(folderOfThisFile.."LuaPreprocess.preprocess")
 local capToBmfont = require(folderOfThisFile.."tools.caps-to-bmfont")
 local fs = require(folderOfThisFile.."tools.filesystem")
+local jsonParser = require(folderOfThisFile.."json.json")
 
 local module = {}
 
@@ -99,6 +100,65 @@ function module.luaProcessor(input, output)
   local processedFileInfo = pp.processFile(settings)
 end
 
+function module.pdxinfoProcessor(input, output, options)
+  local inputFile = io.open(input, "rb")
+  local contents = inputFile:read("a")
+  inputFile:close()
+
+  local metadata = jsonParser.decode(contents)
+
+  -- increment build number
+  if metadata.buildNumber and options and options.incrementBuildNumber then
+    metadata.buildNumber = metadata.buildNumber + 1
+
+    -- json lib doesn't sort properties dertministically, so order the way PD docs
+    -- has it so at least its consistent between builds
+    local sortedProperties = {
+      "name",
+      "author",
+      "description",
+      "bundleID",
+      "version",
+      "buildNumber",
+      "imagePath",
+      "launchSoundPath",
+      "contentWarning",
+      "contentWarning2",
+    }
+
+    -- rebuild json string, since the json lib also doesn't support pretty printing...
+    local jsonStr = "{\n"
+    local first = true
+    for i = 1, #sortedProperties do
+      local k = sortedProperties[i]
+      if metadata[k] then
+        if not first then
+          jsonStr = jsonStr..",\n"
+        end
+        jsonStr = jsonStr..'  "'..k..'": "'..metadata[k]..'"'
+        first = false  
+      end
+    end
+    jsonStr = jsonStr.."\n}"
+
+    -- update metadata file 
+    local inputFile = io.open(input, "w+b")
+    inputFile:write(jsonStr)
+    inputFile:close()
+  end
+
+  -- convert to pdxinfo format
+  local outputStr = ""
+  for k,v in pairs(metadata) do
+    outputStr = outputStr..k.."="..v.."\n"
+  end
+
+  fs.createFolderIfNeeded(output)
+  local outputFile = io.open(output, "w+b")
+  outputFile:write(outputStr)
+  outputFile:close()
+end
+
 function module.processFile(input, output, localProcessors, globalProcessors)
   local ext = fs.getFileExtension(input)
   local processor = (localProcessors and localProcessors[ext]) or globalProcessors[ext]
@@ -139,6 +199,17 @@ function module.processPath(projectFolder, buildFolder, inputPath, outputPath, l
   end
 end
 
+---@class BuildOptions
+---@field assert boolean
+---@field debug boolean
+---@field platform string
+---@field output string
+---@field clearBuildFolder boolean
+---@field fileProcessors table
+---@field files table
+
+--- Make a build!
+---@param options BuildOptions
 function module.build(options)
   local timeStart = os.clock()
 
