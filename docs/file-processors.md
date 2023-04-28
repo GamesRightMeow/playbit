@@ -102,6 +102,23 @@ The FFmpeg executable must either be added to your system path or specified usin
 Optional parameters:
 - **path:** If set, this path is used to call FFmpeg from the command-line instead of relying on your system path. Defaults to `nil`.
 
+### PDXINFO/metadata.json
+```lua
+fileProcessors = {
+  json = {
+    build.pdxinfoProcessor,
+    {
+      incrementBuildNumber = true
+    }
+  }
+}
+```
+
+Converts JSON files to a [PDXINFO](https://sdk.play.date/Inside%20Playdate.html#pdxinfo) file. Optionally auto increments the build number.
+
+Optional parameters:
+- **incrementBuildNumber:** If true, the buildNumber will automatically be incremented before building. The source JSON file will also be updated, so that you can commit and track this change in source control. Defaults to `false`.
+
 ### Custom
 
 You can also create your own file processor, simply by defining a function in a build script.
