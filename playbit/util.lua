@@ -1,6 +1,6 @@
 local module = {}
-pb = pb or {}
-pb.util = module
+playbit = playbit or {}
+playbit.util = module
 
 --- rounds a number to the specified number of decimal places
 function module.round(num, numDecimalPlaces)

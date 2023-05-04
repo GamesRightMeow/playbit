@@ -19,6 +19,7 @@ end
 
 !if LOVE2D then
 require("playdate.playdate")
+require("playdate.metadata")
 require("playdate.graphics")
 require("playdate.image")
 require("playdate.imagetable")
@@ -31,19 +32,6 @@ require("playdate.sound")
 require("playdate.easing")
 require("playdate.frameTimer")
 require("playdate.timer")
-
--- load pdxinfo into memory
-playdate.metadata = {}
-if love.filesystem.getInfo("pdxinfo") then
-  local pdxinfo = love.filesystem.newFile("pdxinfo")
-  pdxinfo:open("r")
-  for line in pdxinfo:lines() do
-    local index = line:find("=")
-    local key = line:sub(1, index - 1)
-    local value = line:sub(index + 1)
-    playdate.metadata[key] = value
-  end
-end
 
 local firstFrame = true
 
@@ -58,21 +46,14 @@ playdate.graphics.setColor(0)
 
 math.randomseed(os.time())
 
-playbit = {}
-
---- Sets the scale of the screen in Love2D
----@param scale number
-playbit.screenScale = 1
-playbit.newScreenScale = 1
-function playbit.setScreenScale(scale)
-  playbit.newScreenScale = scale
-end
-
 function love.draw()
-  -- must be changed first, love2d doesn't like changing res with canvas active
-  if playbit.newScreenScale ~= playbit.screenScale then
-    playbit.screenScale = playbit.newScreenScale
-    love.window.setMode(400 * playbit.screenScale, 240 * playbit.screenScale)
+  local newScreenScale = playdate.graphics._newScreenScale
+  local currentScreenScale = playdate.graphics._screenScale
+
+  -- must be changed at start of frame - love2d doesn't allow changing res with canvas active
+  if newScreenScale ~= currentScreenScale then
+    currentScreenScale = newScreenScale
+    love.window.setMode(400 * currentScreenScale, 240 * currentScreenScale)
   end
 
   -- render to canvas to allow 2x scaling
@@ -126,7 +107,7 @@ function love.draw()
   love.graphics.setColor(1, 1, 1, 1)
 
   -- draw canvas to screen
-  love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, playbit.screenScale, playbit.screenScale)
+  love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, currentScreenScale, currentScreenScale)
 
   -- reset back to set color
   love.graphics.setColor(r, g, b, 1)

@@ -1,6 +1,6 @@
 local module = {}
-pb = pb or {}
-pb.time = module
+playbit = playbit or {}
+playbit.time = module
 
 local lastFrameTime = 0
 local deltaTime = 0

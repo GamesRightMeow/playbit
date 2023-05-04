@@ -78,7 +78,7 @@ function module.isCrankDocked()
 end
 
 function module.getCrankChange()
-    local change = pb.geometry.angleDiff(lastCrankPos, crankPos)
+    local change = playbit.geometry.angleDiff(lastCrankPos, crankPos)
     -- TODO: how does the playdate accelerate this?
     local acceleratedChange = change 
     return change, acceleratedChange

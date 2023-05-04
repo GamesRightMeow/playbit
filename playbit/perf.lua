@@ -1,16 +1,16 @@
 local module = {}
-pb = pb or {}
-pb.perf = module
+playbit = playbit or {}
+playbit.perf = module
 
 local sampleStart = 0
 local frameSamples = {}
 
 function module.beginSample()
-  sampleStart = pb.time.getTime()
+  sampleStart = playbit.time.getTime()
 end
 
 function module.endSample()
-  local endTime = pb.time.getTime()
+  local endTime = playbit.time.getTime()
   print((endTime - sampleStart) .. "ms")
 end
 
@@ -22,13 +22,13 @@ function module.beginFrameSample(name)
       lastDuration = 0
     }
   end
-  frameSamples[name].startTime = pb.time.getTime()
+  frameSamples[name].startTime = playbit.time.getTime()
 !end
 end
 
 function module.endFrameSample(name)
 !if DEBUG then
-  local endTime = pb.time.getTime()
+  local endTime = playbit.time.getTime()
   local startTime = frameSamples[name].startTime
   frameSamples[name].lastDuration = endTime - startTime
 !end
@@ -46,7 +46,7 @@ function module.getFrameSample(name)
     return "0.000"
   end
 
-  return pb.util.round(time, 3)
+  return playbit.util.round(time, 3)
 !else
     return "0.000"
 !end
@@ -57,7 +57,7 @@ function module.getFps()
 !if LOVE2D then
   return love.timer.getFPS()
 !elseif PLAYDATE then
-  return math.floor(1.0 / pb.time.avgDeltaTime())
+  return math.floor(1.0 / playbit.time.avgDeltaTime())
 !end
 end
 

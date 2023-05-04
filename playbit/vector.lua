@@ -1,6 +1,6 @@
 local module = {}
-pb = pb or {}
-pb.vector = module
+playbit = playbit or {}
+playbit.vector = module
 
 function module.angle(x, y)
   return math.deg(math.atan2(-y, x))

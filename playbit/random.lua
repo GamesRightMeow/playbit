@@ -1,6 +1,6 @@
 local module = {}
-pb = pb or {}
-pb.random = module
+playbit = playbit or {}
+playbit.random = module
 
 -- Returns a random value from the list
 function module.choose(list)

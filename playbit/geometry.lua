@@ -1,6 +1,6 @@
 local module = {}
-pb = pb or {}
-pb.geometry = module
+playbit = playbit or {}
+playbit.geometry = module
 
 --- Gets the difference of two angles, wrapped around to the range -180 to 180.
 function module.angleDiff(a, b)
