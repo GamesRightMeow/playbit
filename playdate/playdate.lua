@@ -37,26 +37,30 @@ local joystickToButton = {
   b = "b",
 }
 
--- 0=no input, 1=just pressed, 2=pressed, 3=just released
+local NONE = 0
+local JUST_PRESSED = 1
+local PRESSED = 2
+local JUST_RELEASED = 3
+
 local buttonStates = {
-  up = 0,
-  down = 0,
-  left = 0,
-  right = 0,
-  a = 0,
-  b = 0,
+  up = NONE,
+  down = NONE,
+  left = NONE,
+  right = NONE,
+  a = NONE,
+  b = NONE,
 }
 
 function module.buttonIsPressed(button)
-  return buttonStates[button] == 1 or buttonStates[button] == 2
+  return buttonStates[button] == JUST_PRESSED or buttonStates[button] == PRESSED
 end
 
 function module.buttonJustPressed(button)
-  return buttonStates[button] == 1
+  return buttonStates[button] == JUST_PRESSED
 end
 
 function module.buttonJustReleased(button)
-  return buttonStates[button] == 3
+  return buttonStates[button] == JUST_RELEASED
 end
 
 function module.isCrankDocked()
@@ -127,7 +131,7 @@ function love.gamepadpressed(joystick, gamepadButton)
     return
   end
 
-  buttonStates[button] = 1
+  buttonStates[button] = JUST_PRESSED
 end
 
 function love.gamepadreleased(joystick, gamepadButton)
@@ -139,7 +143,7 @@ function love.gamepadreleased(joystick, gamepadButton)
     return
   end
 
-  buttonStates[button] = 3
+  buttonStates[button] = JUST_RELEASED
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
@@ -174,7 +178,7 @@ function love.keypressed(key)
     return
   end
 
-  buttonStates[button] = 1
+  buttonStates[button] = JUST_PRESSED
 end
 
 function love.keyreleased(key)
@@ -184,15 +188,15 @@ function love.keyreleased(key)
     return
   end
   
-  buttonStates[button] = 3
+  buttonStates[button] = JUST_RELEASED
 end
 
 function module.updateInput()
   for k,v in pairs(buttonStates) do
-    if buttonStates[k] == 1 then
-      buttonStates[k] = 2
-    elseif buttonStates[k] == 3 then
-      buttonStates[k] = 0
+    if buttonStates[k] == JUST_PRESSED then
+      buttonStates[k] = PRESSED
+    elseif buttonStates[k] == JUST_RELEASED then
+      buttonStates[k] = NONE
     end
   end
   lastCrankPos = crankPos
