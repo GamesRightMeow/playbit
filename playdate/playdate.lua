@@ -19,22 +19,13 @@ local isCrankDocked = false
 local crankPos = 0
 local lastCrankPos = 0
 
-local keyToButton = {
-  up = "up",
-  down = "down",
-  left = "left",
-  right = "right",
-  s = "a",
-  a = "b",
-}
-
-local joystickToButton = {
-  dpup = "up",
-  dpdown = "down",
-  dpleft = "left",
-  dpright = "right",
-  a = "a",
-  b = "b",
+module._buttonToKey = {
+  up = "kb_up",
+  down = "kb_down",
+  left = "kb_left",
+  right = "kb_right",
+  a = "kb_s",
+  b = "kb_a",
 }
 
 local NONE = 0
@@ -42,25 +33,36 @@ local JUST_PRESSED = 1
 local PRESSED = 2
 local JUST_RELEASED = 3
 
-local buttonStates = {
-  up = NONE,
-  down = NONE,
-  left = NONE,
-  right = NONE,
-  a = NONE,
-  b = NONE,
-}
+local inputStates = {}
 
 function module.buttonIsPressed(button)
-  return buttonStates[button] == JUST_PRESSED or buttonStates[button] == PRESSED
+  local key = module._buttonToKey[button]
+  if not inputStates[key] then
+    -- no entry, assume no input
+    return false
+  end
+
+  return inputStates[key] == JUST_PRESSED or inputStates[key] == PRESSED
 end
 
 function module.buttonJustPressed(button)
-  return buttonStates[button] == JUST_PRESSED
+  local key = module._buttonToKey[button]
+  if not inputStates[key] then
+    -- no entry, assume no input
+    return false
+  end
+
+  return inputStates[key] == JUST_PRESSED
 end
 
 function module.buttonJustReleased(button)
-  return buttonStates[button] == JUST_RELEASED
+  local key = module._buttonToKey[button]
+  if not inputStates[key] then
+    -- no entry, assume no input
+    return false
+  end
+
+  return inputStates[key] == JUST_RELEASED
 end
 
 function module.isCrankDocked()
@@ -108,7 +110,7 @@ function module.getCrankPosition()
 end
 
 function love.joystickadded(joystick)
-  -- always take most reset added joystick as active joystick
+  -- always take most recently added joystick as active joystick
   lastActiveJoystick = joystick
 end
 
@@ -124,26 +126,12 @@ end
 
 function love.gamepadpressed(joystick, gamepadButton)
   lastActiveJoystick = joystick
-
-  local button = joystickToButton[gamepadButton]
-  if not button then
-    -- button not mapped
-    return
-  end
-
-  buttonStates[button] = JUST_PRESSED
+  inputStates["js_"..gamepadButton] = JUST_PRESSED
 end
 
 function love.gamepadreleased(joystick, gamepadButton)
   lastActiveJoystick = joystick
-
-  local button = joystickToButton[gamepadButton]
-  if not button then
-    -- button not mapped
-    return
-  end
-
-  buttonStates[button] = JUST_RELEASED
+  inputStates["js_"..gamepadButton] = JUST_RELEASED
 end
 
 function love.mousepressed(x, y, button, istouch, presses)
@@ -172,31 +160,20 @@ function love.wheelmoved(x, y)
 end
 
 function love.keypressed(key)
-  local button = keyToButton[key]
-  if not button then
-    -- button not mapped
-    return
-  end
-
-  buttonStates[button] = JUST_PRESSED
+  inputStates["kb_"..key] = JUST_PRESSED
 end
 
-function love.keyreleased(key)
-  local button = keyToButton[key]
-  if not button then
-    -- button not mapped
-    return
-  end
-  
-  buttonStates[button] = JUST_RELEASED
+function love.keyreleased(key)  
+  inputStates["kb_"..key] = JUST_RELEASED
 end
 
 function module.updateInput()
-  for k,v in pairs(buttonStates) do
-    if buttonStates[k] == JUST_PRESSED then
-      buttonStates[k] = PRESSED
-    elseif buttonStates[k] == JUST_RELEASED then
-      buttonStates[k] = NONE
+  -- only update keys that are mapped
+  for k,v in pairs(module._buttonToKey) do
+    if inputStates[v] == JUST_PRESSED then
+      inputStates[v] = PRESSED
+    elseif inputStates[v] == JUST_RELEASED then
+      inputStates[v] = NONE
     end
   end
   lastCrankPos = crankPos
