@@ -90,6 +90,8 @@ function module.getCrankChange()
     return change, acceleratedChange
 end
 
+-- TODO: acceleramator, emulate via leftstick, keyboard...?
+
 function module.getCrankPosition()
   if module.isCrankDocked() then
     return 0
@@ -159,12 +161,72 @@ function love.wheelmoved(x, y)
   end
 end
 
+-- emulate the keys that PD simulator supports
+-- https://sdk.play.date/Inside%20Playdate.html#c-keyPressed
+local supportedCallbackKeys = {
+  ["1"] = true,
+  ["2"] = true,
+  ["3"] = true,
+  ["4"] = true,
+  ["5"] = true,
+  ["6"] = true,
+  ["7"] = true,
+  ["8"] = true,
+  ["9"] = true,
+  ["0"] = true,
+  ["q"] = true,
+  ["w"] = true,
+  ["e"] = true,
+  ["r"] = true,
+  ["t"] = true,
+  ["y"] = true,
+  ["u"] = true,
+  ["i"] = true,
+  ["o"] = true,
+  ["p"] = true,
+  ["a"] = true,
+  ["s"] = true,
+  ["d"] = true,
+  ["f"] = true,
+  ["g"] = true,
+  ["h"] = true,
+  ["j"] = true,
+  ["k"] = true,
+  ["l"] = true,
+  ["z"] = true,
+  ["x"] = true,
+  ["c"] = true,
+  ["v"] = true,
+  ["b"] = true,
+  ["n"] = true,
+  ["m"] = true,
+  [";"] = true,
+  ["'"] = true,
+  [","] = true,
+  ["."] = true,
+  ["/"] = true,
+  ["\\"] = true,
+  ["`"] = true,
+}
+
 function love.keypressed(key)
   inputStates["kb_"..key] = JUST_PRESSED
+
+  if supportedCallbackKeys[key] then
+    if playdate.keyPressed then
+      playdate.keyPressed(key)
+    end
+  end
 end
 
 function love.keyreleased(key)  
   inputStates["kb_"..key] = JUST_RELEASED
+
+  if supportedCallbackKeys[key] then
+    if playdate.keyReleased then
+      playdate.keyReleased(key)
+    end
+  end
 end
 
 function module.updateInput()
