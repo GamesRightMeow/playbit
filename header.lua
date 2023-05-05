@@ -53,6 +53,7 @@ function love.draw()
   -- must be changed at start of frame - love2d doesn't allow changing res with canvas active
   if newScreenScale ~= currentScreenScale then
     currentScreenScale = newScreenScale
+    playdate.graphics._screenScale = currentScreenScale
     love.window.setMode(400 * currentScreenScale, 240 * currentScreenScale)
   end
 
