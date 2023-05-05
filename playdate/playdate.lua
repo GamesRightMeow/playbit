@@ -212,6 +212,10 @@ local supportedCallbackKeys = {
 function love.keypressed(key)
   inputStates["kb_"..key] = JUST_PRESSED
 
+  if playbit.keyPressed then
+    playbit.keyPressed(key)
+  end
+
   if supportedCallbackKeys[key] then
     if playdate.keyPressed then
       playdate.keyPressed(key)
@@ -221,6 +225,10 @@ end
 
 function love.keyreleased(key)  
   inputStates["kb_"..key] = JUST_RELEASED
+
+  if playbit.keyReleased then
+    playbit.keyReleased(key)
+  end
 
   if supportedCallbackKeys[key] then
     if playdate.keyReleased then
