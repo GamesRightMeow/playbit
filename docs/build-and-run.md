@@ -11,7 +11,7 @@ The [Playbit template](https://github.com/GamesRightMeow/playbit-template) comes
 - **playdate: run** - runs your `pdx` in the Playdate simulator.
 - **playdate: build & run** - builds, compiles, and runs your project in the Playdate Simulator.
 
-You can add, remove, and modify these tasks in [tasks.json](../../.vscode/tasks.json).
+You can add, remove, and modify these tasks in `.vscode/tasks.json`.
 
 ### Keyboard shortcuts
 

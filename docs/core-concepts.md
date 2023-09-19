@@ -1,50 +1,105 @@
 # Core concepts
 
-## Playbit header
-The file [header.lua](/header.lua), referred to as _the header_, contains boiler plate code that allows your Playdate code to run under Love2d. The header must be added to the top of `main.lua` with a [LuaPreprocess insert]() `@@"playbit/header.lua"`
+## Lua preprocessing
 
-## Macros
+Playbit introduces a [preprocessing](https://en.wikipedia.org/wiki/Preprocessor) step to the build process. During this step, [metaprograms](#metaprogramming) written in your Lua code are evaluated which generate new versions of your Lua scripts. These new scripts are then passed to the Playdate compiler to generate the final playable build of your game.
 
-This section details available macros to use in your project.
+Note: Lua preprocessing is not directly implemented in Playbit; this functionality is added by the  [LuaPreprocess](http://refreezed.com/luapreprocess) submodule.
 
-To add your own, refer to the documentation on [macros in LuaPreprocess](http://luapreprocess.refreezed.com/docs/extra-functionality/#insert-func).
+## Metaprogramming
+From [Wikipedia](https://en.wikipedia.org/wiki/Metaprogramming):
+> Metaprogramming is a programming technique in which computer programs have the ability to treat other programs as their data. It means that a program can be designed to read, generate, analyze or transform other programs, and even modify itself while running.
 
-### @@ASSERT(condition, falseMessage)
-_This is technically added by [LuaPreprocess](http://luapreprocess.refreezed.com/docs/api/#assert)._
+For more information on how to metaprogram, see [How to metaprogram](http://refreezed.com/luapreprocess/docs/#how-to-metaprogram).
 
-Assert statements are a valuable debugging tool during development. However they come with a performance cost, so you typically don't want to include them in production. 
+## Macro functions
+Macro functions are [metaprograms](#metaprogramming) embedded in your Lua files that generate Lua code at runtime. This is useful if you have code you wish to reuse logic in multiple places, but don't want to incur the performance cost of calling a function.
 
-Lua however doesn't have a way to compile out the native `assert()` function - this is where `@@ASSERT` comes in.
-
-Replace the native `assert()` function with `@@ASSERT` and they will only be included if `assert` is set to `true` in your build config.
-
-### @@IMPORT(path)
-Playdate and Love2d handle including files differently: Playdate uses `import()` and Love2d uses `require()`.
-
-The solution in Playbit is the `@@IMPORT` macro which will resolve to the correct include function at build-time. 
-
-Usage is simple, normally where you'd use a platform specific include function, use `@@IMPORT` instead:
+For example, instead of:
 ```lua
-@@IMPORT("CoreLibs/graphics")
+function calculateCost(a, b)
+    return (a + 10) + (b * 0.10)
+end
+
+function playdate.update()
+    local cost1 = calculateCost(10, 100)
+    local cost2 = calculateCost(20, 1)
+end
+```
+
+You could use:
+```lua
+!(
+function calculateCost(a, b)
+    return "("..a.." + 10) + ("..b.." * 0.10)"
+end
+)
+
+function playdate.update()
+    local cost1 = @@calculateCost(10, 100)
+    local cost2 = @@calculateCost(20, 1)
+end
+```
+
+Which when compiled, would result in:
+```lua
+function playdate.update()
+    local cost1 = (10 + 10) + (100 * 0.10)
+    local cost2 = (20 + 10) + (1 * 0.10)
+end
+```
+
+For more information on how to write macro functions, see [How to metaprogram](http://refreezed.com/luapreprocess/docs/#how-to-metaprogram).
+
+For a list of macro functions added by Playbit, see [Macro functions](macro-functions.md).
+
+## Inserts
+
+An [insert](http://refreezed.com/luapreprocess/docs/extra-functionality/#insert) is a [macro function](#macro-functions) that you can use to insert Lua code from _another file_. This is how [Playbit's header](#playbit-header) is injected into your game.
+
+<!-- TODO: what's a more useful/practical example? -->
+For example:
+```lua
+-- debugstats.lua
+playdate.graphics.drawText(x, 0, 8)
+playdate.graphics.drawText(y, 0, 16)
+```
+
+```lua
+-- main.lua
+local x = 0
+local y = 0
+function playdate.update()
+    if playdate.buttonJustPressed("up") then
+        y = y - 1
+    elseif playdate.buttonJustPressed("down") then
+        y = y + 1
+    elseif playdate.buttonJustPressed("left") then
+        x = x - 1
+    elseif playdate.buttonJustPressed("right") then
+        x = x + 1
+    end
+    @@"debugstats.lua"
+end
 ```
 
 ## Preprocessor flags
+Preprocessor flags are boolean variables that can be used in [macro functions](#macro-functions) to conditionally include (or exclude) blocks of code. For example:
 
-### PLAYDATE
+```lua
+!if PLAYDATE then
+    print("running on playdate!")
+!elseif LOVE2D then
+    print("running in love2d!"
+!end
+```
 
-Evaluates to `true` when `platform` in your build script is set to `playdate`. Use this to write metaprogram statements for code that should only be included in Playdate builds.
-
-### LOVE2D
-
-Evaluates to `true` when `platform` in your build script is set to `love2d`. Use this to write metaprogram statements for code that should only be included in Love2d builds.
-
-### DEBUG
-
-Evaluates to `true` when `debug` in your build script is set to `true`. Use this to write metaprogram statements for code that should only included in debug builds. Useful for removing debugging or development tools from release builds.
-
-<!-- TODO: meta programming? -->
+For a list of preprocessor flags added by Playbit, see [Preprocessor flags](preprocessor-flags.md).
 
 ## Build scripts
 A _build script_ is a Lua script that you run to build your project for a particular platform or configuration. 
 
 For more information, see the [Build Scripts](build-scripts.md)
+
+## Playbit header
+The file [header.lua](../header.lua), referred to as _the header_, contains boiler plate code that allows your Playdate code to run under Love2d. The header is added to the top of your project's `main.lua` with a [LuaPreprocess insert macro](#inserts).
