@@ -9,6 +9,10 @@ module.kFileRead = 3
 module.kFileWrite = 4
 module.kFileAppend = 8
 
+function module.load(path)
+  return love.filesystem.load(path)
+end
+
 function module.listFiles(path)
   path = path or "/"
 
