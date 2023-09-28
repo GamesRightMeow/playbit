@@ -223,6 +223,24 @@ function module.build(options)
   pp.metaEnvironment.LOVE2D = targetPlatform == "love2d"
   pp.metaEnvironment.DEBUG = options.debug
 
+  -- make IMPORT function globally accessible to metaprogram
+  pp.metaEnvironment.IMPORT = function (path)
+    -- path comes in with quotes, remove them
+    path = path:sub(2, #path - 1)
+    if pp.metaEnvironment.PLAYDATE then
+      return pp.metaEnvironment.outputLuaTemplate("import(?)", path)
+    elseif pp.metaEnvironment.LOVE2D then
+      if string.match(path, "^CoreLibs/") then
+        -- ignore these imports, since the playdate namespace is already reimplemented in the global namespace
+        return
+      end
+      path = string.gsub(path, "/", ".")
+      return pp.metaEnvironment.outputLuaTemplate("require(?)", path)
+    else
+      error("Unknown platform!")
+    end
+  end
+
   -- any game specific env values
   if options.env then
     for i = 1, #options.env, 1 do
