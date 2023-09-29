@@ -164,8 +164,10 @@ function module.processFile(input, output, localProcessors, globalProcessors)
   local processor = (localProcessors and localProcessors[ext]) or globalProcessors[ext]
   if processor then
     if type(processor) == "table" then
+      assert(processor[1], "File processor for ."..ext.." is nil - are you sure you configured it correctly?")
       processor[1](input, output, processor[2])
     else
+      assert(processor, "File processor for ."..ext.." is nil - are you sure you configured it correctly?")
       processor(input, output, nil)
     end
   else
