@@ -10,7 +10,11 @@ module.kFileWrite = 4
 module.kFileAppend = 8
 
 function module.load(path)
-  return love.filesystem.load(path)
+  if string.sub(path, #path - 3) == ".pdz" then
+    path = string.sub(path, 1, #path - 4)
+  end
+  
+  return love.filesystem.load(path..".lua")
 end
 
 function module.listFiles(path)
