@@ -6,7 +6,7 @@ local COLOR_WHITE = { r = 176 / 255, g = 174 / 255, b = 167 / 255 }
 -- #312f28
 local COLOR_BLACK = { r = 49 / 255, g = 47 / 255, b = 40 / 255 }
 
-local PATTERN_DEFAULT = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff }
+local PATTERN_DEFAULT = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
 
 module._shader = love.graphics.newShader("playdate/shader")
 module._drawOffset = { x = 0, y = 0}
