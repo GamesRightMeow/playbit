@@ -9,8 +9,6 @@ This section will guide you through adding Playbit to an existing project. You c
 
 1. Add Playbit to your project by adding it as a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) (recommended!) or copying it manually into your project folder.
    - If you copy Playbit manually, make sure you also copy Playbit's submodules.
-1. Add the Playbit header to your `main.lua`. 
+2. In your `main.lua` file, add `@@"playbit/header.lua"` to the top of the file.
    - Learn more about the Playbit header in [Core concepts](core-concepts.md#playbit-header).
-1. Replace instances of `import()` with `@@import`.
-   - Learn more about the `@@IMPORT` macro in [Core concepts](core-concepts.md#macros).
 

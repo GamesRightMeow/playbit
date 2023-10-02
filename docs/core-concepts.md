@@ -101,5 +101,10 @@ A _build script_ is a Lua script that you run to build your project for a partic
 
 For more information, see the [Build Scripts](build-scripts.md)
 
+## Including files via import() vs require()
+The Playdate SDK adds the [import function](https://sdk.play.date/Inside%20Playdate.html#_structuring_your_project) for including files. This is not a native function in Lua, so this is not supported in Love2d.
+
+To address this, Playbit defines an `import()` shim in the [header](core-concepts.md#playbit-header) when running under Love2d. Under the hood, this simply calls `require()` with the corrected path.
+
 ## Playbit header
 The file [header.lua](../header.lua), referred to as _the header_, contains boiler plate code that allows your Playdate code to run under Love2d. The header is added to the top of your project's `main.lua` with a [LuaPreprocess insert macro](#inserts).

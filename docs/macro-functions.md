@@ -13,9 +13,9 @@ Replace the native `assert()` function with `@@ASSERT` and they will only be inc
 ## Import
 `@@IMPORT(path)`
 
-Playdate and Love2d handle including files differently: Playdate uses `import()` and Love2d uses `require()`.
+As an alternative to the `import()` shim, Playbit also provides the `@@IMPORT` macro which will resolve to the correct include function at build-time. This is slightly more efficient for Love2d builds since the path is evaluated at build-time instead of runtime. 
 
-The solution in Playbit is the `@@IMPORT` macro which will resolve to the correct include function at build-time. 
+Under most circumstances you won't need to use this method, but is provided for edge-cases.
 
 Usage is simple, normally where you'd use a platform specific include function, use `@@IMPORT` instead:
 ```lua

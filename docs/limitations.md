@@ -18,13 +18,6 @@ The Playdate SDK adds [additional assignment operators](https://sdk.play.date/In
 
 For example, instead of `myVar += 1` use `myVar = myVar + 1`.
 
-## Using import() vs require()
-The Playdate SDK adds the [import function](https://sdk.play.date/Inside%20Playdate.html#_structuring_your_project) for including files. This is not supported in Love2d.
-
-You'll need to replace calls to `import()` with the Playbit macro `@@IMPORT()`.
-
-For example, instead of `import("CoreLibs/graphics")` use `@@IMPORT("CoreLibs/graphics")`.
-
 ## Using the Love2D API directly
 Playbit reimplements the Playdate API in Love2D, not the other way around! As such, you can't use the Love2D API on Playdate.
 

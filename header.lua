@@ -15,6 +15,15 @@ require("playdate.easing")
 require("playdate.frameTimer")
 require("playdate.timer")
 
+function import(path)
+  if string.match(path, "^CoreLibs/") then
+    -- ignore these imports, since the playdate namespace is already reimplemented in the global namespace
+    return
+  end
+  path = string.gsub(path, "/", ".")
+  return require(path)
+end
+
 local firstFrame = true
 
 playdate.graphics._canvas:setFilter("nearest", "nearest")
