@@ -17,7 +17,8 @@ However Playbit's features also can help improve your workflow when working on P
 - Process assets at build-time with [file processors](file-processors.md) to generate more performant versions e.g. work directly with [Aseprite (.aseprite)](https://www.aseprite.org/) to retain layers, tags, and other features and then auto-generate PNGs at build-time.
 - Compile out blocks of code with [preprocessor flags](core-concepts.md#preprocessor-flags) that aren't relevant for builds e.g. add development tools to test builds without adding bloat to your final production builds.
 - Write more performant and maintainable code e.g. instead of calling `math.abs(num)` in a performance critical area (function calls can add up!) you can inline the method with a [macro](core-concepts.md#macros).
-- If you're not creating a cross-platform game, all Playdate SDK functions are available to you since Playbit doesn't need to emulate them for Love2D.
+
+Additionally, if you're not creating a cross-platform game, all Playdate SDK functions are available to you since Playbit doesn't need to emulate them for Love2D.
 
 ## Current features
 
