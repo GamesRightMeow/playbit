@@ -1,4 +1,3 @@
-<!-- FIXME: relink incoming -->
 # Macros
 
 ## Assert
