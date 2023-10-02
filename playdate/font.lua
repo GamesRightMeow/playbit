@@ -19,6 +19,10 @@ function meta:getHeight()
   return self.data:getHeight()
 end
 
+function meta:getLeading()
+  return self.data:getLineHeight()
+end
+
 function meta:drawText(str, x, y)
   local currentFont = love.graphics.getFont()
   love.graphics.setFont(self.data)
