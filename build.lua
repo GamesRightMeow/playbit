@@ -25,7 +25,7 @@ function module.asepriteProcessor(input, output, options)
 
   -- TODO: warn if aseprite not in path?
   local asepritePath = "aseprite"
-  local asepriteFlags = " -bv "
+  local asepriteFlags = " -bv"
 
   if options and options.path then
     asepritePath = "\""..fs.sanitizePath(options.path).."\""
@@ -34,15 +34,20 @@ function module.asepriteProcessor(input, output, options)
   local asepriteVersion = io.popen(asepritePath.." --version", "r"):read("*a")
   assert(string.match(asepriteVersion, "Aseprite"), "aseprite binary not found")
 
-  local command = asepritePath..asepriteFlags.."\""..input.."\""
+  local command = asepritePath..asepriteFlags
 
   if options then
+    -- ignore-layer must be placed before the file https://www.aseprite.org/docs/cli/#ignore-layer
     if options.ignoredLayers then
       for i = 1, #options.ignoredLayers, 1 do
         command = command.." --ignore-layer "..options.ignoredLayers[i]
       end
     end
+  end
 
+  command = command.." \""..input.."\""
+
+  if options then
     if options.scale then
       command = command.." --scale "..options.scale
     end
