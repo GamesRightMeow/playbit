@@ -11,6 +11,12 @@ function sampleplayer.new(path)
   return sample
 end
 
+function sampleplayer.meta:copy()
+  local sample = setmetatable({}, sampleplayer.meta)
+  sample.data = self.data:clone()
+  return sample
+end
+
 function sampleplayer.meta:play(repeatCount, rate)
   -- TODO: repeat count
   if rate then
