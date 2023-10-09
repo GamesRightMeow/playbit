@@ -1,13 +1,18 @@
 # Macros
 
+To learn more about macro functions, see [Core Concepts](core-concepts.md#macro-functions).
+
 ## Assert
 `@@ASSERT(condition, falseMessage)`
 
 Assert statements are a valuable debugging tool during development. However they come with a performance cost, so you typically don't want to include them in production. 
 
-Lua however doesn't have a way to compile out the native `assert()` function - this is where `@@ASSERT` comes in.
+Lua however doesn't have a way to compile out the native `assert()` function - this is where `@@ASSERT` comes in. Replace the native `assert()` function with `@@ASSERT` and they will only be included if `assert` is set to `true` in your build config.
 
-Replace the native `assert()` function with `@@ASSERT` and they will only be included if `assert` is set to `true` in your build config.
+## Log
+`@@LOG(message)`
+
+Persistent print statements are useful for development, but come with a performance cost. Use the log macro when you want print statements when the [debug flag](build-scripts.md#debug) is enabled.
 
 ## Import
 `@@IMPORT(path)`

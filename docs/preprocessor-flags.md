@@ -1,5 +1,6 @@
-<!-- FIXME: relink incoming -->
 # Preprocessor flags
+
+To learn more about preprocessor flags, see [Core Concepts](core-concepts.md#preprocessor-flags).
 
 ## PLAYDATE
 

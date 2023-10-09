@@ -59,7 +59,7 @@ A boolean value where a value of `true` causes the build folder to be deleted (i
 Set this to `false` for custom build scripts where you want to do a smaller rebuild i.e. only update level files.
 
 ### debug
-Sets the value of the [DEBUG preprocessor flag](core-concepts.md#debug). A value of `true` indicates the build is a non-production build. Currently only affects [perf.lua](../playbit/perf.lua) but can be used to control what builds your own developer tools are enabled in.
+Sets the value of the [DEBUG preprocessor flag](preprocessor-flags.md). A value of `true` indicates the build is a non-production build. Currently only affects [perf.lua](../playbit/perf.lua) but can be used to control what builds your own developer tools are enabled in.
 
 ### env
 An array of strings that represent boolean flags. If a flag is in this list, it has a value of `true`. Use this to add custom preprocessor flags.

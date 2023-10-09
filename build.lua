@@ -201,6 +201,33 @@ function module.processPath(projectFolder, buildFolder, inputPath, outputPath, l
   end
 end
 
+local function addMacros(environment)
+  environment.IMPORT = function (path)
+    -- path comes in with quotes, remove them
+    path = path:sub(2, #path - 1)
+    if environment.PLAYDATE then
+      return environment.outputLuaTemplate("import(?)", path)
+    elseif environment.LOVE2D then
+      if string.match(path, "^CoreLibs/") then
+        -- ignore these imports, since the playdate namespace is already reimplemented in the global namespace
+        return
+      end
+      path = string.gsub(path, "/", ".")
+      return environment.outputLuaTemplate("require(?)", path)
+    else
+      error("Unknown platform!")
+    end
+  end
+
+  environment.LOG = function (message)
+    if environment.DEBUG then
+      return "print("..message..")"
+    else
+      return ""
+    end
+  end
+end
+
 ---@class BuildOptions
 ---@field assert boolean
 ---@field debug boolean
@@ -225,23 +252,8 @@ function module.build(options)
   pp.metaEnvironment.LOVE2D = targetPlatform == "love2d"
   pp.metaEnvironment.DEBUG = options.debug
 
-  -- make IMPORT function globally accessible to metaprogram
-  pp.metaEnvironment.IMPORT = function (path)
-    -- path comes in with quotes, remove them
-    path = path:sub(2, #path - 1)
-    if pp.metaEnvironment.PLAYDATE then
-      return pp.metaEnvironment.outputLuaTemplate("import(?)", path)
-    elseif pp.metaEnvironment.LOVE2D then
-      if string.match(path, "^CoreLibs/") then
-        -- ignore these imports, since the playdate namespace is already reimplemented in the global namespace
-        return
-      end
-      path = string.gsub(path, "/", ".")
-      return pp.metaEnvironment.outputLuaTemplate("require(?)", path)
-    else
-      error("Unknown platform!")
-    end
-  end
+  -- add playbit defined macros
+  addMacros(pp.metaEnvironment)
 
   -- any game specific env values
   if options.env then
