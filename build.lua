@@ -73,7 +73,7 @@ function module.waveProcessor(input, output, options)
     end
   end
 
-  local command = ffmpegPath.." -i \""..input.."\" -ar 44100 -acodec adpcm_ima_wav \""..output.."\""
+  local command = ffmpegPath.." -loglevel error -i \""..input.."\" -ar 44100 -acodec adpcm_ima_wav \""..output.."\""
   io.popen(command, "w")
 end
 
