@@ -215,7 +215,7 @@ meta.__index = function(table, key)
 	elseif key == "timeLeft" then
 		return math.max(0, table.duration - table.currentTime)
 	else
-		return rawget(playdate.timer, key)
+		return rawget(meta, key)
 	end
 end
 
