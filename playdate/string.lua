@@ -1,27 +1,28 @@
--- taken from the playdate sdk
+local module = {}
+playdate.string = module
 
-playdate.string = {}
-
-function playdate.string.UUID(length)
-  str = ""
-  for i=1, length do str = str..string.char(math.random(65, 90)) end
+function module.UUID(length)
+  local str = ""
+  for i = 1, length do 
+    str = str..string.char(math.random(65, 90)) 
+  end
   return str
 end
 
-function playdate.string.getTextSize(str)
+function module.getTextSize(str)
   return playdate.graphics.getTextSize(str)
 end
 
 -- trim7() from http://lua-users.org/wiki/StringTrim
 local match = string.match
-function playdate.string.trimWhitespace(str)
-   return match(str,'^()%s*$') and '' or match(str,'^%s*(.*%S)')
+function module.trimWhitespace(str)
+  return match(str, '^()%s*$') and '' or match(str, '^%s*(.*%S)')
 end
 
-function playdate.string.trimLeadingWhitespace(str)
-   return match(str,'^%s*(.+)')
+function module.trimLeadingWhitespace(str)
+  return match(str, '^%s*(.+)')
 end
 
-function playdate.string.trimTrailingWhitespace(str)
-   return match(str,'(.-)%s*$')
+function module.trimTrailingWhitespace(str)
+  return match(str, '(.-)%s*$')
 end
