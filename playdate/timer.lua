@@ -209,6 +209,16 @@ function module.allTimers()
 	return timers
 end
 
+meta.__index = function(table, key)
+	if key == "running" then
+		return not table.paused
+	elseif key == "timeLeft" then
+		return math.max(0, table.duration - table.currentTime)
+	else
+		return rawget(playdate.timer, key)
+	end
+end
+
 function meta:pause()
 	self.paused = true
 end
