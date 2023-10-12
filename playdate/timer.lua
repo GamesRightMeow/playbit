@@ -197,7 +197,8 @@ function module.updateTimers()
   
   -- remove timers
   for i = 1, #timersToRemove do
-		local index = table.indexOfElement(timers, timer)
+    local t = timersToRemove[i]
+		local index = table.indexOfElement(timersToRemove, t)
 		if index then 
 			table.remove(timers, index)
 		end
@@ -242,5 +243,5 @@ end
 
 function meta:remove()
   self.active = false
-	table.insert(timers, self)
+	table.insert(timersToRemove, self)
 end
