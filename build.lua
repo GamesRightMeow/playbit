@@ -256,6 +256,7 @@ function module.build(options)
   pp.metaEnvironment.PLAYDATE = targetPlatform == "playdate"
   pp.metaEnvironment.LOVE2D = targetPlatform == "love2d"
   pp.metaEnvironment.DEBUG = options.debug
+  pp.metaEnvironment.PROFILER = options.profiler
 
   -- add playbit defined macros
   addMacros(pp.metaEnvironment)

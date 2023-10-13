@@ -2,16 +2,33 @@ local module = {}
 playbit = playbit or {}
 playbit.perf = module
 
-local sampleStart = 0
+local samples = {}
 local frameSamples = {}
 
-function module.beginSample()
-  sampleStart = playbit.time.getTime()
+!(
+function PROFILER_BEGIN_SAMPLE(name)
+  if PROFILER then
+    return "playbit.perf.beginSample("..name..")"
+  end
+  return ""
 end
 
-function module.endSample()
-  local endTime = playbit.time.getTime()
-  print((endTime - sampleStart) .. "ms")
+function PROFILER_END_SAMPLE(name)
+  if PROFILER then
+    return "playbit.perf.endSample("..name..")"
+  end
+  return ""
+end
+)
+
+function module.beginSample(name)
+  samples[name] = playdate.getCurrentTimeMilliseconds()
+end
+
+function module.endSample(name)
+  local endTime = playdate.getCurrentTimeMilliseconds()
+  local startTime = samples[name]
+  print(name, "=", endTime - startTime, "ms")
 end
 
 function module.beginFrameSample(name)
