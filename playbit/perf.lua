@@ -28,7 +28,7 @@ end
 function module.endSample(name)
   local endTime = playdate.getCurrentTimeMilliseconds()
   local startTime = samples[name]
-  print(name, "=", endTime - startTime, "ms")
+  print(name.."="..(endTime - startTime).."ms")
 end
 
 function module.beginFrameSample(name)
