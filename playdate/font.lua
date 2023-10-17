@@ -8,6 +8,7 @@ module.__index = meta
 function module.new(path)
   local font = setmetatable({}, meta)
   font.data = love.graphics.newFont(path..".fnt")
+  font.data:setLineHeight(0)
   return font
 end
 
@@ -21,6 +22,10 @@ end
 
 function meta:getLeading()
   return self.data:getLineHeight()
+end
+
+function meta:setLeading(pixels)
+  return self.data:setLineHeight(pixels)
 end
 
 function meta:drawText(str, x, y)
