@@ -59,3 +59,71 @@ function meta:drawTextAligned(str, x, y, alignment)
   love.graphics.setFont(currentFont)
   playdate.graphics._updateContext()
 end
+
+function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
+  y = y - 1
+  
+  local lineHeight = self:getHeight() + self:getLeading() + leadingAdjustment
+  
+  if lineHeight > height then
+    -- even one line won't fit
+    return 0, 0, false
+  end
+
+  local line = ""
+  local lineCount = 0
+  local largestLineWidth = 0
+  local truncated = false
+
+  for w in string.gmatch(text, "%S+") do
+    -- append words to line until it doesn't fit
+    local l = line..w
+    if self:getTextWidth(l) <= width then
+      line = l.." "
+      goto continue
+    end
+
+    -- trimm trailing space
+    line = string.sub(line, 1, #line - 1)
+
+    if lineHeight * (lineCount + 1) > height 
+    or lineHeight * (lineCount + 2) > height then
+      -- this line or the next line surpasses specified max height
+      line = line..truncationString
+      local lineWidth = self:getTextWidth(line)
+      if lineWidth > largestLineWidth then
+        largestLineWidth = lineWidth
+      end
+
+      self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
+      line = nil
+      lineCount = lineCount + 1
+      truncated = true
+      break
+    end
+
+    local lineWidth = self:getTextWidth(line)
+    if lineWidth > largestLineWidth then
+      largestLineWidth = lineWidth
+    end
+
+    self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
+    line = w.." "
+    lineCount = lineCount + 1
+
+    ::continue::
+  end
+
+  if line then
+    -- print last line if shorter than specified width
+    self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
+    lineCount = lineCount + 1
+
+    local lineWidth = self:getTextWidth(line)
+    if lineWidth > largestLineWidth then
+      largestLineWidth = lineWidth
+    end
+  end
+  
+  return largestLineWidth, (lineHeight * lineCount) - leadingAdjustment, truncated
+end

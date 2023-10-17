@@ -218,9 +218,18 @@ function module.getTextSize(str)
 end
 
 -- playdate.graphics.drawTextInRect(str, x, y, width, height, [leadingAdjustment, [truncationString, [alignment, [font]]]]) 
--- playdate.graphics.drawTextInRect(str, rect, [leadingAdjustment, [truncationString, [alignment, [font]]]]) 
 function module.drawTextInRect(text, x, ...)
-  error("not implemented!")
+  local y, width, height, leadingAdjustment, truncationString, textAlignment, font
+  if type(x) == "number" then
+    y, width, height, leadingAdjustment, truncationString, textAlignment, font = select(1, ...)
+  else
+    -- rect
+    error("Rect support not implemented!")
+  end
+
+  font = font or module._activeFont
+
+  return font:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
 end
 
 function module.drawText(text, x, y, fontFamily, leadingAdjustment)
