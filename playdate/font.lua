@@ -11,7 +11,7 @@ function module.new(path)
   return font
 end
 
-function meta:getWidth(str)
+function meta:getTextWidth(str)
   return self.data:getWidth(str)
 end
 
@@ -33,7 +33,7 @@ end
 
 -- 0=left 1=right 2=center
 function meta:drawTextAligned(str, x, y, alignment)
-  local width = self:getWidth(str)
+  local width = self:getTextWidth(str)
   if alignment == 1 then
     -- right
     x = x - width
