@@ -13,6 +13,11 @@ function module.new(path)
 end
 
 function meta:getTextWidth(str)
+  --[[ 
+    NOTE: width returned will not be the same as on Playdate
+    if a tracking value is set in the font (.fnt)
+    https://github.com/GamesRightMeow/playbit/issues/12
+  ]]--
   return self.data:getWidth(str)
 end
 
