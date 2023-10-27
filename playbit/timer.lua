@@ -75,15 +75,17 @@ function module.update(dt)
     local startValue = timer[module.IND_START_VALUE]
     local endValue = timer[module.IND_END_VALUE]
 
+    timer[module.IND_COMPLETE] = false
     if time == duration then
       if timer[module.IND_REPEATS] then
         timer[module.IND_TIME] = 0
         timer[module.IND_VALUE] = startValue
       else
         timer[module.IND_ACTIVE] = false
-        timer[module.IND_COMPLETE] = true
         timer[module.IND_TO_REMOVE] = true
       end
+      -- always flag as complete so that repeating timers are at least complete for one frame
+      timer[module.IND_COMPLETE] = true
       goto continue
     end
 
@@ -130,7 +132,7 @@ function meta:getValue(index)
   return self[index]
 end
 
----Resets the timer back to zero, but does not pause the timer.
+---Resets the timer back to zero, but does not pause the timer. If the timer has already completed, you'll need to call start()
 function meta:reset()
   self[module.IND_ACTIVE] = true
   self[module.IND_TIME] = 0
