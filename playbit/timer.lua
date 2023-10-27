@@ -24,8 +24,14 @@ module.IND_REPEATS = 12
 module.IND_HAS_EASING = 13
 module.IND_REMOVED = 14
 
+---Creates and automatically starts a new timer. Timers are stored as contiguous arrays for faster updates.
+---@param duration number Duration the timer should run. 
+---@param repeats boolean Optional. Defaults to false. If true, the timer will repeat when it completes indefinitely.
+---@param startValue number Optional. Defaults to 1. The starting value to interpolate from.
+---@param endValue number Optional. Defaults to 1. The ending value to interpolate to.
+---@param easingFunction function Optional. Defaults to easingFunctions.linear. The function used to interpolate between the startValue and endValue.
+---@return table The new timer.
 function module.new(duration, repeats, startValue, endValue, easingFunction)
-  @@ASSERT(repeats == nil or type(repeats) == "boolean", "Second parameter should be a boolean!")
   local timer = {}
   timer[module.IND_ACTIVE] = true
   timer[module.IND_REPEATS] = repeats or false
@@ -47,6 +53,8 @@ function module.new(duration, repeats, startValue, endValue, easingFunction)
   return timer
 end
 
+---Call in playdate.update to tick all timers.
+---@param dt number The time elapsed since the last frame.
 function module.update(dt)
   for i = timerCount, 1, -1 do
     local timer = timers[i]
@@ -103,19 +111,26 @@ function module.update(dt)
   end
 end
 
+---Returns all active timers.
+---@return table
 function module.allTimers()
   return timers
 end
 
+---Removes all active timers.
 function module.removeAll()
   timers = {}
   timerCount = 0
 end
 
+---Returns the specified property. Use the raw int value, or one of the IND_ constants e.g. `myTimer:getValue(playbit.timer.IND_ACTIVE)`.
+---@param index number
+---@return unknown
 function meta:getValue(index)
   return self[index]
 end
 
+---Resets the timer back to zero, but does not pause the timer.
 function meta:reset()
   self[module.IND_ACTIVE] = true
   self[module.IND_TIME] = 0
@@ -123,10 +138,12 @@ function meta:reset()
   self[module.IND_COMPLETE] = false
 end
 
+---Pauses the timer.
 function meta:pause()
   self[module.IND_ACTIVE] = false
 end
 
+---Starts/resumes the timer.
 function meta:start()
   self[module.IND_ACTIVE] = true
   if self[module.IND_REMOVED] then
@@ -137,6 +154,7 @@ function meta:start()
   end
 end
 
+---Marks the timer for removal in the next update. This is normally automatically done when the timer is completed.
 function meta:remove()
   self[module.IND_TO_REMOVE] = true
   self[module.IND_REMOVED] = true
