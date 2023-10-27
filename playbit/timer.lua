@@ -125,11 +125,20 @@ function module.removeAll()
   timerCount = 0
 end
 
----Returns the specified property. Use the raw int value, or one of the IND_ constants e.g. `myTimer:getValue(playbit.timer.IND_ACTIVE)`.
+---Convenience method for getting timer values. Use the raw int value, or one of the IND_ constants e.g. `myTimer:getValue(playbit.timer.IND_ACTIVE)`.
+---Use [] directly for more performant access e.g. `myTimer[playbit.timer.IND_ACTIVE] = false`
 ---@param index number
 ---@return unknown
 function meta:getValue(index)
   return self[index]
+end
+
+---Convenience method for setting timer values. Use the raw int value, or one of the IND_ constants e.g. `myTimer:setValue(playbit.timer.IND_ACTIVE, false)`.
+---Use [] directly for more performant access e.g. `myTimer[playbit.timer.IND_ACTIVE] = false`
+---@param index any
+---@param value any
+function meta:setValue(index, value)
+  self[index] = value
 end
 
 ---Resets the timer back to zero, but does not pause the timer. If the timer has already completed, you'll need to call start()
