@@ -14,6 +14,7 @@ require("playdate.sound")
 require("playdate.easing")
 require("playdate.frameTimer")
 require("playdate.timer")
+require("playdate.video")
 
 function import(path)
   if string.match(path, "^CoreLibs/") then
