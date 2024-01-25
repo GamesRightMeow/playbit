@@ -249,7 +249,7 @@ function module:_updateContext()
   -- love2d doesn't allow calling newImageData() when canvas is active
   love.graphics.setCanvas()
   local imageData = activeContext._canvas:newImageData()
-  love.graphics.setCanvas(activeContext._canvas)
+  love.graphics.setCanvas({activeContext._canvas, stencil=true})
 
   -- update image
   activeContext.data:replacePixels(imageData)
@@ -268,7 +268,7 @@ function module.pushContext(image)
   table.insert(module._contextStack, image)
 
   -- update current render target
-  love.graphics.setCanvas(image._canvas)
+  love.graphics.setCanvas({image._canvas, stencil=true})
 end
 
 function module.popContext()
@@ -278,9 +278,9 @@ function module.popContext()
   table.remove(module._contextStack)
   -- update current render target
   if #module._contextStack == 0 then
-    love.graphics.setCanvas(module._canvas)
+    love.graphics.setCanvas({module._canvas, stencil=true})
   else
     local activeContext = module._contextStack[#module._contextStack]
-    love.graphics.setCanvas(activeContext._canvas)
+    love.graphics.setCanvas({activeContext._canvas, stencil=true})
   end
 end
