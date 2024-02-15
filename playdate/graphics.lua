@@ -166,6 +166,28 @@ function module.fillRect(x, y, width, height)
   module.setImageDrawMode(module._drawMode)
 end
 
+function module.drawRoundRect(x, y, width, height, radius)
+  -- TODO: love's rectangle function doesn't draw the same way as Playdate's
+  -- module._shader:send("mode", 8)
+
+  -- love.graphics.rectangle("line", x, y, width, height, radius, radius, 0)
+  -- module._updateContext()
+
+  -- module.setImageDrawMode(module._drawMode)
+  error("not implemented")
+end
+
+function module.fillRoundRect(x, y, width, height, radius)
+  -- TODO: love's rectangle function doesn't draw the same way as Playdate's
+  -- module._shader:send("mode", 8)
+
+  -- love.graphics.rectangle("fill", x, y, width, height, radius, radius, 0)
+  -- module._updateContext()
+
+  -- module.setImageDrawMode(module._drawMode)
+  error("not implemented")
+end
+
 function module.drawLine(x1, y1, x2, y2)
   module._shader:send("mode", 8)
 
