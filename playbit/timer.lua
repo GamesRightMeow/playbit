@@ -157,8 +157,8 @@ end
 ---Starts/resumes the timer.
 function meta:start()
   self[module.IND_ACTIVE] = true
+  self[module.IND_TO_REMOVE] = false
   if self[module.IND_REMOVED] then
-    self[module.IND_TO_REMOVE] = false
     self[module.IND_REMOVED] = false
     timerCount = timerCount + 1
     timers[timerCount] = self
