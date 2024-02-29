@@ -1,5 +1,6 @@
 !if LOVE2D then
 require("playdate.playdate")
+require("playdate.datastore")
 require("playdate.string")
 require("playdate.metadata")
 require("playdate.graphics")
