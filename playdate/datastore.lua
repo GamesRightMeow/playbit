@@ -16,8 +16,12 @@ end
 function module.read(filename)
   filename = filename or "data"
   filename = filename..".json"
-
+  
   local str, size = love.filesystem.read(filename)
+  if str == nil then
+    return nil
+  end
+
   local table = jsonParser.decode(str)
   return table
 end
