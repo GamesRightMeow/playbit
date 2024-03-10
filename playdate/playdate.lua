@@ -3,6 +3,28 @@ playdate = module
 
 require("playbit.geometry")
 
+-- ████████╗██╗███╗   ███╗███████╗
+-- ╚══██╔══╝██║████╗ ████║██╔════╝
+--    ██║   ██║██╔████╔██║█████╗  
+--    ██║   ██║██║╚██╔╝██║██╔══╝  
+--    ██║   ██║██║ ╚═╝ ██║███████╗
+--    ╚═╝   ╚═╝╚═╝     ╚═╝╚══════╝
+                               
+function module.getTime()
+  local seconds = os.time()
+  local date = os.date("*t", seconds)
+  return {
+    year = date.year,
+    month = date.month,
+    day = date.day,
+    weekday = date.wday,
+    hour = date.hour,
+    minute = date.min,
+    second = date.sec,
+    millisecond = date.sec * 1000,
+  }
+end
+
 function module.getCurrentTimeMilliseconds()
   return love.timer.getTime() * 1000
 end
