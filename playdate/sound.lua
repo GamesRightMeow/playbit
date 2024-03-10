@@ -46,6 +46,10 @@ function sampleplayer.meta:setVolume(value)
   self.data:setVolume(value)
 end
 
+function sampleplayer.meta:getVolume()
+  return self.data:getVolume()
+end
+
 function sampleplayer.meta:setOffset(value)
   self.data:seek(value)
 end
@@ -90,12 +94,20 @@ function fileplayer.meta:stop()
   self.data:stop()
 end
 
+function fileplayer.meta:pause(value)
+  self.data:pause()
+end
+
 function fileplayer.meta:isPlaying()
   return self.data:isPlaying()
 end
 
 function fileplayer.meta:setVolume(value)
   self.data:setVolume(value)
+end
+
+function fileplayer.meta:getVolume()
+  return self.data:getVolume()
 end
 
 function fileplayer.meta:setRate(rate)
