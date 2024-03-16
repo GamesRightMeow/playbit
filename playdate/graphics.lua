@@ -35,6 +35,17 @@ kTextAlignment = {
 	center = 2,
 }
 
+---Converts playdate color into love rendering color.
+---@return color
+function module.getLoveColor(color)
+  @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
+  if color == 1 then
+    return COLOR_WHITE
+  else
+    return COLOR_BLACK
+  end
+end
+
 function module.setDrawOffset(x, y)
   module._drawOffset.x = x
   module._drawOffset.y = y
