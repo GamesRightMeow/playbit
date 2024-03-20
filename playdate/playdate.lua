@@ -50,6 +50,13 @@ module._buttonToKey = {
   b = "kb_a",
 }
 
+module.kButtonA = "a"
+module.kButtonB = "b"
+module.kButtonUp = "up"
+module.kButtonDown = "down"
+module.kButtonLeft = "left"
+module.kButtonRight = "right"
+
 local NONE = 0
 local JUST_PRESSED = 1
 local PRESSED = 2
@@ -85,6 +92,12 @@ function module.buttonJustReleased(button)
   end
 
   return inputStates[key] == JUST_RELEASED
+end
+
+function module.getButtonState(button)
+  local key = module._buttonToKey[button]
+  local value = inputStates[key]
+  return value == PRESSED, value == PRESSED, value == JUST_RELEASED
 end
 
 function module.isCrankDocked()
