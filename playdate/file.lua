@@ -9,6 +9,8 @@ module.kFileRead = 3
 module.kFileWrite = 4
 module.kFileAppend = 8
 
+local openFileCount = 0
+
 function module.load(path)
   if string.sub(path, #path - 3) == ".pdz" then
     path = string.sub(path, 1, #path - 4)
@@ -35,6 +37,12 @@ function module.listFiles(path)
 end
 
 function module.open(path, mode)
+  -- playdate has a maximum open file count of 64, so emulate that
+  if openFileCount >= 64 then
+    return nil
+  end
+  openFileCount = openFileCount + 1
+
   mode = mode or module.kFileRead
 
   local data = love.filesystem.newFile(path)
@@ -49,10 +57,12 @@ function module.open(path, mode)
   local file = setmetatable({}, meta)
   file._data = data
   file._lastLine = data:lines()
+
   return file
 end
 
 function meta:close()
+  openFileCount = openFileCount - 1
   self._data:close()
 end
 
