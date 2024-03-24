@@ -50,7 +50,7 @@ function love.draw()
   end
 
   -- render to canvas to allow 2x scaling
-  love.graphics.setCanvas(playdate.graphics._canvas)
+  love.graphics.setCanvas({playdate.graphics._canvas, stencil=true})
   love.graphics.setShader(playdate.graphics._shader)
 
   --[[ 
