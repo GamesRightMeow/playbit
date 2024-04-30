@@ -52,8 +52,10 @@ function parseLine(line, inputData)
 
   local char1 = string.sub(line, 1, 1)
   local char2 = string.sub(line, 2, 2)
-
-  if isWhitespace(char2) then  
+  
+  if #char1 == 0 or isWhitespace(char1) then
+    -- do nothing, assume this is a blank line
+  elseif isWhitespace(char2) then  
     -- if second char is whitespace, we can assume this line is a glyph
     if isAscii(char1) then
       local glyph = {
