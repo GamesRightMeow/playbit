@@ -1,3 +1,4 @@
 _dist/*
 _test/*
 .vscode/*
+_tests/*
