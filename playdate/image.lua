@@ -5,6 +5,12 @@ local meta = {}
 meta.__index = meta
 module.__index = meta
 
+function module.newFromData(imageData)
+  local img = setmetatable({}, meta)
+  img.data = love.graphics.newImage(imageData)
+  return img
+end
+
 function module.new(widthOrPath, height, bgcolor)
   @@ASSERT(bgcolor == nil, "Parameter 'bgcolor' is not implemented.")
   local img = setmetatable({}, meta)
