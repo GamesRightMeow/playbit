@@ -247,10 +247,11 @@ local supportedCallbackKeys = {
 function love.keypressed(key)
   inputStates["kb_"..key] = JUST_PRESSED
 
+  --[[ Playdate only has a limited range of supported keys, so Playbit exposes the separate
+  `playbit.keyPressed` handler so that it can be used to listen to any keypress under love2d. ]]--
   if playbit.keyPressed then
     playbit.keyPressed(key)
   end
-
   if supportedCallbackKeys[key] then
     if playdate.keyPressed then
       playdate.keyPressed(key)
