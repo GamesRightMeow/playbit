@@ -12,7 +12,6 @@ Designed around these specs:
 
 Limitations:
   * does not support non-ascii chars
-  * glyph atlas must have 16 chars per row
 --]]
 local folderOfThisFile = (...):match("(.-)[^%.]+$")
 local fs = require(folderOfThisFile..".filesystem")
@@ -24,6 +23,9 @@ end
 
 function isAscii(char)
   local code = string.byte(char)
+  if #char == 0 then
+    error("function was given a nil char")
+  end
 
   -- space to tilde
   if (code >= 32 and code <= 126) then
@@ -34,6 +36,25 @@ function isAscii(char)
 end
 
 function parseLine(line, inputData)
+  local start, ends = string.find(line, "%-%-")
+  if (start and ends) then
+    -- ignore comments
+    return
+  end
+  
+  local start, ends = string.find(line, "playbit_width=")
+  if (start and ends) then
+    
+    inputData.texWidth = tonumber(string.sub(line, ends+1))
+    return
+  end
+
+  local start, ends = string.find(line, "playbit_height=")
+  if (start and ends) then
+    inputData.texHeight = tonumber(string.sub(line, ends+1))
+    return
+  end
+
   local start, ends = string.find(line, "tracking=")
   if (start and ends) then
     inputData.tracking = string.sub(line, ends+1)
@@ -52,6 +73,11 @@ function parseLine(line, inputData)
 
   local char1 = string.sub(line, 1, 1)
   local char2 = string.sub(line, 2, 2)
+
+  if #char1 == 0 or #char2 == 0 then
+    -- ignore empty line
+    return
+  end
 
   if isWhitespace(char2) then  
     -- if second char is whitespace, we can assume this line is a glyph
@@ -134,7 +160,7 @@ function convert(inputFntPath, outputFntPath)
     kerning = {},
     name = "",
     texWidth = 0,
-    textHeight = 0
+    texHeight = 0
   }
 
   -- find atlas based on .fnt path
@@ -155,21 +181,22 @@ function convert(inputFntPath, outputFntPath)
     line = io.read()
   end
 
-  --[[ 
-    Lua does not have any native way to read image size. 
-
-    However most fonts won't have less than 16 chars, and Caps
-    won't put more than 16 chars in a row. So we can infer the
-    image size based on this.
-  --]]
-
-  -- just in case, lets warn if I forget about this.
-  if #input.glyphs < 16 then
-    error("There are less than 16 characters in this font, so image size won't be correct: "..inputFntPath)
+  -- Lua does not have any native way to read image size, so instead playbit requires font files to add custom keys to specify the font texture dimensions
+  if input.texWidth == 0 then
+    error("Font '"..input.name..".fnt' does not contain the playbit_width key!")
   end
 
-  input.texWidth = input.tileWidth * 16
-  input.textHeight = input.tileHeight * math.floor(#input.glyphs / 16)
+  if input.texHeight == 0 then
+    error("Font '"..input.name..".fnt' does not contain the playbit_height key!")
+  end
+
+  if input.texWidth % input.tileWidth ~= 0 then
+    error("Font '"..input.name..".fnt' does not have a texture width that is evenly divisible by tile width. Is the playbit_width key set to the correct value?")
+  end
+
+  if input.tileHeight % input.tileHeight ~= 0 then
+    error("Font '"..input.name..".fnt' does not have a texture height that is evenly divisible by tile height. Is the playbit_height key set to the correct value?")
+  end
 
   -- convert to BMFont .fnt file
   local outputFile = io.open(outputFntPath, "w+")
