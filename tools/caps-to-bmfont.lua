@@ -37,6 +37,12 @@ function isAscii(char)
 end
 
 function parseLine(line, inputData)
+  local start, ends = string.find(line, "%-%-")
+  if (start and ends) then
+    -- ignore comments
+    return
+  end
+  
   local start, ends = string.find(line, "tracking=")
   if (start and ends) then
     inputData.tracking = string.sub(line, ends+1)
