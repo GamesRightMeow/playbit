@@ -24,6 +24,9 @@ end
 
 function isAscii(char)
   local code = string.byte(char)
+  if #char == 0 then
+    error("function was given a nil char")
+  end
 
   -- space to tilde
   if (code >= 32 and code <= 126) then
