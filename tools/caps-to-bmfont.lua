@@ -142,7 +142,7 @@ function convert(inputFntPath, outputFntPath)
     kerning = {},
     name = "",
     texWidth = 0,
-    textHeight = 0
+    texHeight = 0
   }
 
   -- find atlas based on .fnt path
@@ -177,7 +177,7 @@ function convert(inputFntPath, outputFntPath)
   end
 
   input.texWidth = input.tileWidth * 16
-  input.textHeight = input.tileHeight * math.floor(#input.glyphs / 16)
+  input.texHeight = input.tileHeight * math.floor(#input.glyphs / 16)
 
   -- convert to BMFont .fnt file
   local outputFile = io.open(outputFntPath, "w+")
