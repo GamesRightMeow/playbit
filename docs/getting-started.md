@@ -24,17 +24,18 @@ The following are not required for _general_ use of Playbit, but required if you
 
 ## Setup your environment
 1. Add the `PLAYDATE_SDK_PATH` to your environment variables. For more information, see Panic's documentation on how to [set the Playdate SDK variable](https://sdk.play.date/Inside%20Playdate.html#_set_playdate_sdk_path_environment_variable).
-1. Add Lua to your `Path` environment variable.
-2. Add Love2d to your `Path` environment variable.
+2. Add Lua to your `Path` environment variable.
+3. Add Love2d to your `Path` environment variable.
 
 If you're using any [optional dependencies](#optional) you'll also need to add them to your `Path` environment variable, unless you specify the path to the executable when setting up [file processors](file-processors.md).
 
 ## Next steps
 1. [Read about Playbit's limitations](limitations.md)
-1. [Learn about core concepts](core-concepts.md)
-1. [Add Playbit to your project](add-playbit.md)
-1. [Configure build scripts](build-scripts.md)
-1. [Build & run your project](build-and-run.md)
+2. [Learn about core concepts](core-concepts.md)
+3. [Add Playbit to your project](add-playbit.md)
+4. [Add metadata to your fonts](add-font-metadata.md)
+5. [Configure build scripts](build-scripts.md)
+6. [Build & run your project](build-and-run.md)
 
 ## Get help
 If you find a bug, missing documentation, or have trouble setting up playbit, [open an issue](https://github.com/GamesRightMeow/playbit/issues).
