@@ -178,6 +178,9 @@ function love.mousepressed(x, y, button, istouch, presses)
 
   isCrankDocked = not isCrankDocked
   crankPos = 0
+  --[[ also reset lastCrankPos since on PD, you cant
+  dock the crank without rotating it back to 0 --]]
+  lastCrankPos = 0
 end
 
 function love.wheelmoved(x, y)
