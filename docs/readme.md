@@ -44,7 +44,7 @@ Additionally, a core aspect of Playbit is the the implementation of Playdate API
 - `playdate.imagetable`
 - `playdate.easingFunctions`
 - `playdate.font`
-  - Has limitations on font atlases, see issues [#4](https://github.com/GamesRightMeow/playbit/issues/4) and [#2](https://github.com/GamesRightMeow/playbit/issues/2)
+  - Has limitations, see issue [#2](https://github.com/GamesRightMeow/playbit/issues/2)
 - `playdate.sound`
   - Only `sampleplayer` and `fileplayer`
 - Some functions under the general `playdate` namespace
@@ -52,9 +52,8 @@ Additionally, a core aspect of Playbit is the the implementation of Playdate API
     - Supports remapping
     - Supports keyboards and controllers
   - `getCurrentTimeMilliseconds()`
-  - `printTable()`
 
-This list is _not_ comprehensive. For complete details on currently implemented SDK functions, review the [source code](../playdate/).
+This list is _not_ comprehensive. For complete details on currently implemented SDK functions, review the [source code](../playdate/) and [review open issues](https://github.com/GamesRightMeow/playbit/issues).
 
 ## Documentation
 Documentation can be found in the [docs](../docs/) folder. If you're new, it's recommended that you first read [Getting Started](getting-started.md).
