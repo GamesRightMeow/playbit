@@ -2,7 +2,7 @@
 The following are fundamental limitations due to the nature of this framework.
 
 ## Intellisense syntax errors
-[Metaprogram statements](http://luapreprocess.refreezed.com/docs/#how-to-metaprogram) are not considered valid by intellisense plugins/extensions. This is because they aren't _technically_ valid Lua syntax with the leading exclamation mark. LuaPreprocess strips the exclamation mark before executing the metaprogram.
+[Metaprogram statements](https://github.com/GamesRightMeow/LuaPreprocess/blob/master/docs/getting-started.md#how-to-metaprogram) are not considered valid by intellisense plugins/extensions. This is because they aren't _technically_ valid Lua syntax with the leading exclamation mark. LuaPreprocess strips the exclamation mark before executing the metaprogram.
 
 Depending on your IDE/plugin, you can try to add metaprogram statements as an exception or simply ignore relevant warnings.
 

@@ -4,7 +4,7 @@
 
 Playbit is a framework for creating cross-platform [Playdate](https://play.date/) games from a single [Lua](https://www.lua.org/) codebase. To accomplish this, it has two key components:
 * A reimplemention of the [Playdate API](https://sdk.play.date/Inside%20Playdate.html) in [Love2D](https://love2d.org/).
-* A build system that utilizes [LuaPreprocess](https://github.com/ReFreezed/LuaPreprocess/) to strip/inject platform dependent code.
+* A build system that utilizes [LuaPreprocess](https://github.com/GamesRightMeow/LuaPreprocess) to strip/inject platform dependent code.
 
 **⚠ IMPORTANT:** This project is in active development and has not reached a stable 1.0 release yet. Use in a production environment at your own risk. 
 
@@ -27,8 +27,8 @@ Additionally, if you're not creating a cross-platform game, all Playdate SDK fun
 * Process assets at build-time with file processors
   * Export PNGs from [Aseprite (.aseprite)](https://www.aseprite.org/) files
   * Convert [Caps](https://play.date/caps/) fonts to [BMFonts](https://www.angelcode.com/products/bmfont/)
-* Macro support (via LuaPreprocess's [macros](http://luapreprocess.refreezed.com/docs/extra-functionality/#insert-func))
-  * Compile asserts out for release builds (via LuaPreprocess's [ASSERT() macro](http://luapreprocess.refreezed.com/docs/api/#assert))
+* Macro support (via LuaPreprocess's [macros](https://github.com/GamesRightMeow/LuaPreprocess/blob/master/docs/extra-functionality.md#insert))
+  * Compile asserts out for release builds (via LuaPreprocess's [ASSERT() macro](https://github.com/GamesRightMeow/LuaPreprocess/blob/master/docs/api.md#assert))
 * Automatic generation of pdxinfo file with auto-incrementing build number
 * A [template repo](https://github.com/GamesRightMeow/playbit-template), featuring:
   * A working barebones example project
