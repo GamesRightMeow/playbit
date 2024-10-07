@@ -27,4 +27,4 @@ Usage is simple, normally where you'd use a platform specific include function, 
 ```
 
 ## Add your own
-To add your own macros, see [Macros in LuaPreprocess](http://luapreprocess.refreezed.com/docs/extra-functionality/#insert-func).
+To add your own macros, see [Macros in LuaPreprocess](https://github.com/GamesRightMeow/LuaPreprocess/blob/master/docs/extra-functionality.md#insert).

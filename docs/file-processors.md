@@ -82,7 +82,7 @@ fileProcessors = {
 }
 ```
 
-Uses [LuaPreprocess](https://github.com/ReFreezed/LuaPreprocess) to run your metaprogram and strip platform-dependent code.
+Uses [LuaPreprocess](https://github.com/GamesRightMeow/LuaPreprocess) to run your metaprogram and strip platform-dependent code.
 
 ### Wave
 ```lua

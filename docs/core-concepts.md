@@ -4,13 +4,13 @@
 
 Playbit introduces a [preprocessing](https://en.wikipedia.org/wiki/Preprocessor) step to the build process. During this step, [metaprograms](#metaprogramming) written in your Lua code are evaluated which generate new versions of your Lua scripts. These new scripts are then passed to the Playdate compiler to generate the final playable build of your game.
 
-Note: Lua preprocessing is not directly implemented in Playbit; this functionality is added by the  [LuaPreprocess](http://refreezed.com/luapreprocess) submodule.
+Note: Lua preprocessing is not directly implemented in Playbit; this functionality is added by the  [LuaPreprocess](https://github.com/GamesRightMeow/LuaPreprocess) submodule.
 
 ## Metaprogramming
 From [Wikipedia](https://en.wikipedia.org/wiki/Metaprogramming):
 > Metaprogramming is a programming technique in which computer programs have the ability to treat other programs as their data. It means that a program can be designed to read, generate, analyze or transform other programs, and even modify itself while running.
 
-For more information on how to metaprogram, see [How to metaprogram](http://refreezed.com/luapreprocess/docs/#how-to-metaprogram).
+For more information on how to metaprogram, see [How to metaprogram](https://github.com/GamesRightMeow/LuaPreprocess/blob/master/docs/getting-started.md#how-to-metaprogram).
 
 ## Macro functions
 Macro functions are [metaprograms](#metaprogramming) embedded in your Lua files that generate Lua code at runtime. This is useful if you have code you wish to reuse logic in multiple places, but don't want to incur the performance cost of calling a function.
@@ -49,13 +49,13 @@ function playdate.update()
 end
 ```
 
-For more information on how to write macro functions, see [How to metaprogram](http://refreezed.com/luapreprocess/docs/#how-to-metaprogram).
+For more information on how to write macro functions, see [How to metaprogram](https://github.com/GamesRightMeow/LuaPreprocess/blob/master/docs/getting-started.md#how-to-metaprogram).
 
 For a list of macro functions added by Playbit, see [Macro functions](macro-functions.md).
 
 ## Inserts
 
-An [insert](http://refreezed.com/luapreprocess/docs/extra-functionality/#insert) is a [macro function](#macro-functions) that you can use to insert Lua code from _another file_. This is how [Playbit's header](#playbit-header) is injected into your game.
+An [insert](https://github.com/GamesRightMeow/LuaPreprocess/blob/master/docs/extra-functionality.md#insert) is a [macro function](#macro-functions) that you can use to insert Lua code from _another file_. This is how [Playbit's header](#playbit-header) is injected into your game.
 
 <!-- TODO: what's a more useful/practical example? -->
 For example:
