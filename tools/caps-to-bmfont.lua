@@ -44,7 +44,6 @@ function parseLine(line, inputData)
   
   local start, ends = string.find(line, "playbit_width=")
   if (start and ends) then
-    
     inputData.texWidth = tonumber(string.sub(line, ends+1))
     return
   end
@@ -87,6 +86,9 @@ function parseLine(line, inputData)
         tonumber(string.sub(line, 2))
       }
       table.insert(inputData.glyphs, glyph)
+    else
+      print("Glyph for non-ASCII character was skipped as they are currently not supported by Playbit.")
+      table.insert(inputData.glyphs, {nil})
     end
   else
     -- otherwise assume is a kerning pair
@@ -100,6 +102,9 @@ function parseLine(line, inputData)
         tonumber(string.sub(line, 3))
       }
       table.insert(inputData.kerning, pair)
+    else
+      print("Glyph for non-ASCII character was skipped as they are currently not supported by Playbit.")
+      table.insert(inputData.glyphs, {nil})
     end
   end
 end
@@ -244,19 +249,29 @@ function convert(inputFntPath, outputFntPath)
   io.write("\nchars count="..#input.glyphs)
   for i = 1, #input.glyphs, 1 do
     local index = i - 1
+    local id = input.glyphs[i][1]
+    local leading = input.glyphs[i][2]
+
+    if id == nil then
+      --[[ Skip nil glyphs. These characters are unsupported by playbit
+      but we still need to count other wise glyph position will be off. ]]--
+      goto continue
+    end
+
     local glyph = {
-      id = input.glyphs[i][1],
+      id = id,
       x = (index % glyphsPerRow) * input.tileWidth,
       y = math.floor(index / glyphsPerRow) * input.tileHeight,
       width = input.tileWidth,
       height = input.tileHeight,
       xoffset = 0,
       yoffset = 0,
-      xadvance = input.glyphs[i][2] + input.tracking,
+      xadvance = leading + input.tracking,
       page = 0,
       chnl = 15,
     }
     io.write("\nchar"..tableToStr(glyph))
+    ::continue::
   end
 
   -- kerning
