@@ -35,7 +35,7 @@ function isAscii(char)
   return false
 end
 
-function parseLine(line, inputData)
+function parseLine(line, inputData, lineNum)
   local start, ends = string.find(line, "%-%-")
   if (start and ends) then
     -- ignore comments
@@ -87,7 +87,7 @@ function parseLine(line, inputData)
       }
       table.insert(inputData.glyphs, glyph)
     else
-      print("Glyph for non-ASCII character was skipped as they are currently not supported by Playbit.")
+      print("Glyph on line "..lineNum.." in font '"..inputData.name.."' is a non-ASCII character and was skipped because they are not currently supported by Playbit.")
       table.insert(inputData.glyphs, {nil})
     end
   else
@@ -103,7 +103,7 @@ function parseLine(line, inputData)
       }
       table.insert(inputData.kerning, pair)
     else
-      print("Glyph for non-ASCII character was skipped as they are currently not supported by Playbit.")
+      print("Glyph on line "..lineNum.." in font '"..inputData.name.."' is a non-ASCII character and was skipped because they are not currently supported by Playbit.")
       table.insert(inputData.glyphs, {nil})
     end
   end
@@ -181,9 +181,11 @@ function convert(inputFntPath, outputFntPath)
   local inputFile = io.open(inputFntPath, "r")
   io.input(inputFile)
   local line = io.read()
+  local lineNum = 1
   while line ~= nil do
-    parseLine(line, input)
+    parseLine(line, input, lineNum)
     line = io.read()
+    lineNum = lineNum + 1
   end
 
   -- Lua does not have any native way to read image size, so instead playbit requires font files to add custom keys to specify the font texture dimensions
