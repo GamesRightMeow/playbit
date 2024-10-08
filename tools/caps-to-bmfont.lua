@@ -87,7 +87,7 @@ function parseLine(line, inputData, lineNum)
       }
       table.insert(inputData.glyphs, glyph)
     else
-      print("Glyph on line "..lineNum.." in font '"..inputData.name.."' is a non-ASCII character and was skipped because they are not currently supported by Playbit.")
+      print("Glyph on line "..lineNum.." in font '"..inputData.name.."' is a non-ASCII character and was skipped because they are not currently supported by Playbit: https://github.com/GamesRightMeow/playbit/issues/2")
       table.insert(inputData.glyphs, {nil})
     end
   else
@@ -103,7 +103,7 @@ function parseLine(line, inputData, lineNum)
       }
       table.insert(inputData.kerning, pair)
     else
-      print("Glyph on line "..lineNum.." in font '"..inputData.name.."' is a non-ASCII character and was skipped because they are not currently supported by Playbit.")
+      print("Glyph on line "..lineNum.." in font '"..inputData.name.."' is a non-ASCII character and was skipped because they are not currently supported by Playbit: https://github.com/GamesRightMeow/playbit/issues/2")
       table.insert(inputData.glyphs, {nil})
     end
   end
