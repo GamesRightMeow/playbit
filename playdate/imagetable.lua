@@ -81,11 +81,11 @@ function module.new(path)
 end
 
 function meta:drawImage(n, x, y, flip)
-  self.images[n]:draw(x, y, flip)
+  self._images[n]:draw(x, y, flip)
 end
 
 function meta:getImage(n)
-  return self.images[n]
+  return self._images[n]
 end
 
 function meta:getLength()
