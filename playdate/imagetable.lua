@@ -49,7 +49,7 @@ function module.new(path)
   local rows = h / frameHeight
   local columns = w / frameWidth
 
-  imagetable.images = {}
+  local images = {}
   for r = 0, rows - 1, 1 do
     for c = 0, columns - 1, 1 do
       
@@ -63,13 +63,19 @@ function module.new(path)
 
       local image = playdate.graphics.image.new(frameWidth, frameHeight)
       image.data:replacePixels(imageData)
-      table.insert(imagetable.images, image)
+      table.insert(images, image)
     end
   end
   
   imagetable.length = rows * columns
-  imagetable.frameWidth = frameWidth
-  imagetable.frameHeight = frameHeight
+
+  imagetable._images = images
+  imagetable._width = w
+  imagetable._height = w
+  imagetable._rows = rows
+  imagetable._columns = columns
+  imagetable._frameWidth = frameWidth
+  imagetable._frameHeight = frameHeight
 
   return imagetable
 end
@@ -84,4 +90,8 @@ end
 
 function meta:getLength()
   return self.length
+end
+
+function meta:getSize()
+    return self._rows, self._columns
 end
