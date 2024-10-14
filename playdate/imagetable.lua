@@ -50,8 +50,8 @@ function module.new(path)
   local columns = w / frameWidth
 
   imagetable.images = {}
-  for c = 0, columns - 1, 1 do
-    for r = 0, rows - 1, 1 do
+  for r = 0, rows - 1, 1 do
+    for c = 0, columns - 1, 1 do
       
       local imageData = love.image.newImageData(frameWidth, frameHeight)
       for x = 0, frameWidth - 1, 1 do
