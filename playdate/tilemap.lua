@@ -64,3 +64,7 @@ function meta:setTiles(data, width)
   self._length = width * self._height
   self._tiles = data
 end
+
+function meta:getTileSize()
+  return self._imagetable._frameWidth, self._imagetable._frameHeight
+end
