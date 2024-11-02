@@ -71,7 +71,7 @@ function module.new(path)
 
   imagetable._images = images
   imagetable._width = w
-  imagetable._height = w
+  imagetable._height = h
   imagetable._rows = rows
   imagetable._columns = columns
   imagetable._frameWidth = frameWidth
