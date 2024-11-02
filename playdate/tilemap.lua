@@ -6,8 +6,12 @@ meta.__index = meta
 module.__index = meta
 
 function module.new()
-  local tilemap = setmetatable({}, meta)
-  return tilemap
+  local t = setmetatable({}, meta)
+  t._width = 0
+  t._height = 0
+  t._length = 0
+  t._tiles = {}
+  return t
 end
 
 function meta:setImageTable(table)
@@ -21,13 +25,6 @@ function meta:setSize(width, height)
 
   -- TODO: this will clear the tilemap if set later, what does PD do?
   self._tiles = {}
-  for x = 1, self._width, 1 do
-    local column = {}
-    for y = 1, self._height, 1 do
-      column[y] = 0
-    end
-    self._tiles[x] = column
-  end
 end
 
 function meta:setTileAtPosition(x, y, tile)
@@ -35,7 +32,11 @@ function meta:setTileAtPosition(x, y, tile)
 end
 
 function meta:getTileAtPosition(x, y)
-  return self._tiles[x][y]
+  local index = x * y
+  if index > #self._tiles then
+    return 0
+  end
+  return self._tiles[index]
 end
 
 function meta:draw(x, y)
@@ -43,24 +44,23 @@ function meta:draw(x, y)
   local r, g, b = love.graphics.getColor()
   love.graphics.setColor(1, 1, 1, 1)
 
-  local w = self._imagetable._width
-  local h = self._imagetable._height
   local frameWidth = self._imagetable._frameWidth
   local frameHeight = self._imagetable._frameHeight
-  local imageRows = self._imagetable._rows
 
-  for tx = 1, self._width, 1 do
-    for ty = 1, self._height, 1 do
-      local index = self._tiles[tx][ty]
-      local dx = x + ((tx - 1) * frameWidth)
-      local dy = y + ((ty - 1) * frameHeight)
-      local qx = math.floor((index - 1) % imageRows) * frameHeight
-      local qy = math.floor((index - 1) / imageRows) * frameWidth
-      playdate.graphics._quad:setViewport(qx, qy, frameWidth, frameHeight, w, h)
-      love.graphics.draw(self._imagetable._images[index].data, dx, dy)
-    end
+  for i = 1, self._length do
+    local j = i - 1
+    local tile = self._tiles[i]
+    local x = math.floor(j % self._width) * frameHeight
+    local y = math.floor(j / self._width) * frameWidth
+    love.graphics.draw(self._imagetable._images[tile].data, x, y)
   end
 
   love.graphics.setColor(r, g, b, 1)
   playdate.graphics._updateContext()
+end
+
+function meta:setTiles(data, width)
+  self._width = width
+  self._length = width * self._height
+  self._tiles = data
 end
