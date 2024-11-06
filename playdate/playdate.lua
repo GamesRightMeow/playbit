@@ -30,6 +30,25 @@ function module.getCurrentTimeMilliseconds()
   return love.timer.getTime() * 1000
 end
 
+function module.getSecondsSinceEpoch()
+  -- os.time() without params always returns in system local time, so we must convert to UTC
+  local nowLocal = os.time()
+  local nowTable = os.date("!*t", nowLocal)
+  local nowUtc = os.time(nowTable)
+  -- Playdate epoch, as described: https://sdk.play.date/2.6.0/Inside%20Playdate.html#f-getSecondsSinceEpoch
+  local playdateEpochUtc = os.time({
+    year = 2000,
+    month = 1,
+    day = 1,
+    hour = 0,
+    min = 0,
+    sec = 0,
+  })
+  -- TODO: PD also returns milliseconds to the next second, but time functions in native lua don't have millisecond precision
+  local milliseconds = 0
+  return os.difftime(nowUtc, playdateEpochUtc), milliseconds
+end
+
 -- ██╗███╗   ██╗██████╗ ██╗   ██╗████████╗
 -- ██║████╗  ██║██╔══██╗██║   ██║╚══██╔══╝
 -- ██║██╔██╗ ██║██████╔╝██║   ██║   ██║   
