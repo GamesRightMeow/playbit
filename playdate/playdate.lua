@@ -21,7 +21,8 @@ function module.getTime()
     hour = date.hour,
     minute = date.min,
     second = date.sec,
-    millisecond = date.sec * 1000,
+    -- TODO: PD also returns milliseconds to the next second, but time functions in native lua don't have millisecond precision
+    millisecond = 0,
   }
 end
 
