@@ -12,7 +12,7 @@ require("playbit.geometry")
                                
 function module.getTime()
   local seconds = os.time()
-  local date = os.date("!*t", seconds)
+  local date = os.date("*t", seconds)
   return {
     year = date.year,
     month = date.month,
