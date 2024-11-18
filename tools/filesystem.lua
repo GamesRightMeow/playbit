@@ -60,7 +60,7 @@ function module.getFileName(path)
   local nameReversed = string.reverse(name)
   local lastSlash = #name - string.find(nameReversed, getSlash())
   name = string.sub(name, lastSlash + 2)
-  name = string.gsub(name, "%....", "")
+  name = string.gsub(name, "%..+", "")
   return name
 end
 
