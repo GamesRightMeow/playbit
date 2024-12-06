@@ -102,10 +102,28 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
   // {
   //   // TODO: blackTransparent drawmode
   // }
-  // else if (mode == 6)                  // ---------- "inverted"
-  // {
-  //   // TODO: inverted drawmode
-  // }
+  else if (mode == 6)                  // ---------- "inverted"
+  {
+    if (outputcolor.a > 0)
+    {
+      if (debugDraw)
+      {
+        return DEBUG;
+      }
+
+      // choose white or black based on saturation
+      float saturation = rgb2hsv(vec3(outputcolor)).z;
+      // ideally this value is 0.5f (halfway) not sure why this doesn't work?
+      if (saturation >= 0.45f)
+      {
+        return BLACK;
+      }
+      else
+      {
+        return WHITE;
+      }
+    }
+  }
   else if (mode == 7)                     // ---------- ???
   {
     // unused

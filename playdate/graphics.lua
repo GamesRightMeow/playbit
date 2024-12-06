@@ -119,6 +119,8 @@ function module.setImageDrawMode(mode)
     module._shader:send("mode", 1)
   elseif mode == module.kDrawModeFillBlack or mode == "fillBlack" then
     module._shader:send("mode", 2)
+  elseif mode == module.kDrawModeFillBlack or mode == "inverted" then
+    module._shader:send("mode", 6)
   elseif mode == module.kDrawModeFillBlack or mode == "whiteTransparent" then
     module._shader:send("mode", 4)
   else
