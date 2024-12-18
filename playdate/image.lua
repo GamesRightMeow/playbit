@@ -53,6 +53,11 @@ function meta:drawRotated(x, y, angle)
   love.graphics.push()
   local w = self.data:getWidth() * 0.5
   local h = self.data:getHeight() * 0.5
+
+  -- using fractional numbers will cause jitter and artifacting
+  w = math.floor(w)
+  h = math.floor(h)
+
   love.graphics.translate(x, y)
   love.graphics.rotate(math.rad(angle))
   love.graphics.draw(self.data, -w, -h)
