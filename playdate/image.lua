@@ -30,14 +30,31 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
   local r, g, b = love.graphics.getColor()
   love.graphics.setColor(1, 1, 1, 1)
 
-  @@ASSERT(not flip or flip == 0, "Flip not implemented.")
+  local sx = 1
+  local sy = 1
+  if flip then
+    local w = self.data:getWidth()
+    local h = self.data:getHeight()
+    if flip == playdate.graphics.kImageFlippedX then
+      sx = -1
+      x = x + w
+    elseif flip == playdate.graphics.kImageFlippedY then
+      sy = -1
+      y = y + h
+    elseif flip == playdate.graphics.kImageFlippedXY then
+      sx = -1
+      sy = -1
+      x = x + w
+      y = y + h
+    end
+  end
   
   if qx and qy and qw and qh then
     local w, h = self:getSize()
     playdate.graphics._quad:setViewport(qx, qy, qw, qh, w, h)
-    love.graphics.draw(self.data, playdate.graphics._quad, x, y)
+    love.graphics.draw(self.data, playdate.graphics._quad, x, y, sx, sy)
   else
-    love.graphics.draw(self.data, x, y)
+    love.graphics.draw(self.data, x, y, 0, sx, sy)
   end
 
   love.graphics.setColor(r, g, b, 1)

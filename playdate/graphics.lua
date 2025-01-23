@@ -29,6 +29,11 @@ module.kDrawModeXOR = 5
 module.kDrawModeNXOR = 6
 module.kDrawModeInverted = 7
 
+module.kImageUnflipped = 0
+module.kImageFlippedX = 1
+module.kImageFlippedY = 2
+module.kImageFlippedXY = 3
+
 kTextAlignment = {
 	left = 0,
 	right = 1,
