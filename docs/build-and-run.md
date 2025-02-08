@@ -15,21 +15,27 @@ You can add, remove, and modify these tasks in `.vscode/tasks.json`.
 
 ### Keyboard shortcuts
 
-You can [bind tasks to keyboard shortcuts](https://code.visualstudio.com/docs/editor/tasks#_binding-keyboard-shortcuts-to-tasks) for faster access. For example, add the following to your keybindings.json:
+You can [bind tasks to keyboard shortcuts](https://code.visualstudio.com/docs/editor/tasks#_binding-keyboard-shortcuts-to-tasks) for faster access. For example, add the following to your [keybindings.json](https://code.visualstudio.com/docs/getstarted/keybindings#_advanced-customization):
 
 ```json
 // build and run love2d
 {
   "key": "ctrl+f1",
   "command": "workbench.action.tasks.runTask",
-  "args": "love2d: build & run"
+  "args": "! love2d: build & run" // args need to match the task.label exactly
 },
 // build and run playdate
 {
   "key": "ctrl+f2",
   "command": "workbench.action.tasks.runTask",
-  "args": "playdate: build & run"
+  "args": "! playdate: build & run"
 },
+// build and run both debug
+{
+  "key": "ctrl+f4",
+  "command": "workbench.action.tasks.runTask",
+  "args": "! all: debug"
+}
 ```
 
 <!-- TODO: when nova configs are added, mention them here -->
