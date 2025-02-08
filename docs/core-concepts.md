@@ -90,7 +90,7 @@ Preprocessor flags are boolean variables that can be used in [macro functions](#
 !if PLAYDATE then
     print("running on playdate!")
 !elseif LOVE2D then
-    print("running in love2d!"
+    print("running in love2d!")
 !end
 ```
 
