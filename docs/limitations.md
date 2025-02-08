@@ -13,7 +13,7 @@ However the line numbers in error messages will line up to the Lua source that i
 
 If you're using the [Playbit template](https://github.com/GamesRightMeow/playbit-template), these folders are called `_love2d` for Love2d and `_pdx` for Playdate. Keep in mind that any modifications to files in these folders will be overwritten the next time you run the build script.
 
-## No assignment operators
+## No augmented assignment operators
 The Playdate SDK adds [additional assignment operators](https://sdk.play.date/Inside%20Playdate.html#additional-assignment-operators) for your convenience. Unfortunately these are not supported in Love2D, so you'll need to use the plain assignment operator.
 
 For example, instead of `myVar += 1` use `myVar = myVar + 1`.

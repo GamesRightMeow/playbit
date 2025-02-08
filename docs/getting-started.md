@@ -33,7 +33,7 @@ If you're using any [optional dependencies](#optional) you'll also need to add t
 1. [Read about Playbit's limitations](limitations.md)
 2. [Learn about core concepts](core-concepts.md)
 3. [Add Playbit to your project](add-playbit.md)
-4. [Add metadata to your fonts](add-font-metadata.md)
+4. [Add metadata to your fonts](modify-fonts.md)
 5. [Configure build scripts](build-scripts.md)
 6. [Build & run your project](build-and-run.md)
 
