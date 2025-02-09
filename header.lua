@@ -12,6 +12,7 @@ require("playdate.animation")
 require("playdate.file")
 require("playdate.json")
 require("playdate.sound")
+require("playdate.sprite")
 require("playdate.easing")
 require("playdate.frameTimer")
 require("playdate.timer")
@@ -73,6 +74,11 @@ function love.draw()
   -- main update
   playdate.graphics.setImageDrawMode(playdate.graphics._drawMode)
   playdate.update()
+  playdate.graphics.sprite.updateAll()
+  
+  -- Unclear if the drawing of the images of a sprite needs to be called here
+  -- or would happend later through the love.graphics.draw(playdate.graphics._canvas, ... )
+  playdate.graphics.sprite.drawAll()
 
   -- debug draw
   if playdate.debugDraw then
