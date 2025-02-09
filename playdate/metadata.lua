@@ -1,3 +1,5 @@
+-- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#pdxinfo
+
 playdate.metadata = {}
 
 if love.filesystem.getInfo("pdxinfo") then

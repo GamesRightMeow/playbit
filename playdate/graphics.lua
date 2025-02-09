@@ -243,7 +243,10 @@ function module.getFont()
   return module._activeFont
 end
 
-function module.getTextSize(str)
+function module.getTextSize(str, fontFamily, leadingAdjustment)
+  @@ASSERT(fontFamily == nil, "[ERR] Parameter fontFamily is not yet implemented.")
+  @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
+
   local font = module._activeFont
   return font:getWidth(str), font:getHeight()
 end
@@ -263,11 +266,51 @@ function module.drawTextInRect(text, x, ...)
   return font:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
 end
 
-function module.drawText(text, x, y, fontFamily, leadingAdjustment)
+-- TODO: handle the overloaded signature (text, rect, fontFamily, leadingAdjustment, wrapMode, alignment)
+function module.drawText(text, x, y, width, height, fontFamily, leadingAdjustment, wrapMode, alignment)
+  @@ASSERT(width == nil, "[ERR] Parameter width is not yet implemented.")
+  @@ASSERT(height == nil, "[ERR] Parameter height is not yet implemented.")
+  @@ASSERT(wrapMode == nil, "[ERR] Parameter wrapMode is not yet implemented.")
+  @@ASSERT(alignment == nil, "[ERR] Parameter alignment is not yet implemented.")
+
   @@ASSERT(text ~= nil, "Text is nil")
   local font = module._activeFont
   font:drawText(text, x, y, fontFamily, leadingAdjustment)
   module._updateContext()
+end
+
+-- TODO: handle the overloaded signature (key, rect, language, leadingAdjustment)
+function module.drawLocalizedText(key, x, y, width, height, language, leadingAdjustment, wrapMode, alignment)
+  error("[ERR] playdate.graphics.drawLocalizedText() is not yet implemented.")
+end
+
+function module.getLocalizedText(key, language)
+  error("[ERR] playdate.graphics.getLocalizedText() is not yet implemented.")
+end
+
+function module.drawTextAligned(text, x, y, alignment, leadingAdjustment)
+  error("[ERR] playdate.graphics.drawTextAligned() is not yet implemented.")
+end
+
+function module.drawLocalizedTextAligned(text, x, y, alignment, language, leadingAdjustment)
+  error("[ERR] playdate.graphics.drawLocalizedTextAligned() is not yet implemented.")
+end
+
+-- TODO: handle the overloaded signature (text, rect, leadingAdjustment, truncationString, alignment, font, language)
+function module.drawLocalizedTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, alignment, font, language)
+  error("[ERR] playdate.graphics.drawLocalizedTextInRect() is not yet implemented.")
+end
+
+function module.getTextSizeForMaxWidth(text, maxWidth, leadingAdjustment, font)
+  error("[ERR] playdate.graphics.getTextSizeForMaxWidth() is not yet implemented.")
+end
+
+function module.imageWithText(text, maxWidth, maxHeight, backgroundColor, leadingAdjustment, truncationString, alignment, font)
+  error("[ERR] playdate.graphics.imageWithText() is not yet implemented.")
+end
+
+function module.checkAlphaCollision(image1, x1, y1, flip1, image2, x2, y2, flip2)
+  error("[ERR] playdate.graphics.checkAlphaCollision() is not yet implemented.")
 end
 
 function module:_updateContext()

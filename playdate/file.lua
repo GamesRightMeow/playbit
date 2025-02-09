@@ -7,7 +7,7 @@ local meta = {}
 meta.__index = meta
 module.__index = meta
 
-module.kFileRead = 3 -- typo?? if this is a bitfield, should be 2
+module.kFileRead = 3
 module.kFileWrite = 4
 module.kFileAppend = 8
 

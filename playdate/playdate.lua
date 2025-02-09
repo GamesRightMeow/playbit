@@ -340,3 +340,8 @@ end
 function where()
   error("[ERR] where() is not yet implemented.")
 end
+
+function module.apiVersion()
+  -- TODO: return Playbit version instead?
+  error("[ERR] playdate.apiVersion() is not yet implemented.")
+end

@@ -20,7 +20,7 @@ Install the following dependencies:
 Add `love.exe` and `lua.exe` to your `PATH` variable
 * [Windows instructions](https://www.howtogeek.com/787217/how-to-edit-environment-variables-on-windows-10-or-11/)
   * Check your installation with `where love` and `where lua` in a Command Prompt.
-* [macOS and Linux instructions](https://www.howtogeek.com/787217/how-to-edit-environment-variables-on-windows-10-or-11/)
+* [macOS and Linux instructions](https://www.howtogeek.com/658904/how-to-add-a-directory-to-your-path-in-linux/#how-to-permanently-add-something-to-path)
   * Check your installation with `which love` and `which lua` from the command line.
 
 ### Optional

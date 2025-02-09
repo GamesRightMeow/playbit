@@ -1,3 +1,5 @@
+-- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.font
+
 local module = {}
 playdate.graphics.font = module
 
@@ -10,6 +12,30 @@ function module.new(path)
   font.data = love.graphics.newFont(path..".fnt")
   font.data:setLineHeight(0)
   return font
+end
+
+function module.newFamily(fontPaths)
+  error("[ERR] playdate.graphics.font.newFamily() is not yet implemented.")
+end
+
+function module.setFont(font, variant)
+  error("[ERR] playdate.graphics.font.setFont() is not yet implemented.")
+end
+
+function module.getFont(variant)
+  error("[ERR] playdate.graphics.font.getFont() is not yet implemented.")
+end
+
+function module.setFontFamily(fontFamily)
+  error("[ERR] playdate.graphics.font.setFontFamily() is not yet implemented.")
+end
+
+function module.setFontTracking(pixels)
+  error("[ERR] playdate.graphics.font.setFontTracking() is not yet implemented.")
+end
+
+function module.getSystemFont(variant)
+  error("[ERR] playdate.graphics.font.getSystemFont() is not yet implemented.")
 end
 
 function meta:getTextWidth(str)
@@ -25,6 +51,18 @@ function meta:getHeight()
   return self.data:getHeight()
 end
 
+function meta:getTextWidth(text)
+  error("[ERR] playdate.graphics.font:getTextWidth() is not yet implemented.")
+end
+
+function meta:setTracking(pixels)
+  error("[ERR] playdate.graphics.font:setTracking() is not yet implemented.")
+end
+
+function meta:getTracking()
+  error("[ERR] playdate.graphics.font:getTracking() is not yet implemented.")
+end
+
 function meta:getLeading()
   return self.data:getLineHeight()
 end
@@ -33,7 +71,17 @@ function meta:setLeading(pixels)
   return self.data:setLineHeight(pixels)
 end
 
-function meta:drawText(str, x, y)
+function meta:getGlyph(character)
+  error("[ERR] playdate.graphics.font:getGlyph() is not yet implemented.")
+end
+
+-- TODO: handle the overloaded signature (text, rect, leadingAdjustment, wrapMode, alignment)
+function meta:drawText(str, x, y, width, height, leadingAdjustment, wrapMode, alignment)
+  @@ASSERT(width == nil, "[ERR] Parameter width is not yet implemented.")
+  @@ASSERT(height == nil, "[ERR] Parameter height is not yet implemented.")
+  @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
+  @@ASSERT(wrapMode == nil, "[ERR] Parameter wrapMode is not yet implemented.")
+  @@ASSERT(alignment == nil, "[ERR] Parameter alignment is not yet implemented.")
   local currentFont = love.graphics.getFont()
   love.graphics.setFont(self.data)
   love.graphics.print(str, x, y)
@@ -42,7 +90,8 @@ function meta:drawText(str, x, y)
 end
 
 -- 0=left 1=right 2=center
-function meta:drawTextAligned(str, x, y, alignment)
+function meta:drawTextAligned(str, x, y, alignment, leadingAdjustment)
+  @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
   local width = self:getTextWidth(str)
   if alignment == 1 then
     -- right
