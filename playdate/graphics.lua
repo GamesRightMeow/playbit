@@ -129,7 +129,7 @@ function module.setImageDrawMode(mode)
   elseif mode == module.kDrawModeFillBlack or mode == "whiteTransparent" then
     module._shader:send("mode", 4)
   else
-    error("Draw mode '"..mode.."' not implemented.")
+    error("[ERR] Draw mode '"..mode.."' is not yet implemented.")
   end
 end
 
@@ -181,7 +181,7 @@ function module.drawRoundRect(x, y, width, height, radius)
   -- module._updateContext()
 
   -- module.setImageDrawMode(module._drawMode)
-  error("not implemented")
+  error("[ERR] playdate.graphics.drawRoundRect() is not yet implemented.")
 end
 
 function module.fillRoundRect(x, y, width, height, radius)
@@ -192,7 +192,7 @@ function module.fillRoundRect(x, y, width, height, radius)
   -- module._updateContext()
 
   -- module.setImageDrawMode(module._drawMode)
-  error("not implemented")
+  error("[ERR] playdate.graphics.fillRoundRect() is not yet implemented.")
 end
 
 function module.drawLine(x1, y1, x2, y2)
@@ -255,7 +255,7 @@ function module.drawTextInRect(text, x, ...)
     y, width, height, leadingAdjustment, truncationString, textAlignment, font = select(1, ...)
   else
     -- rect
-    error("Rect support not implemented!")
+    error("[ERR] Support for the rect parameter is not yet implemented.")
   end
 
   font = font or module._activeFont

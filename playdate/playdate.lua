@@ -166,6 +166,10 @@ function module.getCrankPosition()
   return degrees
 end
 
+function module.getCrankTicks(ticksPerRevolution)
+  error("[ERR] playdate.getCrankTicks() is not yet implemented.")
+end
+
 function love.joystickadded(joystick)
   -- always take most recently added joystick as active joystick
   lastActiveJoystick = joystick
@@ -325,5 +329,14 @@ function table.indexOfElement(table, element)
 end
 
 function printTable(...)
-	error("not implemented!")
+	error("[ERR] printTable() is not yet implemented.")
+end
+
+-- debug TODO: make a fancy header
+function sample()
+  error("[ERR] sample() is not yet implemented.")
+end
+
+function where()
+  error("[ERR] where() is not yet implemented.")
 end

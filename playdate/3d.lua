@@ -1,0 +1,3 @@
+-- TODO: document 3d.lua from CoreLibs
+-- interestingly, these functions aren't in the SDK documentation online
+-- skipping for now since they aren't "public"

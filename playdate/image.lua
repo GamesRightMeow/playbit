@@ -6,7 +6,7 @@ meta.__index = meta
 module.__index = meta
 
 function module.new(widthOrPath, height, bgcolor)
-  @@ASSERT(bgcolor == nil, "Parameter 'bgcolor' is not implemented.")
+  @@ASSERT(bgcolor == nil, "[ERR] Parameter bgcolor is not yet implemented.")
   local img = setmetatable({}, meta)
 
   if height then
