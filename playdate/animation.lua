@@ -1,4 +1,5 @@
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.animation.loop
+
 playdate.graphics.animation = playdate.graphics.animation or {}
 
 local module = {}

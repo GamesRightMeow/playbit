@@ -1,4 +1,5 @@
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#M-ui
+
 playdate.ui = playdate.ui or {}
 
 local module = {}

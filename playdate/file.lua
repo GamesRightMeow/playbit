@@ -1,3 +1,5 @@
+-- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#M-file
+
 local module = {}
 playdate.file = module
 
@@ -5,7 +7,7 @@ local meta = {}
 meta.__index = meta
 module.__index = meta
 
-module.kFileRead = 3
+module.kFileRead = 3 -- typo?? if this is a bitfield, should be 2
 module.kFileWrite = 4
 module.kFileAppend = 8
 
@@ -19,7 +21,8 @@ function module.load(path)
   return love.filesystem.load(path..".lua")
 end
 
-function module.listFiles(path)
+function module.listFiles(path, showHidden)
+  @ASSERT(showHidden == nil, "[ERR] showHidden parameter is not yet implemented.")
   path = path or "/"
 
   local files = love.filesystem.getDirectoryItems(path)
@@ -87,4 +90,56 @@ end
 
 function meta:read(numberOfBytes)
   return self._data:read(numberOfBytes)
+end
+
+function meta:write(string)
+  error("[ERR] playdate.file:write() is not yet implemented.")
+end
+
+function meta:flush()
+  error("[ERR] playdate.file:flush() is not yet implemented.")
+end
+
+function meta:seek(offset, whence)
+  error("[ERR] playdate.file:seek() is not yet implemented.")
+end
+
+function meta:tell()
+  error("[ERR] playdate.file:tell() is not yet implemented.")
+end
+
+function module.exists(path)
+  error("[ERR] playdate.file.exists() is not yet implemented.")
+end
+
+function module.isdir(path)
+  error("[ERR] playdate.file.isdir() is not yet implemented.")
+end
+
+function module.mkdir(path)
+  error("[ERR] playdate.file.mkdir() is not yet implemented.")
+end
+
+function module.delete(path, recursive)
+  error("[ERR] playdate.file.delete() is not yet implemented.")
+end
+
+function module.getType(path)
+  error("[ERR] playdate.file.getType() is not yet implemented.")
+end
+
+function module.modtime(path)
+  error("[ERR] playdate.file.modtime() is not yet implemented.")
+end
+
+function module.rename(path, newPath)
+  error("[ERR] playdate.file.rename() is not yet implemented.")
+end
+
+function module.load(path, env)
+  error("[ERR] playdate.file.load() is not yet implemented.")
+end
+
+function module.run(path, env)
+  error("[ERR] playdate.file.run() is not yet implemented.")
 end

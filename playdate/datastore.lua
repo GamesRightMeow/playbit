@@ -1,3 +1,5 @@
+-- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#M-datastore
+
 local module = {}
 playdate.datastore = module
 
@@ -30,4 +32,12 @@ function module.delete(filename)
   filename = filename or "data"
   filename = filename..".json"
   love.filesystem.remove(filename)
+end
+
+function module.writeImage(image, path)
+  error("[ERR] playdate.datastore.writeImage() is not yet implemented.")
+end
+
+function module.readImage(path)
+  error("[ERR] playdate.datastore.readImage() is not yet implemented.")
 end

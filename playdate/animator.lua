@@ -1,5 +1,6 @@
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.animator
-import "CoreLibs/easing.lua"
+
+require("easing")
 
 playdate.graphics = playdate.graphics or {}
 
