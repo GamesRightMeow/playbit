@@ -51,10 +51,6 @@ function meta:getHeight()
   return self.data:getHeight()
 end
 
-function meta:getTextWidth(text)
-  error("[ERR] playdate.graphics.font:getTextWidth() is not yet implemented.")
-end
-
 function meta:setTracking(pixels)
   error("[ERR] playdate.graphics.font:setTracking() is not yet implemented.")
 end
