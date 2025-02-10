@@ -22,7 +22,7 @@ function module.load(path)
 end
 
 function module.listFiles(path, showHidden)
-  @ASSERT(showHidden == nil, "[ERR] showHidden parameter is not yet implemented.")
+  @@ASSERT(showHidden == nil, "[ERR] showHidden parameter is not yet implemented.")
   path = path or "/"
 
   local files = love.filesystem.getDirectoryItems(path)
