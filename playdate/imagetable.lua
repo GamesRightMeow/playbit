@@ -1,3 +1,5 @@
+-- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.imagetable
+
 local module = {}
 playdate.graphics.imagetable = module
 
@@ -5,7 +7,14 @@ local meta = {}
 meta.__index = meta
 module.__index = meta
 
-function module.new(path)
+-- TODO: overload the `[]` array index operator to return an image
+-- TODO: overload the `#` length operator to return the number of images
+
+-- TODO: handle overloaded signature (count, cellsWide, cellSize)
+function module.new(path, cellsWide, cellsSize)
+  @@ASSERT(cellsWide == nil, "[ERR] Parameter cellsWide is not yet implemented.")
+  @@ASSERT(cellsSize == nil, "[ERR] Parameter cellsSize is not yet implemented.")
+
   local imagetable = setmetatable({}, meta)
   local folder = ""
   local pattern = path.."-table-"
@@ -84,8 +93,17 @@ function meta:drawImage(n, x, y, flip)
   self._images[n]:draw(x, y, flip)
 end
 
+-- TODO: handle overloaded signature (x, y)
 function meta:getImage(n)
   return self._images[n]
+end
+
+function meta:setImage(n, image)
+  error("[ERR] playdate.graphics.imagetable:setImage() is not yet implemented.")
+end
+
+function meta:load(path)
+  error("[ERR] playdate.graphics.imagetable:load() is not yet implemented.")
 end
 
 function meta:getLength()
