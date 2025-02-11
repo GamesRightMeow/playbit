@@ -21,18 +21,31 @@ function isWhitespace(char)
   return start ~= nil
 end
 
-function isAscii(char)
-  local code = string.byte(char)
-  if #char == 0 then
-    error("function was given a nil char")
+function splitLine(line)
+  local a = ""
+  local b = ""
+  local reachedSpace = false
+  for i = 1, #line, 1 do
+      local char = line:sub(i, i)
+      if isWhitespace(char) then
+          reachedSpace = true
+      else
+          if reachedSpace then
+              b = b .. char
+          else
+              a = a .. char
+          end
+      end
   end
+  return a, b
+end
 
-  -- space to tilde
-  if (code >= 32 and code <= 126) then
-    return true
+function getCodes(str)
+  local codes = {}
+  for _, code in utf8.codes(str) do
+      table.insert(codes, code)
   end
-  
-  return false
+  return codes
 end
 
 function parseLine(line, inputData, lineNum)
@@ -78,34 +91,25 @@ function parseLine(line, inputData, lineNum)
     return
   end
 
-  if isWhitespace(char2) then  
-    -- if second char is whitespace, we can assume this line is a glyph
-    if isAscii(char1) then
-      local glyph = {
-        string.byte(char1),
-        tonumber(string.sub(line, 2))
-      }
-      table.insert(inputData.glyphs, glyph)
-    else
-      print("Glyph on line "..lineNum.." in font '"..inputData.name.."' is a non-ASCII character and was skipped because they are not currently supported by Playbit: https://github.com/GamesRightMeow/playbit/issues/2")
-      table.insert(inputData.glyphs, {nil})
-    end
+  local a, b = splitLine(line)
+  local val = tonumber(b)
+  local codes = getCodes(a)
+
+  if #codes == 1 then -- this line is a single glyph
+    local glyph = {
+      codes[1],
+      val
+    }
+    table.insert(inputData.glyphs, glyph)
+  elseif #codes == 2 then -- this is a kerning pair
+    local pair = {
+      codes[1],
+      codes[2],
+      val
+    }
+    table.insert(inputData.kerning, pair)
   else
-    -- otherwise assume is a kerning pair
-    if isAscii(char1) then
-      -- TODO: extract value
-      -- if the first char is supported, assume this is a kerning pair  
-      -- print("kerning: "..char1..char2)
-      local pair = {
-        string.byte(char1),
-        string.byte(char2),
-        tonumber(string.sub(line, 3))
-      }
-      table.insert(inputData.kerning, pair)
-    else
-      print("Glyph on line "..lineNum.." in font '"..inputData.name.."' is a non-ASCII character and was skipped because they are not currently supported by Playbit: https://github.com/GamesRightMeow/playbit/issues/2")
-      table.insert(inputData.glyphs, {nil})
-    end
+    print("Invalid line " .. lineNum .. " in font '" .. inputData.name .. "' - detected more than 2 glyphs?")
   end
 end
 
