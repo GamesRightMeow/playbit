@@ -44,7 +44,7 @@ Additionally, a core aspect of Playbit is the the implementation of Playdate API
 - `playdate.imagetable`
 - `playdate.easingFunctions`
 - `playdate.font`
-  - Has limitations, see issues [#2](https://github.com/GamesRightMeow/playbit/issues/2) and [#20](https://github.com/GamesRightMeow/playbit/issues/20).
+  - Has limitations, see issue [#20](https://github.com/GamesRightMeow/playbit/issues/20).
 - `playdate.sound`
   - Only `sampleplayer` and `fileplayer`
 - Some functions under the general `playdate` namespace
