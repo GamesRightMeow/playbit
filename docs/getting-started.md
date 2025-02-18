@@ -42,6 +42,3 @@ If you're using any [optional dependencies](#optional) you'll also need to add t
 4. [Add metadata to your fonts](modify-fonts.md)
 5. [Configure build scripts](build-scripts.md)
 6. [Build & run your project](build-and-run.md)
-
-## Get help
-If you find a bug, missing documentation, or have trouble setting up playbit, [open an issue](https://github.com/GamesRightMeow/playbit/issues).
