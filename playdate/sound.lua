@@ -7,6 +7,10 @@ function module.getSampleRate()
   return 44100.0 -- hardcoded by Playdate hardware
 end
 
+function module.playingSources()
+  error("[ERR] playdate.sound.playingSources() is not yet implemented.")
+end
+
 local sampleplayer = {}
 playdate.sound.sampleplayer = sampleplayer
 sampleplayer.meta = {}
@@ -258,4 +262,299 @@ function sample.meta:save(filename)
   error("[ERR] playdate.sound.sample:save() is not yet implemented.")
 end
 
--- TODO: synth, channel, source, signnal, LFO, envelope, effects, bitcrusher, ring modulator.....
+local channel = {}
+playdate.sound.channel = channel
+channel.meta = {}
+channel.meta.__index = channel.meta
+
+function channel.new()
+  error("[ERR] playdate.sound.channel.new() is not yet implemented.")
+end
+
+function channel.meta:remove()
+  error("[ERR] playdate.sound.channel:remove() is not yet implemented.")
+end
+
+function channel.meta:addEffect(effect)
+  error("[ERR] playdate.sound.channel:addEffect() is not yet implemented.")
+end
+
+function channel.meta:removeEffect(effect)
+  error("[ERR] playdate.sound.channel:removeEffect() is not yet implemented.")
+end
+
+function channel.meta:addSource(source)
+  error("[ERR] playdate.sound.channel:addSource() is not yet implemented.")
+end
+
+function channel.meta:removeSource(source)
+  error("[ERR] playdate.sound.channel:removeSource() is not yet implemented.")
+end
+
+function channel.meta:setVolume(volume)
+  error("[ERR] playdate.sound.channel:setVolume() is not yet implemented.")
+end
+
+function channel.meta:getVolume()
+  error("[ERR] playdate.sound.channel:getVolume() is not yet implemented.")
+end
+
+function channel.meta:setPan(pan)
+  error("[ERR] playdate.sound.channel:setPan() is not yet implemented.")
+end
+
+function channel.meta:setPanMod(signal)
+  error("[ERR] playdate.sound.channel:setPanMod() is not yet implemented.")
+end
+
+function channel.meta:setVolumeMod(signal)
+  error("[ERR] playdate.sound.channel:setVolumeMod() is not yet implemented.")
+end
+
+function channel.meta:getDryLevelSignal()
+  error("[ERR] playdate.sound.channel:getDryLevelSignal() is not yet implemented.")
+end
+
+function channel.meta:getWetLevelSignal()
+  error("[ERR] playdate.sound.channel:getWetLevelSignal() is not yet implemented.")
+end
+
+local synth = {}
+playdate.sound.synth = synth
+synth.meta = {}
+synth.meta.__index = synth.meta
+
+-- TODO: handle overloaded signature (sample, sustainStart, sustainEnd)
+function synth.new(waveform)
+  error("[ERR] playdate.sound.synth.new() is not yet implemented.")
+end
+
+function synth.meta:copy()
+  error("[ERR] playdate.sound.synth:copy() is not yet implemented.")
+end
+
+function synth.meta:playNote(pitch, volume, length, when)
+  error("[ERR] playdate.sound.synth:playNote() is not yet implemented.")
+end
+
+function synth.meta:playMIDINote(note, volume, length, when)
+  error("[ERR] playdate.sound.synth:playMIDINote() is not yet implemented.")
+end
+
+function synth.meta:noteOff()
+  error("[ERR] playdate.sound.synth:noteOff() is not yet implemented.")
+end
+
+function synth.meta:stop()
+  error("[ERR] playdate.sound.synth:stop() is not yet implemented.")
+end
+
+function synth.meta:isPlaying()
+  error("[ERR] playdate.sound.synth:isPlaying() is not yet implemented.")
+end
+
+function synth.meta:setAmplitudeMod(signal)
+  error("[ERR] playdate.sound.synth:setAmplitudeMod() is not yet implemented.")
+end
+
+function synth.meta:setADSR(attack, decay, sustain, release)
+  error("[ERR] playdate.sound.synth:setADSR() is not yet implemented.")
+end
+
+function synth.meta:setAttack(time)
+  error("[ERR] playdate.sound.synth:setAttack() is not yet implemented.")
+end
+
+function synth.meta:setDecay(time)
+  error("[ERR] playdate.sound.synth:setDecay() is not yet implemented.")
+end
+
+function synth.meta:setSustain(level)
+  error("[ERR] playdate.sound.synth:setSustain() is not yet implemented.")
+end
+
+function synth.meta:setRelease(time)
+  error("[ERR] playdate.sound.synth:setRelease() is not yet implemented.")
+end
+
+function synth.meta:clearEnvelope()
+  error("[ERR] playdate.sound.synth:clearEnvelope() is not yet implemented.")
+end
+
+function synth.meta:setEnvelopeCurvature(amount)
+  error("[ERR] playdate.sound.synth:setEnvelopeCurvature() is not yet implemented.")
+end
+
+function synth.meta:getEnvelope()
+  error("[ERR] playdate.sound.synth:getEnvelope() is not yet implemented.")
+end
+
+function synth.meta:setFinishCallback(func)
+  error("[ERR] playdate.sound.synth:setFinishCallback() is not yet implemented.")
+end
+
+function synth.meta:setFrequencyMod(signal)
+  error("[ERR] playdate.sound.synth:setFrequencyMod() is not yet implemented.")
+end
+
+function synth.meta:setLegato(flag)
+  error("[ERR] playdate.sound.synth:setLegato() is not yet implemented.")
+end
+
+function synth.meta:setVolume(left, right)
+  error("[ERR] playdate.sound.synth:setVolume() is not yet implemented.")
+end
+
+function synth.meta:getVolume()
+  error("[ERR] playdate.sound.synth:getVolume() is not yet implemented.")
+end
+
+function synth.meta:setWaveform(waveform)
+  error("[ERR] playdate.sound.synth:setWaveform() is not yet implemented.")
+end
+
+function synth.meta:setWavetable(sample, samplesize, xsize, ysize)
+  error("[ERR] playdate.sound.synth:setWavetable() is not yet implemented.")
+end
+
+function synth.meta:setParameter(parameter, value)
+  error("[ERR] playdate.sound.synth:setParameter() is not yet implemented.")
+end
+
+function synth.meta:setParameterMod(parameter, signal)
+  error("[ERR] playdate.sound.synth:setParameterMod() is not yet implemented.")
+end
+
+local signal = {}
+playdate.sound.signal = signal
+signal.meta = {}
+signal.meta.__index = signal.meta
+
+function signal.meta:setOffset(offset)
+  error("[ERR] playdate.sound.signal:setOffset() is not yet implemented.")
+end
+
+function signal.meta:setScale(scale)
+  error("[ERR] playdate.sound.signal:setScale() is not yet implemented.")
+end
+
+function signal.meta:getValue()
+  error("[ERR] playdate.sound.signal:getValue() is not yet implemented.")
+end
+
+local lfo = {}
+playdate.sound.lfo = lfo
+lfo.meta = {}
+lfo.meta.__index = lfo.meta
+
+function lfo.new(type)
+  error("[ERR] playdate.sound.lfo.new() is not yet implemented.")
+end
+
+function lfo.meta:setType(type)
+  error("[ERR] playdate.sound.lfo:setType() is not yet implemented.")
+end
+
+function lfo.meta:setArpeggio(note1, ...)
+  error("[ERR] playdate.sound.lfo:setArpeggio() is not yet implemented.")
+end
+
+function lfo.meta:setCenter(center)
+  error("[ERR] playdate.sound.lfo:setCenter() is not yet implemented.")
+end
+
+function lfo.meta:setDepth(depth)
+  error("[ERR] playdate.sound.lfo:setDepth() is not yet implemented.")
+end
+
+function lfo.meta:setRate(rate)
+  error("[ERR] playdate.sound.lfo:setRate() is not yet implemented.")
+end
+
+function lfo.meta:setPhase(phase)
+  error("[ERR] playdate.sound.lfo:setPhase() is not yet implemented.")
+end
+
+function lfo.meta:setStartPhase(phase)
+  error("[ERR] playdate.sound.lfo:setStartPhase() is not yet implemented.")
+end
+
+function lfo.meta:setGlobal(flag)
+  error("[ERR] playdate.sound.lfo:setGlobal() is not yet implemented.")
+end
+
+function lfo.meta:setRetrigger(flag)
+  error("[ERR] playdate.sound.lfo:setRetrigger() is not yet implemented.")
+end
+
+function lfo.meta:setDelay(holdoff, ramp)
+  error("[ERR] playdate.sound.lfo:setDelay() is not yet implemented.")
+end
+
+function lfo.meta:getValue()
+  error("[ERR] playdate.sound.lfo:getValue() is not yet implemented.")
+end
+
+local envelope = {}
+playdate.sound.envelope = envelope
+envelope.meta = {}
+envelope.meta.__index = envelope.meta
+
+function envelope.new(attack, decay, sustain, release)
+  error("[ERR] playdate.sound.envelope.new() is not yet implemented.")
+end
+
+function envelope.meta:setAttack(attack)
+  error("[ERR] playdate.sound.envelope:setAttack() is not yet implemented.")
+end
+
+function envelope.meta:setDecay(decay)
+  error("[ERR] playdate.sound.envelope:setDecay() is not yet implemented.")
+end
+
+function envelope.meta:setSustain(sustain)
+  error("[ERR] playdate.sound.envelope:setSustain() is not yet implemented.")
+end
+
+function envelope.meta:setRelease(release)
+  error("[ERR] playdate.sound.envelope:setRelease() is not yet implemented.")
+end
+
+function envelope.meta:setCurvature(amount)
+  error("[ERR] playdate.sound.envelope:setCurvature() is not yet implemented.")
+end
+
+function envelope.meta:setVelocitySensitivity(scaling, start, finish)
+  error("[ERR] playdate.sound.envelope:setVelocitySensitivity() is not yet implemented.")
+end
+
+function envelope.meta:setRateScaling(scaling, start, finish)
+  error("[ERR] playdate.sound.envelope:setRateScaling() is not yet implemented.")
+end
+
+function envelope.meta:setScale(scale)
+  error("[ERR] playdate.sound.envelope:setScale() is not yet implemented.")
+end
+
+function envelope.meta:setOffset(offset)
+  error("[ERR] playdate.sound.envelope:setOffset() is not yet implemented.")
+end
+
+function envelope.meta:setLegato(flag)
+  error("[ERR] playdate.sound.envelope:setLegato() is not yet implemented.")
+end
+
+function envelope.meta:setRetrigger(flag)
+  error("[ERR] playdate.sound.envelope:setRetrigger() is not yet implemented.")
+end
+
+function envelope.meta:setGlobal(flag)
+  error("[ERR] playdate.sound.envelope:setGlobal() is not yet implemented.")
+end
+
+function envelope.meta:getValue()
+  error("[ERR] playdate.sound.envelope:getValue() is not yet implemented.")
+end
+
+-- https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-sound.effect
+-- TODO: effects, bitcrusher, ring modulator.....
