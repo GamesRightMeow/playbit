@@ -39,8 +39,9 @@ function module.new(imageOrTilemap)
     sprite.zIndex = 0
     sprite.collideRect = nil
     sprite.animator = nil
-    sprite.xCenter = 0.5
-    sprite.yCenter = 0.5
+
+    sprite:setCenter(0.5, 0.5)
+
     sprite:resetGroupMask()
     sprite:resetCollidesWithGroupsMask()
 
@@ -392,6 +393,19 @@ end
 
 function meta:isVisible()
     return self.visible
+end
+
+function meta:setCenter(x, y)
+    self.centerX = x
+    self.centerY = y
+end
+
+function meta:getCenter()
+    return self.centerX, self.centerY
+end
+
+function meta:getCenterPoint()
+    return self.x - self.width * self.centerX, self.y - self.height * self.centerY
 end
 
 function meta:draw()
