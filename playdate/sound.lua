@@ -44,7 +44,7 @@ sampleplayer.meta.__index = sampleplayer.meta
 function sampleplayer.new(path)
   local sample = setmetatable({}, sampleplayer.meta)
   sample.data = love.audio.newSource(path..".wav", "static")
-  -- TODO: should we force a sample rate of 44100.0 since Playdate's hardware does this?
+  -- TODO: force audio to 44100 at build time https://github.com/GamesRightMeow/playbit/issues/35
   return sample
 end
 
