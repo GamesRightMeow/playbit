@@ -144,6 +144,7 @@ fileplayer.meta.__index = fileplayer.meta
 -- TODO: handle overloaded function signature (bufferSize)
 function fileplayer.new(path, bufferSize)
   -- TODO: is there a way to use bufferSize to control Love2D chunks?
+  @@ASSERT(bufferSize == nil, "[ERR] Parameter bufferSize is not yet implemented.")
   local sample = setmetatable({}, fileplayer.meta)
   sample.data = love.audio.newSource(path..".wav", "stream")
   return sample
