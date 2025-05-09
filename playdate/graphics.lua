@@ -17,8 +17,6 @@ module._contextStack = {}
 -- shared quad to reduce gc
 module._quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 module._lastClearColor = COLOR_WHITE
-module._screenScale = 1
-module._newScreenScale = 1
 
 module.kDrawModeCopy = 0
 module.kDrawModeWhiteTransparent = 1

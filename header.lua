@@ -16,6 +16,8 @@ require("playdate.easing")
 require("playdate.frameTimer")
 require("playdate.timer")
 
+require("playbit.graphics")
+
 function import(path)
   if string.match(path, "^CoreLibs/") then
     -- ignore these imports, since the playdate namespace is already reimplemented in the global namespace
@@ -26,6 +28,7 @@ function import(path)
 end
 
 local firstFrame = true
+local screenWidth, screenHeight = playbit.graphics.getResolution()
 
 playdate.graphics._canvas:setFilter("nearest", "nearest")
 
@@ -39,14 +42,13 @@ playdate.graphics.setColor(0)
 math.randomseed(os.time())
 
 function love.draw()
-  local newScreenScale = playdate.graphics._newScreenScale
-  local currentScreenScale = playdate.graphics._screenScale
-
   -- must be changed at start of frame - love2d doesn't allow changing res with canvas active
-  if newScreenScale ~= currentScreenScale then
-    currentScreenScale = newScreenScale
-    playdate.graphics._screenScale = currentScreenScale
-    love.window.setMode(400 * currentScreenScale, 240 * currentScreenScale)
+  local newScreenWidth, newScreenHeight = playbit.graphics.getResolution()
+  if screenWidth ~= newScreenWidth or screenHeight ~= newScreenHeight then
+    local w, y, flags = love.window.getMode()
+    love.window.setMode(newScreenWidth, newScreenHeight, flags)
+    screenWidth = newScreenWidth
+    screenHeight = newScreenHeight
   end
 
   -- render to canvas to allow 2x scaling
@@ -100,7 +102,9 @@ function love.draw()
   love.graphics.setColor(1, 1, 1, 1)
 
   -- draw canvas to screen
-  love.graphics.draw(playdate.graphics._canvas, 0, 0, 0, currentScreenScale, currentScreenScale)
+  local currentScreenScale = playbit.graphics.getScreenScale()
+  local x, y = playbit.graphics.getScreenPosition()
+  love.graphics.draw(playdate.graphics._canvas, x, y, 0, currentScreenScale, currentScreenScale)
 
   -- reset back to set color
   love.graphics.setColor(r, g, b, 1)
