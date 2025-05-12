@@ -10,6 +10,7 @@ local canvasX = 0
 local canvasY = 0
 local windowWidth = 400
 local windowHeight = 240
+local fullscreen = false
 
 --- Sets the scale of the canvas.
 ---@param scale number
@@ -66,5 +67,13 @@ end
 ---@return integer height
 function module.getWindowSize()
   return windowWidth, windowHeight
+end
+
+function module.setFullscreen(enabled)
+  fullscreen = enabled
+end
+
+function  module.getFullscreen()
+  return fullscreen
 end
 !end
