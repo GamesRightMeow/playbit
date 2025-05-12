@@ -56,6 +56,15 @@ function love.draw()
   local w, y, flags = love.window.getMode()
   if windowWidth ~= newWindowWidth or windowHeight ~= newWindowHeight or flags.fullscreen ~= fullscreen then
     flags.fullscreen = fullscreen
+
+    -- stop window from ending up off screen when switching back from fullscreen
+    if flags.x < 50 then
+      flags.x = 50
+    end
+    if flags.y < 50 then
+      flags.y = 50
+    end
+
     love.window.setMode(newWindowWidth, newWindowHeight, flags)
     windowWidth = newWindowWidth
     windowHeight = newWindowHeight

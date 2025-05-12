@@ -69,10 +69,14 @@ function module.getWindowSize()
   return windowWidth, windowHeight
 end
 
+--- Sets fullscreen (true) or window mode (false).
+---@param enabled any
 function module.setFullscreen(enabled)
   fullscreen = enabled
 end
 
+--- Returns if the game is in fullscreen (true) or window mode (false).
+---@return boolean
 function  module.getFullscreen()
   return fullscreen
 end
