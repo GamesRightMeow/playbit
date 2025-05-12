@@ -28,7 +28,7 @@ function import(path)
 end
 
 local firstFrame = true
-local screenWidth, screenHeight = playbit.graphics.getResolution()
+local windowWidth, windowHeight = playbit.graphics.getWindowSize()
 
 playdate.graphics._canvas:setFilter("nearest", "nearest")
 
@@ -42,13 +42,21 @@ playdate.graphics.setColor(0)
 math.randomseed(os.time())
 
 function love.draw()
-  -- must be changed at start of frame - love2d doesn't allow changing res with canvas active
-  local newScreenWidth, newScreenHeight = playbit.graphics.getResolution()
-  if screenWidth ~= newScreenWidth or screenHeight ~= newScreenHeight then
+  -- must be changed at start of frame when canvas is not active
+  local newCanvasWidth, newCanvasHeight = playbit.graphics.getCanvasSize()
+  local canvasWidth = playdate.graphics._canvas:getWidth()
+  local canvasHeight = playdate.graphics._canvas:getHeight()
+  if canvasWidth ~= newCanvasWidth or canvasHeight ~= newCanvasHeight then
+    playdate.graphics._canvas = love.graphics.newCanvas(newCanvasWidth, newCanvasHeight)
+  end
+
+  -- must be changed at start of frame - love2d doesn't allow changing window size with canvas active
+  local newWindowWidth, newWindowHeight = playbit.graphics.getWindowSize()
+  if windowWidth ~= newWindowWidth or windowHeight ~= newWindowHeight then
     local w, y, flags = love.window.getMode()
-    love.window.setMode(newScreenWidth, newScreenHeight, flags)
-    screenWidth = newScreenWidth
-    screenHeight = newScreenHeight
+    love.window.setMode(newWindowWidth, newWindowHeight, flags)
+    windowWidth = newWindowWidth
+    windowHeight = newWindowHeight
   end
 
   -- render to canvas to allow 2x scaling
@@ -102,9 +110,9 @@ function love.draw()
   love.graphics.setColor(1, 1, 1, 1)
 
   -- draw canvas to screen
-  local currentScreenScale = playbit.graphics.getScreenScale()
-  local x, y = playbit.graphics.getScreenPosition()
-  love.graphics.draw(playdate.graphics._canvas, x, y, 0, currentScreenScale, currentScreenScale)
+  local currentCanvasScale = playbit.graphics.getCanvasScale()
+  local x, y = playbit.graphics.getCanvasPosition()
+  love.graphics.draw(playdate.graphics._canvas, x, y, 0, currentCanvasScale, currentCanvasScale)
 
   -- reset back to set color
   love.graphics.setColor(r, g, b, 1)

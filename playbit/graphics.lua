@@ -3,51 +3,68 @@ playbit = playbit or {}
 local module = {}
 playbit.graphics = module
 
-local screenScale = 1
-local screenWidth = 400
-local screenHeight = 240
-local screenX = 0
-local screenY = 0
+local canvasScale = 1
+local canvasWidth = 400
+local canvasHeight = 240
+local canvasX = 0
+local canvasY = 0
+local windowWidth = 400
+local windowHeight = 240
 
---- Sets the scale of the screen.
+--- Sets the scale of the canvas.
 ---@param scale number
-function module.setScreenScale(scale)
-  screenScale = scale
+function module.setCanvasScale(scale)
+  canvasScale = scale
 end
 
----Returns the current scale of the screen.
+---Returns the current scale of the canvas.
 ---@return number
-function module.getScreenScale()
-  return screenScale
+function module.getCanvasScale()
+  return canvasScale
 end
 
---- Sets the window (not screen) size.
+--- Sets the canvas size.
 ---@param width number
 ---@param height number
-function module.setResolution(width, height)
-  screenWidth = width
-  screenHeight = height
+function module.setCanvasSize(width, height)
+  canvasWidth = width
+  canvasHeight = height
+end
+
+--- Returns the current canvas size.
+---@return integer width
+---@return integer height
+function module.getCanvasSize()
+  return canvasWidth, canvasHeight
+end
+
+--- Sets the canvas position within the window.
+---@param x any
+---@param y any
+function module.setCanvasPosition(x, y)
+  canvasX = x
+  canvasY = y
+end
+
+--- Returns the current canvas position within the window.
+---@return integer x
+---@return integer y
+function module.getCanvasPosition()
+  return canvasX, canvasY
+end
+
+--- Sets the size of the window.
+---@param width number
+---@param height number
+function module.setWindowSize(width, height)
+  windowWidth = width
+  windowHeight = height
 end
 
 --- Returns the current window size.
 ---@return integer width
 ---@return integer height
-function module.getResolution()
-  return screenWidth, screenHeight
-end
-
---- Sets the screen position within the window.
----@param x any
----@param y any
-function module.setScreenPosition(x, y)
-  screenX = x
-  screenY = y
-end
-
---- Returns the current screen position within the window.
----@return integer x
----@return integer y
-function module.getScreenPosition()
-  return screenX, screenY
+function module.getWindowSize()
+  return windowWidth, windowHeight
 end
 !end
