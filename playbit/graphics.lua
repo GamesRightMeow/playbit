@@ -77,7 +77,23 @@ end
 
 --- Returns if the game is in fullscreen (true) or window mode (false).
 ---@return boolean
-function  module.getFullscreen()
+function module.getFullscreen()
   return fullscreen
 end
+
+--- Sets the colors used when drawing graphics.
+---@param white table An array of 4 values that correspond to RGBA that range from 0 to 1.
+---@param black table An array of 4 values that correspond to RGBA that range from 0 to 1.
+function module.setColors(white, black)
+  if white == null then
+    white = { 176 / 255, 174 / 255, 167 / 255, 1 };
+  end
+  if black == null then
+    black = { 49 / 255, 47 / 255, 40 / 255, 1 };
+  end
+  playdate.graphics._shader:send("white", white)
+  playdate.graphics._shader:send("black", black)
+end
+
+
 !end

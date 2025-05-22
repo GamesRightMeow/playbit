@@ -6,10 +6,9 @@
 extern int mode;
 extern bool debugDraw;
 extern int pattern[64];
+extern vec4 white = vec4(176.0f / 255.0f, 174.0f / 255.0f, 167.0f / 255.0f, 1);
+extern vec4 black = vec4( 49.0f / 255.0f,  47.0f / 255.0f,  40.0f / 255.0f, 1);
 
-// color constants that match playdate colors
-const vec4 WHITE =        vec4(176.0f / 255.0f, 174.0f / 255.0f, 167.0f / 255.0f, 1);
-const vec4 BLACK =        vec4( 49.0f / 255.0f,  47.0f / 255.0f,  40.0f / 255.0f, 1);
 const vec4 TRANSPARENT =  vec4(0, 0, 0, 0);
 const vec4 DEBUG =        vec4(1, 0, 0, 0.5); // used when rendering via playdate.debugDraw()
 
@@ -37,7 +36,7 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
       }
       else
       {
-        return WHITE;
+        return white;
       }
     }
     else
@@ -55,7 +54,7 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
       }
       else
       {
-        return BLACK;
+        return black;
       }
     }
     else
@@ -89,7 +88,7 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
       }
       else
       {
-        return BLACK;
+        return black;
       }
     }
     else
@@ -116,11 +115,11 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
       // ideally this value is 0.5f (halfway) not sure why this doesn't work?
       if (saturation >= 0.45f)
       {
-        return BLACK;
+        return black;
       }
       else
       {
-        return WHITE;
+        return white;
       }
     }
   }
@@ -144,10 +143,10 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
       }
       else
       {
-        return WHITE;
+        return white;
       }
     } else {
-      return BLACK;
+      return black;
     }
   }
   else                                    // ---------- "copy" (default)
@@ -164,11 +163,11 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
       // ideally this value is 0.5f (halfway) not sure why this doesn't work?
       if (saturation >= 0.45f)
       {
-        return WHITE;
+        return white;
       }
       else
       {
-        return BLACK;
+        return black;
       }
     }
     else
