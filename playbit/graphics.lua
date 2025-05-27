@@ -3,6 +3,27 @@ playbit = playbit or {}
 local module = {}
 playbit.graphics = module
 
+-- #b0aea7
+module.COLOR_WHITE = { 176 / 255, 174 / 255, 167 / 255, 1 }
+-- #312f28
+module.COLOR_BLACK = { 49 / 255, 47 / 255, 40 / 255, 1 }
+
+module.colorWhite = module.COLOR_WHITE
+module.colorBlack = module.COLOR_BLACK
+module.shader = love.graphics.newShader("playdate/shader")
+module.drawOffset = { x = 0, y = 0}
+module.drawColorIndex = 1
+module.drawColor = module.colorWhite
+module.backgroundColorIndex = 0
+module.backgroundColor = module.colorBlack
+module.activeFont = {}
+module.drawMode = "copy"
+module.canvas = love.graphics.newCanvas()
+module.contextStack = {}
+-- shared quad to reduce gc
+module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
+module.lastClearColor = module.colorWhite
+
 local canvasScale = 1
 local canvasWidth = 400
 local canvasHeight = 240
@@ -85,15 +106,44 @@ end
 ---@param white table An array of 4 values that correspond to RGBA that range from 0 to 1.
 ---@param black table An array of 4 values that correspond to RGBA that range from 0 to 1.
 function module.setColors(white, black)
-  if white == null then
-    white = { 176 / 255, 174 / 255, 167 / 255, 1 };
+  if white == nil then
+    white = module.COLOR_WHITE
   end
-  if black == null then
-    black = { 49 / 255, 47 / 255, 40 / 255, 1 };
+  if black == nil then
+    black = module.COLOR_BLACK
   end
-  playdate.graphics._shader:send("white", white)
-  playdate.graphics._shader:send("black", black)
+  
+  module.colorWhite = white
+  module.colorBlack = black
+  module.shader:send("white", white)
+  module.shader:send("black", black)
+
+  if module.backgroundColorIndex == 1 then
+    module.backgroundColor = module.colorWhite
+  else
+    module.backgroundColor = module.colorBlack
+  end
+
+  if module.drawColorIndex == 1 then
+    module.drawColor = module.colorWhite
+  else
+    module.drawColor = module.colorBlack
+  end
 end
 
+function module.updateContext()
+  if #module.contextStack == 0 then
+    return
+  end
 
+  local activeContext = module.contextStack[#module.contextStack]
+
+  -- love2d doesn't allow calling newImageData() when canvas is active
+  love.graphics.setCanvas()
+  local imageData = activeContext._canvas:newImageData()
+  love.graphics.setCanvas(activeContext._canvas)
+
+  -- update image
+  activeContext.data:replacePixels(imageData)
+end
 !end

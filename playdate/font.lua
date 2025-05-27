@@ -82,7 +82,7 @@ function meta:drawText(str, x, y, width, height, leadingAdjustment, wrapMode, al
   love.graphics.setFont(self.data)
   love.graphics.print(str, x, y)
   love.graphics.setFont(currentFont)
-  playdate.graphics._updateContext()
+  playbit.graphics.updateContext()
 end
 
 -- 0=left 1=right 2=center
@@ -102,7 +102,7 @@ function meta:drawTextAligned(str, x, y, alignment, leadingAdjustment)
   love.graphics.setFont(self.data)
   love.graphics.print(str, x, y)
   love.graphics.setFont(currentFont)
-  playdate.graphics._updateContext()
+  playbit.graphics.updateContext()
 end
 
 function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)

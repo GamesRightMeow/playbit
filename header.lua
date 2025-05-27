@@ -1,4 +1,6 @@
 !if LOVE2D then
+require("playbit.graphics")
+
 require("playdate.playdate")
 require("playdate.datastore")
 require("playdate.string")
@@ -16,8 +18,6 @@ require("playdate.easing")
 require("playdate.frameTimer")
 require("playdate.timer")
 
-require("playbit.graphics")
-
 function import(path)
   if string.match(path, "^CoreLibs/") then
     -- ignore these imports, since the playdate namespace is already reimplemented in the global namespace
@@ -30,7 +30,7 @@ end
 local firstFrame = true
 local windowWidth, windowHeight = playbit.graphics.getWindowSize()
 
-playdate.graphics._canvas:setFilter("nearest", "nearest")
+playbit.graphics.canvas:setFilter("nearest", "nearest")
 
 love.graphics.setDefaultFilter("nearest", "nearest")
 love.graphics.setLineWidth(1)
@@ -44,10 +44,10 @@ math.randomseed(os.time())
 function love.draw()
   -- must be changed at start of frame when canvas is not active
   local newCanvasWidth, newCanvasHeight = playbit.graphics.getCanvasSize()
-  local canvasWidth = playdate.graphics._canvas:getWidth()
-  local canvasHeight = playdate.graphics._canvas:getHeight()
+  local canvasWidth = playbit.graphics.canvas:getWidth()
+  local canvasHeight = playbit.graphics.canvas:getHeight()
   if canvasWidth ~= newCanvasWidth or canvasHeight ~= newCanvasHeight then
-    playdate.graphics._canvas = love.graphics.newCanvas(newCanvasWidth, newCanvasHeight)
+    playbit.graphics.canvas = love.graphics.newCanvas(newCanvasWidth, newCanvasHeight)
   end
 
   -- must be changed at start of frame - love2d doesn't allow changing window size with canvas active
@@ -71,15 +71,15 @@ function love.draw()
   end
 
   -- render to canvas to allow 2x scaling
-  love.graphics.setCanvas(playdate.graphics._canvas)
-  love.graphics.setShader(playdate.graphics._shader)
+  love.graphics.setCanvas(playbit.graphics.canvas)
+  love.graphics.setShader(playbit.graphics.shader)
 
   --[[ 
     Love2d won't allow a canvas to be set outside of the draw function, so we need to do this on the first frame of draw.
     Otherwise setting the bg color outside of playdate.update() won't be consistent with PD.
   --]]
   if firstFrame then
-    local c = playdate.graphics._lastClearColor
+    local c = playbit.graphics.lastClearColor
     love.graphics.clear(c.r, c.g, c.b, 1)
     firstFrame = false
   end
@@ -89,23 +89,23 @@ function love.draw()
 
   -- push main transform for draw offset
   love.graphics.push()
-  love.graphics.translate(playdate.graphics._drawOffset.x, playdate.graphics._drawOffset.y)
+  love.graphics.translate(playbit.graphics.drawOffset.x, playbit.graphics.drawOffset.y)
 
   -- main update
-  playdate.graphics.setImageDrawMode(playdate.graphics._drawMode)
+  playdate.graphics.setImageDrawMode(playbit.graphics.drawMode)
   playdate.update()
 
   -- debug draw
   if playdate.debugDraw then
-    playdate.graphics._shader:send("debugDraw", true)
+    playbit.graphics.shader:send("debugDraw", true)
     playdate.debugDraw()
-    playdate.graphics._shader:send("debugDraw", false)
+    playbit.graphics.shader:send("debugDraw", false)
   end
 
   -- Not sure why, but we must reset to the default mode (copy = 0) otherwise
   -- modes "stick" through till the next frame and seems to apply to clear().
   -- Must also happen *here* - not tested, but maybe before pop() and canvas.draw()?
-  playdate.graphics._shader:send("mode", 0)
+  playbit.graphics.shader:send("mode", 0)
 
   -- pop main transform for draw offset
   love.graphics.pop()
@@ -123,7 +123,7 @@ function love.draw()
   -- draw canvas to screen
   local currentCanvasScale = playbit.graphics.getCanvasScale()
   local x, y = playbit.graphics.getCanvasPosition()
-  love.graphics.draw(playdate.graphics._canvas, x, y, 0, currentCanvasScale, currentCanvasScale)
+  love.graphics.draw(playbit.graphics.canvas, x, y, 0, currentCanvasScale, currentCanvasScale)
 
   -- reset back to set color
   love.graphics.setColor(r, g, b, 1)

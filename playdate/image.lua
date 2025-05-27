@@ -68,14 +68,14 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
   
   if qx and qy and qw and qh then
     local w, h = self:getSize()
-    playdate.graphics._quad:setViewport(qx, qy, qw, qh, w, h)
-    love.graphics.draw(self.data, playdate.graphics._quad, x, y, sx, sy)
+    playbit.graphics.quad:setViewport(qx, qy, qw, qh, w, h)
+    love.graphics.draw(self.data, playbit.graphics.quad, x, y, sx, sy)
   else
     love.graphics.draw(self.data, x, y, 0, sx, sy)
   end
 
   love.graphics.setColor(r, g, b, 1)
-  playdate.graphics._updateContext()
+  playbit.graphics.updateContext()
 end
 
 function meta:drawAnchored(x, y, ax, ay, flip)
@@ -117,7 +117,7 @@ function meta:drawRotated(x, y, angle, scale, yscale)
   love.graphics.pop()
 
   love.graphics.setColor(r, g, b, 1)
-  playdate.graphics._updateContext()
+  playbit.graphics.updateContext()
 end
 
 function meta:rotatedImage(angle, scale, yscale)
@@ -138,7 +138,7 @@ function meta:drawScaled(x, y, scale, yscale)
   love.graphics.pop()
 
   love.graphics.setColor(r, g, b, 1)
-  playdate.graphics._updateContext()
+  playbit.graphics.updateContext()
 end
 
 function meta:scaledImage(scale, yscale)
