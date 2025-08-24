@@ -1,6 +1,11 @@
 local module = {}
 playdate.graphics = module
 
+require("playdate.font")
+require("playdate.image")
+require("playdate.imagetable")
+require("playdate.tilemap")
+
 module.kDrawModeCopy = 0
 module.kDrawModeWhiteTransparent = 1
 module.kDrawModeBlackTransparent = 2

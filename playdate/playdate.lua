@@ -2,6 +2,12 @@ local module = {}
 playdate = module
 
 require("playbit.geometry")
+require("playdate.metadata")
+require("playdate.sound")
+require("playdate.file")
+require("playdate.datastore")
+require("playdate.accelerometer")
+require("playdate.json")
 
 -- ████████╗██╗███╗   ███╗███████╗
 -- ╚══██╔══╝██║████╗ ████║██╔════╝
