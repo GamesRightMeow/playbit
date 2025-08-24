@@ -166,10 +166,6 @@ function module.getCrankPosition()
   return degrees
 end
 
-function module.getCrankTicks(ticksPerRevolution)
-  error("[ERR] playdate.getCrankTicks() is not yet implemented.")
-end
-
 function love.joystickadded(joystick)
   -- always take most recently added joystick as active joystick
   lastActiveJoystick = joystick
