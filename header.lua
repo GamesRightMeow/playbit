@@ -4,7 +4,9 @@ require("playbit.graphics")
 --[[ since there is no CoreLibs/playdate, this file should always 
 be included here so the methods are always available ]]--
 require("playdate.playdate")
-playdate = playdate or {}
+--[[ not really a way around including this one, but probably doesn't really
+matter as all games are going to need to import graphics to draw stuff ]]--
+require("playdate.graphics")
 
 function import(path)
   if string.match(path, "^CoreLibs/") then
@@ -25,13 +27,13 @@ love.graphics.setDefaultFilter("nearest", "nearest")
 love.graphics.setLineWidth(1)
 love.graphics.setLineStyle("rough")
 
-playbit.graphics.backgroundColor = playbit.graphics.colorWhite
-
-local c = playbit.graphics.colorBlack
-playbit.graphics.drawColor = c
-love.graphics.setColor(c[1], c[2], c[3], c[4])
+playdate.graphics.setBackgroundColor(playdate.graphics.kColorWhite)
+playdate.graphics.setColor(playdate.graphics.kColorBlack)
 
 math.randomseed(os.time())
+
+local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
+playdate.graphics.setFont(font)
 
 function love.draw()
   -- must be changed at start of frame when canvas is not active
