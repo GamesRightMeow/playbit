@@ -1,28 +1,16 @@
 !if LOVE2D then
 require("playbit.graphics")
 
+--[[ since there is no CoreLibs/playdate, this file should always 
+be included here so the methods are always available ]]--
 require("playdate.playdate")
-require("playdate.datastore")
-require("playdate.string")
-require("playdate.metadata")
-require("playdate.graphics")
-require("playdate.image")
-require("playdate.imagetable")
-require("playdate.tilemap")
-require("playdate.font")
-require("playdate.animation")
-require("playdate.file")
-require("playdate.json")
-require("playdate.sound")
-require("playdate.easing")
-require("playdate.frameTimer")
-require("playdate.timer")
-require("playdate.object")
+playdate = playdate or {}
 
 function import(path)
   if string.match(path, "^CoreLibs/") then
-    -- ignore these imports, since the playdate namespace is already reimplemented in the global namespace
-    return
+    path = string.gsub(path, "/", ".")
+    path = string.gsub(path, "CoreLibs", "playdate")
+    return require(path)
   end
   path = string.gsub(path, "/", ".")
   return require(path)
@@ -37,8 +25,11 @@ love.graphics.setDefaultFilter("nearest", "nearest")
 love.graphics.setLineWidth(1)
 love.graphics.setLineStyle("rough")
 
-playdate.graphics.setBackgroundColor(1)
-playdate.graphics.setColor(0)
+playbit.graphics.backgroundColor = playbit.graphics.colorWhite
+
+local c = playbit.graphics.colorBlack
+playbit.graphics.drawColor = c
+love.graphics.setColor(c[1], c[2], c[3], c[4])
 
 math.randomseed(os.time())
 
@@ -86,14 +77,13 @@ function love.draw()
   end
 
   -- love requires that this is set every loop
-  love.graphics.setFont(playdate.graphics.getFont().data)
+  love.graphics.setFont(playbit.graphics.activeFont.data)
 
   -- push main transform for draw offset
   love.graphics.push()
   love.graphics.translate(playbit.graphics.drawOffset.x, playbit.graphics.drawOffset.y)
 
   -- main update
-  playdate.graphics.setImageDrawMode(playbit.graphics.drawMode)
   playdate.update()
 
   -- debug draw
@@ -102,11 +92,6 @@ function love.draw()
     playdate.debugDraw()
     playbit.graphics.shader:send("debugDraw", false)
   end
-
-  -- Not sure why, but we must reset to the default mode (copy = 0) otherwise
-  -- modes "stick" through till the next frame and seems to apply to clear().
-  -- Must also happen *here* - not tested, but maybe before pop() and canvas.draw()?
-  playbit.graphics.shader:send("mode", 0)
 
   -- pop main transform for draw offset
   love.graphics.pop()
