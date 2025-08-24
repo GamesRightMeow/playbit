@@ -20,6 +20,10 @@ module.kImageFlippedX = 1
 module.kImageFlippedY = 2
 module.kImageFlippedXY = 3
 
+module.kColorWhite = 1
+module.kColorBlack = 0
+-- TODO: clear and XOR support
+
 kTextAlignment = {
 	left = 0,
 	right = 1,
