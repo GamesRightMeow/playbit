@@ -281,7 +281,7 @@ function module.getLocalizedText(key, language)
 end
 
 function module.drawTextAligned(text, x, y, alignment, leadingAdjustment)
-  error("[ERR] playdate.graphics.drawTextAligned() is not yet implemented.")
+  module.getFont():drawTextAligned(text, x, y, alignment, leadingAdjustment)
 end
 
 function module.drawLocalizedTextAligned(text, x, y, alignment, language, leadingAdjustment)
