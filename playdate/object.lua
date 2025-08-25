@@ -26,8 +26,7 @@ local classTemp = {}
 function class(name, properties, namespace)
   classTemp.className = name
   classTemp.properties = properties
-  -- TODO: the namespace parameter isn't explained at all in PD docs
-  @@ASSERT(namespace == nil, "[ERR] Parameter namespace is not yet implemented.")
+  classTemp.namespace = namespace
   return classTemp
 end
 
@@ -72,8 +71,15 @@ function classTemp.extends(parent)
   end
   setmetatable(subclass, meta)
 
-  _G[classTemp.className] = subclass
+  if classTemp.namespace == nil then
+    -- if no namespace, put in global var
+    _G[classTemp.className] = subclass
+  else
+    -- otherwise place in namespace object
+    classTemp.namespace[classTemp.className] = subclass
+  end
 
   classTemp.className = nil
   classTemp.properties = nil
+  classTemp.namespace = nil
 end
