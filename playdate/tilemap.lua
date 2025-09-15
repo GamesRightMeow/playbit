@@ -56,7 +56,7 @@ function meta:draw(x, y)
   end
 
   love.graphics.setColor(r, g, b, 1)
-  playdate.graphics._updateContext()
+  playbit.graphics.updateContext()
 end
 
 function meta:setTiles(data, width)

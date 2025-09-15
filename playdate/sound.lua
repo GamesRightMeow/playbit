@@ -1,3 +1,5 @@
+-- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#M-sound
+
 playdate.sound = {}
 
 local sampleplayer = {}
@@ -62,7 +64,7 @@ function sampleplayer.meta:setRate(rate)
   self.data:setPitch(rate)
 end
 
-function sampleplayer.meta:getRate(rate)
+function sampleplayer.meta:getRate()
   self.data:getPitch()
 end
 

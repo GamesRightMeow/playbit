@@ -44,7 +44,7 @@ Additionally, a core aspect of Playbit is the the implementation of Playdate API
 - `playdate.imagetable`
 - `playdate.easingFunctions`
 - `playdate.font`
-  - Has limitations, see issues [#2](https://github.com/GamesRightMeow/playbit/issues/2) and [#20](https://github.com/GamesRightMeow/playbit/issues/20).
+  - Has limitations, see issue [#20](https://github.com/GamesRightMeow/playbit/issues/20).
 - `playdate.sound`
   - Only `sampleplayer` and `fileplayer`
 - Some functions under the general `playdate` namespace
@@ -59,3 +59,11 @@ This list is _not_ comprehensive. For complete details on currently implemented 
 Documentation can be found in the [docs](../docs/) folder. If you're new, it's recommended that you first read [Getting Started](getting-started.md).
 
 If you want to jump straight in, create a new repository using the [Playbit template](https://github.com/GamesRightMeow/playbit-template).
+
+## Get help
+If you want to report a bug, request documentation, or ask for feature: [open an issue](https://github.com/GamesRightMeow/playbit/issues).
+
+If you want to ask a question, get help, or start a general discussion topic, you have several avenues:
+  - [Start a new Github discussion](https://github.com/GamesRightMeow/playbit/discussions)
+  - [Join official Discord server](https://discord.gg/PSt3aCcBtk)
+  - Join the [Playbit thread](https://discord.com/channels/675983554655551509/1161743444255965354) in the [Playdate Squad Discord](https://discord.gg/VDqzTmtHR7)

@@ -1,3 +1,5 @@
+-- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#M-datastore
+
 local module = {}
 playdate.datastore = module
 
@@ -8,7 +10,7 @@ function module.write(table, filename, prettyPrint)
   filename = filename..".json"
   prettyPrint = prettyPrint or false
   -- TODO: json lib doesn't support pretty printing
-  @@ASSERT(not prettyPrint, "Print print parameter is not implemented.")
+  @@ASSERT(not prettyPrint, "[ERR] prettyPrint parameter is not yet implemented.")
   local str = jsonParser.encode(table)
   love.filesystem.write(filename, str)
 end
@@ -30,4 +32,12 @@ function module.delete(filename)
   filename = filename or "data"
   filename = filename..".json"
   love.filesystem.remove(filename)
+end
+
+function module.writeImage(image, path)
+  error("[ERR] playdate.datastore.writeImage() is not yet implemented.")
+end
+
+function module.readImage(path)
+  error("[ERR] playdate.datastore.readImage() is not yet implemented.")
 end

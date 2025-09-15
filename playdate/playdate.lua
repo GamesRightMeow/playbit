@@ -2,6 +2,12 @@ local module = {}
 playdate = module
 
 require("playbit.geometry")
+require("playdate.metadata")
+require("playdate.sound")
+require("playdate.file")
+require("playdate.datastore")
+require("playdate.accelerometer")
+require("playdate.json")
 
 -- ████████╗██╗███╗   ███╗███████╗
 -- ╚══██╔══╝██║████╗ ████║██╔════╝
@@ -325,5 +331,19 @@ function table.indexOfElement(table, element)
 end
 
 function printTable(...)
-	error("not implemented!")
+	error("[ERR] printTable() is not yet implemented.")
+end
+
+-- debug TODO: make a fancy header
+function sample()
+  error("[ERR] sample() is not yet implemented.")
+end
+
+function where()
+  error("[ERR] where() is not yet implemented.")
+end
+
+function module.apiVersion()
+  -- TODO: return Playbit version instead?
+  error("[ERR] playdate.apiVersion() is not yet implemented.")
 end

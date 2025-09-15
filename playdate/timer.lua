@@ -58,15 +58,15 @@ function module.new(duration, startValue, ...)
 end
 
 function module.performAfterDelay(delay, func, ...)
-	error("not implemented!")
+	error("[ERR] playdate.timer.performAfterDelay() is not yet implemented.")
 end
 
 function module.keyRepeatTimerWithDelay(initialDelay, repeatDelay, func, ...)
-  error("not implemented!")
+  error("[ERR] playdate.timer.keyRepeatTimerWithDelay() is not yet implemented.")
 end
 
 function module.keyRepeatTimer(func, ...)
-	error("not implemented!")
+	error("[ERR] playdate.timer.keyRepeatTimer() is not yet implemented.")
 end
 
 local function updateTimerValue(timer)

@@ -17,6 +17,12 @@ Install the following dependencies:
   * NOTE: Playbit runs Lua via `lua` at the command line. Depending on your platform and installation method, you may need to rename the binary e.g. rename `lua54.exe` to `lua.exe`.
 * [Love2D 11.x](https://love2d.org/)
 
+Add `love.exe` and `lua.exe` to your `PATH` variable
+* [Windows instructions](https://www.howtogeek.com/787217/how-to-edit-environment-variables-on-windows-10-or-11/)
+  * Check your installation with `where love` and `where lua` in a Command Prompt.
+* [macOS and Linux instructions](https://www.howtogeek.com/658904/how-to-add-a-directory-to-your-path-in-linux/#how-to-permanently-add-something-to-path)
+  * Check your installation with `which love` and `which lua` from the command line.
+
 ### Optional
 The following are not required for _general_ use of Playbit, but required if you use the related features:
 * [Aseprite](https://www.aseprite.org/) for .ASEPRITE export during build-time. For more information, see [Aseprite file processor](file-processors.md#aseprite).
@@ -36,6 +42,3 @@ If you're using any [optional dependencies](#optional) you'll also need to add t
 4. [Add metadata to your fonts](modify-fonts.md)
 5. [Configure build scripts](build-scripts.md)
 6. [Build & run your project](build-and-run.md)
-
-## Get help
-If you find a bug, missing documentation, or have trouble setting up playbit, [open an issue](https://github.com/GamesRightMeow/playbit/issues).

@@ -1,24 +1,10 @@
 local module = {}
 playdate.graphics = module
 
--- #b0aea7
-local COLOR_WHITE = { r = 176 / 255, g = 174 / 255, b = 167 / 255 }
--- #312f28
-local COLOR_BLACK = { r = 49 / 255, g = 47 / 255, b = 40 / 255 }
-
-module._shader = love.graphics.newShader("playdate/shader")
-module._drawOffset = { x = 0, y = 0}
-module._drawColor = COLOR_WHITE
-module._backgroundColor = COLOR_BLACK
-module._activeFont = {}
-module._drawMode = "copy"
-module._canvas = love.graphics.newCanvas()
-module._contextStack = {}
--- shared quad to reduce gc
-module._quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
-module._lastClearColor = COLOR_WHITE
-module._screenScale = 1
-module._newScreenScale = 1
+require("playdate.font")
+require("playdate.image")
+require("playdate.imagetable")
+require("playdate.tilemap")
 
 module.kDrawModeCopy = 0
 module.kDrawModeWhiteTransparent = 1
@@ -34,6 +20,10 @@ module.kImageFlippedX = 1
 module.kImageFlippedY = 2
 module.kImageFlippedXY = 3
 
+module.kColorWhite = 1
+module.kColorBlack = 0
+-- TODO: clear and XOR support
+
 kTextAlignment = {
 	left = 0,
 	right = 1,
@@ -41,45 +31,49 @@ kTextAlignment = {
 }
 
 function module.setDrawOffset(x, y)
-  module._drawOffset.x = x
-  module._drawOffset.y = y
+  playbit.graphics.drawOffset.x = x
+  playbit.graphics.drawOffset.y = y
   love.graphics.pop()
   love.graphics.push()
   love.graphics.translate(x, y)
 end
 
 function module.getDrawOffset()
-  return module._drawOffset.x, module._drawOffset.y
+  return playbit.graphics.drawOffset.x, playbit.graphics.drawOffset.y
 end
 
 function module.setBackgroundColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
+  playbit.graphics.backgroundColorIndex = color
   if color == 1 then
-    module._backgroundColor = COLOR_WHITE
+    playbit.graphics.backgroundColor = playbit.graphics.colorWhite
   else
-    module._backgroundColor = COLOR_BLACK
+    playbit.graphics.backgroundColor = playbit.graphics.colorBlack
   end
   -- don't actually set love's bg color here since doing so immediately sets the color, and this is not consistent with PD
 end
 
 function module.setColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
+  playbit.graphics.drawColorIndex = color
   -- when drawing without a pattern, we must flip the pattern mask for white/black because of the way the shader draws patterns
   if color == 1 then
-    module._drawColor = COLOR_WHITE
+    local c = playbit.graphics.colorWhite
+    playbit.graphics.drawColor = c
     -- reset pattern, as per PD behavior
     module.setPattern({0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff})
-    love.graphics.setColor(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
+    love.graphics.setColor(c[1], c[2], c[3], c[4])
   else
-    module._drawColor = COLOR_BLACK
+    local c = playbit.graphics.colorBlack
+    playbit.graphics.drawColor = c
     -- reset pattern, as per PD behavior
     module.setPattern({0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
-    love.graphics.setColor(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b, 1)
+    love.graphics.setColor(c[1], c[2], c[3], c[4])
   end
 end
 
 function module.setPattern(pattern)
-  module._drawPattern = pattern
+  playbit.graphics.drawPattern = pattern
 
   -- bitshifting does not work in shaders, so do it here in Lua
   local pixels = {}
@@ -94,61 +88,63 @@ function module.setPattern(pattern)
     end
   end
   
-  module._shader:send("pattern", unpack(pixels))
+  playbit.graphics.shader:send("pattern", unpack(pixels))
 end
 
 function module.clear(color)
   if not color then
-    local c = module._backgroundColor
-    love.graphics.clear(c.r, c.g, c.b, 1)
-    module._lastClearColor = c
+    local c = playbit.graphics.backgroundColor
+    love.graphics.clear(c[1], c[2], c[3], c[4])
+    playbit.graphics.lastClearColor = c
   else
     @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
     if color == 1 then
-      love.graphics.clear(COLOR_WHITE.r, COLOR_WHITE.g, COLOR_WHITE.b, 1)
-      module._lastClearColor = COLOR_WHITE
+      local c = playbit.graphics.colorWhite
+      love.graphics.clear(c[1], c[2], c[3], c[4])
+      playbit.graphics.lastClearColor = c
     else
-      love.graphics.clear(COLOR_BLACK.r, COLOR_BLACK.g, COLOR_BLACK.b, 1)
-      module._lastClearColor = COLOR_BLACK
+      local c = playbit.graphics.colorBlack
+      love.graphics.clear(c[1], c[2], c[3], c[4])
+      playbit.graphics.lastClearColor = c
     end
   end
-  module._updateContext()
+  playbit.graphics.updateContext()
 end
 
 -- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
 function module.setImageDrawMode(mode)
-  module._drawMode = mode
+  playbit.graphics.drawMode = mode
   if mode == module.kDrawModeCopy or mode == "copy" then
-    module._shader:send("mode", 0)
+    playbit.graphics.shader:send("mode", 0)
   elseif mode == module.kDrawModeFillWhite or mode == "fillWhite" then
-    module._shader:send("mode", 1)
+    playbit.graphics.shader:send("mode", 1)
   elseif mode == module.kDrawModeFillBlack or mode == "fillBlack" then
-    module._shader:send("mode", 2)
+    playbit.graphics.shader:send("mode", 2)
   elseif mode == module.kDrawModeFillBlack or mode == "inverted" then
-    module._shader:send("mode", 6)
+    playbit.graphics.shader:send("mode", 6)
   elseif mode == module.kDrawModeFillBlack or mode == "whiteTransparent" then
-    module._shader:send("mode", 4)
+    playbit.graphics.shader:send("mode", 4)
   else
-    error("Draw mode '"..mode.."' not implemented.")
+    error("[ERR] Draw mode '"..mode.."' is not yet implemented.")
   end
 end
 
 function module.drawCircleAtPoint(x, y, radius)
-  module._shader:send("mode", 8)
+  playbit.graphics.shader:send("mode", 8)
 
   love.graphics.circle("line", x, y, radius)
-  module._updateContext()
+  playbit.graphics.updateContext()
 
-  module.setImageDrawMode(module._drawMode)
+  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.fillCircleAtPoint(x, y, radius)
-  module._shader:send("mode", 8)
+  playbit.graphics.shader:send("mode", 8)
 
   love.graphics.circle("fill", x, y, radius)
-  module._updateContext()
+  playbit.graphics.updateContext()
 
-  module.setImageDrawMode(module._drawMode)
+  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.setLineWidth(width)
@@ -156,56 +152,56 @@ function module.setLineWidth(width)
 end
 
 function module.drawRect(x, y, width, height)
-  module._shader:send("mode", 8)
+  playbit.graphics.shader:send("mode", 8)
 
   love.graphics.rectangle("line", x, y, width, height)
-  module._updateContext()
+  playbit.graphics.updateContext()
 
-  module.setImageDrawMode(module._drawMode)
+  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.fillRect(x, y, width, height)
-  module._shader:send("mode", 8)
+  playbit.graphics.shader:send("mode", 8)
 
   love.graphics.rectangle("fill", x, y, width, height)
-  module._updateContext()
+  playbit.graphics.updateContext()
 
-  module.setImageDrawMode(module._drawMode)
+  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.drawRoundRect(x, y, width, height, radius)
   -- TODO: love's rectangle function doesn't draw the same way as Playdate's
-  -- module._shader:send("mode", 8)
+  -- playbit.graphics.shader:send("mode", 8)
 
   -- love.graphics.rectangle("line", x, y, width, height, radius, radius, 0)
-  -- module._updateContext()
+  -- playbit.graphics.updateContext()
 
-  -- module.setImageDrawMode(module._drawMode)
-  error("not implemented")
+  -- module.setImageDrawMode(playbit.graphics.drawMode)
+  error("[ERR] playdate.graphics.drawRoundRect() is not yet implemented.")
 end
 
 function module.fillRoundRect(x, y, width, height, radius)
   -- TODO: love's rectangle function doesn't draw the same way as Playdate's
-  -- module._shader:send("mode", 8)
+  -- playbit.graphics.shader:send("mode", 8)
 
   -- love.graphics.rectangle("fill", x, y, width, height, radius, radius, 0)
-  -- module._updateContext()
+  -- playbit.graphics.updateContext()
 
-  -- module.setImageDrawMode(module._drawMode)
-  error("not implemented")
+  -- module.setImageDrawMode(playbit.graphics.drawMode)
+  error("[ERR] playdate.graphics.fillRoundRect() is not yet implemented.")
 end
 
 function module.drawLine(x1, y1, x2, y2)
-  module._shader:send("mode", 8)
+  playbit.graphics.shader:send("mode", 8)
 
   love.graphics.line(x1, y1, x2, y2)
-  module._updateContext()
+  playbit.graphics.updateContext()
 
-  module.setImageDrawMode(module._drawMode)
+  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.drawArc(x, y, radius, startAngle, endAngle)
-  module._shader:send("mode", 8)
+  playbit.graphics.shader:send("mode", 8)
 
   -- 0 degrees is 270 when drawing an arc on PD...
   startAngle = startAngle - 90
@@ -220,31 +216,34 @@ function module.drawArc(x, y, radius, startAngle, endAngle)
   else
     love.graphics.arc("line", "open", x, y, radius, math.rad(endAngle), math.rad(startAngle), 16)
   end
-  module._updateContext()
+  playbit.graphics.updateContext()
 
-  module.setImageDrawMode(module._drawMode)
+  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.drawPixel(x, y)
-  module._shader:send("mode", 8)
+  playbit.graphics.shader:send("mode", 8)
 
   love.graphics.points(x, y)
-  module._updateContext()
+  playbit.graphics.updateContext()
 
-  module.setImageDrawMode(module._drawMode)
+  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.setFont(font)
-  module._activeFont = font
+  playbit.graphics.activeFont = font
   love.graphics.setFont(font.data)
 end
 
 function module.getFont()
-  return module._activeFont
+  return playbit.graphics.activeFont
 end
 
-function module.getTextSize(str)
-  local font = module._activeFont
+function module.getTextSize(str, fontFamily, leadingAdjustment)
+  @@ASSERT(fontFamily == nil, "[ERR] Parameter fontFamily is not yet implemented.")
+  @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
+
+  local font = playbit.graphics.activeFont
   return font:getWidth(str), font:getHeight()
 end
 
@@ -255,35 +254,59 @@ function module.drawTextInRect(text, x, ...)
     y, width, height, leadingAdjustment, truncationString, textAlignment, font = select(1, ...)
   else
     -- rect
-    error("Rect support not implemented!")
+    error("[ERR] Support for the rect parameter is not yet implemented.")
   end
 
-  font = font or module._activeFont
+  font = font or playbit.graphics.activeFont
 
   return font:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
 end
 
-function module.drawText(text, x, y, fontFamily, leadingAdjustment)
+-- TODO: handle the overloaded signature (text, rect, fontFamily, leadingAdjustment, wrapMode, alignment)
+function module.drawText(text, x, y, width, height, fontFamily, leadingAdjustment, wrapMode, alignment)
+  @@ASSERT(width == nil, "[ERR] Parameter width is not yet implemented.")
+  @@ASSERT(height == nil, "[ERR] Parameter height is not yet implemented.")
+  @@ASSERT(wrapMode == nil, "[ERR] Parameter wrapMode is not yet implemented.")
+  @@ASSERT(alignment == nil, "[ERR] Parameter alignment is not yet implemented.")
+
   @@ASSERT(text ~= nil, "Text is nil")
-  local font = module._activeFont
+  local font = playbit.graphics.activeFont
   font:drawText(text, x, y, fontFamily, leadingAdjustment)
-  module._updateContext()
+  playbit.graphics.updateContext()
 end
 
-function module:_updateContext()
-  if #module._contextStack == 0 then
-    return
-  end
+-- TODO: handle the overloaded signature (key, rect, language, leadingAdjustment)
+function module.drawLocalizedText(key, x, y, width, height, language, leadingAdjustment, wrapMode, alignment)
+  error("[ERR] playdate.graphics.drawLocalizedText() is not yet implemented.")
+end
 
-  local activeContext = module._contextStack[#module._contextStack]
+function module.getLocalizedText(key, language)
+  error("[ERR] playdate.graphics.getLocalizedText() is not yet implemented.")
+end
 
-  -- love2d doesn't allow calling newImageData() when canvas is active
-  love.graphics.setCanvas()
-  local imageData = activeContext._canvas:newImageData()
-  love.graphics.setCanvas(activeContext._canvas)
+function module.drawTextAligned(text, x, y, alignment, leadingAdjustment)
+  module.getFont():drawTextAligned(text, x, y, alignment, leadingAdjustment)
+end
 
-  -- update image
-  activeContext.data:replacePixels(imageData)
+function module.drawLocalizedTextAligned(text, x, y, alignment, language, leadingAdjustment)
+  error("[ERR] playdate.graphics.drawLocalizedTextAligned() is not yet implemented.")
+end
+
+-- TODO: handle the overloaded signature (text, rect, leadingAdjustment, truncationString, alignment, font, language)
+function module.drawLocalizedTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, alignment, font, language)
+  error("[ERR] playdate.graphics.drawLocalizedTextInRect() is not yet implemented.")
+end
+
+function module.getTextSizeForMaxWidth(text, maxWidth, leadingAdjustment, font)
+  error("[ERR] playdate.graphics.getTextSizeForMaxWidth() is not yet implemented.")
+end
+
+function module.imageWithText(text, maxWidth, maxHeight, backgroundColor, leadingAdjustment, truncationString, alignment, font)
+  error("[ERR] playdate.graphics.imageWithText() is not yet implemented.")
+end
+
+function module.checkAlphaCollision(image1, x1, y1, flip1, image2, x2, y2, flip2)
+  error("[ERR] playdate.graphics.checkAlphaCollision() is not yet implemented.")
 end
 
 function module.pushContext(image)
@@ -296,22 +319,22 @@ function module.pushContext(image)
   end
   
   -- push context
-  table.insert(module._contextStack, image)
+  table.insert(playbit.graphics.contextStack, image)
 
   -- update current render target
   love.graphics.setCanvas(image._canvas)
 end
 
 function module.popContext()
-  @@ASSERT(#module._contextStack > 0, "No pushed context.")
+  @@ASSERT(#playbit.graphics.contextStack > 0, "No pushed context.")
 
   -- pop context
-  table.remove(module._contextStack)
+  table.remove(playbit.graphics.contextStack)
   -- update current render target
-  if #module._contextStack == 0 then
-    love.graphics.setCanvas(module._canvas)
+  if #playbit.graphics.contextStack == 0 then
+    love.graphics.setCanvas(playbit.graphics.canvas)
   else
-    local activeContext = module._contextStack[#module._contextStack]
+    local activeContext = playbit.graphics.contextStack[#playbit.graphics.contextStack]
     love.graphics.setCanvas(activeContext._canvas)
   end
 end
