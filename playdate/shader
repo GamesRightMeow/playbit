@@ -122,6 +122,11 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
         return white;
       }
     }
+    else
+    {
+      // transparent pixel
+      return TRANSPARENT;
+    }
   }
   else if (mode == 7)                     // ---------- ???
   {
