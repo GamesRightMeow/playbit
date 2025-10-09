@@ -7,6 +7,7 @@ require("playdate.playdate")
 --[[ not really a way around including this one, but probably doesn't really
 matter as all games are going to need to import graphics to draw stuff ]]--
 require("playdate.graphics")
+require("playdate.sprite")
 
 function import(path)
   if string.match(path, "^CoreLibs/") then
@@ -87,6 +88,11 @@ function love.draw()
 
   -- main update
   playdate.update()
+  playdate.graphics.sprite.updateAll()
+  
+  -- Unclear if the drawing of the images of a sprite needs to be called here
+  -- or would happend later through the love.graphics.draw(playdate.graphics._canvas, ... )
+  playdate.graphics.sprite.drawAll()
 
   -- debug draw
   if playdate.debugDraw then
