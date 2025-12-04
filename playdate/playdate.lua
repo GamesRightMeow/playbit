@@ -151,7 +151,8 @@ function module.getCrankChange()
     return change, acceleratedChange
 end
 
--- TODO: acceleramator, emulate via leftstick, keyboard...?
+-- TODO: emulate via leftstick, keyboard...?
+-- accelerometer defined in accelerometer.lua
 
 function module.getCrankPosition()
   if module.isCrankDocked() then

@@ -69,41 +69,40 @@ function meta:draw(x, y, flip)
 end
 
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.animation.blinker
-local blinkerModule = {}
-playdate.graphics.animation.blinker = blinkerModule
 
-local blinkerMeta = {}
-blinkerMeta.__index = blinkerMeta
-blinkerModule.__index = blinkerMeta
+local blinker = {}
+playdate.graphics.animation.blinker = blinker
+blinker.meta = {}
+blinker.meta.__index = blinker.meta
 
-function blinkerModule.new(onDuration, offDuration, loop, cycles, default)
+function blinker.new(onDuration, offDuration, loop, cycles, default)
   error("[ERR] playdate.graphics.animation.blinker.new() is not yet implemented.")
 end
 
-function blinkerModule.updateAll()
+function blinker.updateAll()
   error("[ERR] playdate.graphics.animation.blinker.updateAll() is not yet implemented.")
 end
 
-function blinkerMeta:update()
+function blinker.meta:update()
   error("[ERR] playdate.graphics.animation.blinker:update() is not yet implemented.")
 end
 
-function blinkerMeta:start(onDuration, offDuration, loop, cycles, default)
+function blinker.meta:start(onDuration, offDuration, loop, cycles, default)
   error("[ERR] playdate.graphics.animation.blinker:start() is not yet implemented.")
 end
 
-function blinkerMeta:startLoop()
+function blinker.meta:startLoop()
   error("[ERR] playdate.graphics.animation.blinker:startLoop() is not yet implemented.")
 end
 
-function blinkerMeta:stop()
+function blinker.meta:stop()
   error("[ERR] playdate.graphics.animation.blinker:stop() is not yet implemented.")
 end
 
-function blinkerModule.stopAll()
+function blinker.stopAll()
   error("[ERR] playdate.graphics.animation.blinker.stopAll() is not yet implemented.")
 end
 
-function blinkerMeta:remove()
+function blinker.meta:remove()
   error("[ERR] playdate.graphics.animation.blinker:remove() is not yet implemented.")
 end
