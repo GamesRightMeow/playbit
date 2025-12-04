@@ -187,7 +187,7 @@ function module.processPath(projectFolder, buildFolder, inputPath, outputPath, l
     -- process single file
     local filePath = files[1]
     if (filePath == nil) then
-      error("Invalid file path!")
+      error("No file at input path: "..inputPath)
     end
     local outputFilePath = fs.sanitizePath(projectFolder.."/"..buildFolder.."/"..outputPath)
     module.processFile(filePath, outputFilePath, localProcessors, globalProcessors)
