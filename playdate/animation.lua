@@ -68,41 +68,103 @@ function meta:draw(x, y, flip)
   self._imageTable:drawImage(self.frame, x, y, flip)
 end
 
+local blinkers = {}
+
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.animation.blinker
+local blinkerModule = {}
+playdate.graphics.animation.blinker = blinkerModule
 
-local blinker = {}
-playdate.graphics.animation.blinker = blinker
-blinker.meta = {}
-blinker.meta.__index = blinker.meta
+local blinkerMeta = {}
+blinkerMeta.__index = blinkerMeta
+blinkerModule.__index = blinkerMeta
 
-function blinker.new(onDuration, offDuration, loop, cycles, default)
-  error("[ERR] playdate.graphics.animation.blinker.new() is not yet implemented.")
+local function setBlinkerSettings(blinker,onDuration, offDuration, loop, cycles, default)
+  if (type(onDuration) == "table") then
+    onDuration = onDuration.onDuration
+		offDuration = onDuration.offDuration
+		loop = onDuration.loop
+		cycles = onDuration.cycles
+		default = onDuration.default
+  end
+  blinker.onDuration = onDuration or 200
+  blinker.offDuration = offDuration or 200
+  blinker.loop = loop or false
+  blinker.cycles = cycles or 6
+  blinker._default = default or true
+  
+  blinker.counter = 0
+  blinker.running = false
+  blinker.valid = true
+  blinker.on = blinker._default
 end
 
-function blinker.updateAll()
-  error("[ERR] playdate.graphics.animation.blinker.updateAll() is not yet implemented.")
+function blinkerModule.new(onDuration, offDuration, loop, cycles, default)
+  local blinker = setmetatable({}, blinkerMeta)
+  setBlinkerSettings(blinker,onDuration, offDuration, loop, cycles, default)
+  
+  blinker.counter = 0
+  blinker.running = false
+  blinker.valid = true
+  blinker.on = blinker._default
+  blinker._toRemove = false
+  table.insert(blinkers, blinker)
+  return blinker
+  --error("[ERR] playdate.graphics.animation.blinker.new() is not yet implemented.")
 end
 
-function blinker.meta:update()
-  error("[ERR] playdate.graphics.animation.blinker:update() is not yet implemented.")
+function blinkerModule.updateAll()
+  for key, value in pairs(blinkers) do
+    value:update()
+  end
+  for i = #blinkers, 1 , -1 do
+    if blinkers[i]._toRemove then
+      table.remove(blinkers,i)
+    end
+  end
+  --error("[ERR] playdate.graphics.animation.blinker.updateAll() is not yet implemented.")
+end
+function blinkerMeta:update()
+  if not self.running then return end
+  local elapsedTime = playdate.getCurrentTimeMilliseconds()
+  local durationTime
+  if self.on then
+    durationTime = self.onDuration
+  else
+    durationTime = self.offDuration
+  end
+  if self.counter > 0 and elapsedTime-self.t > durationTime then
+    self.on = not self.on
+    self.t = elapsedTime
+    self.counter = self.counter - 1
+  elseif self.counter == 0 then
+    self.on = self._default
+    self.running = false
+    if self.loop then self:start() end
+  end
+  --error("[ERR] playdate.graphics.animation.blinker:update() is not yet implemented.")
 end
 
-function blinker.meta:start(onDuration, offDuration, loop, cycles, default)
-  error("[ERR] playdate.graphics.animation.blinker:start() is not yet implemented.")
+function blinkerMeta:start(onDuration, offDuration, loop, cycles, default)
+  setBlinkerSettings(self,onDuration, offDuration, loop, cycles, default)
+  self.running = true
 end
 
-function blinker.meta:startLoop()
-  error("[ERR] playdate.graphics.animation.blinker:startLoop() is not yet implemented.")
+function blinkerMeta:startLoop()
+  self:start(nil,nil,true)
 end
 
-function blinker.meta:stop()
-  error("[ERR] playdate.graphics.animation.blinker:stop() is not yet implemented.")
+function blinkerMeta:stop()
+  self.running = false
+  self.counter = 0
+  self.on = self._default
 end
 
-function blinker.stopAll()
-  error("[ERR] playdate.graphics.animation.blinker.stopAll() is not yet implemented.")
+function blinkerModule.stopAll()
+  for key, value in pairs(blinkers) do
+    value:stop()
+  end
 end
 
-function blinker.meta:remove()
-  error("[ERR] playdate.graphics.animation.blinker:remove() is not yet implemented.")
+function blinkerMeta:remove()
+  self._toRemove = true
 end
