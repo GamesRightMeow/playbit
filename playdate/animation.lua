@@ -69,6 +69,7 @@ function meta:draw(x, y, flip)
 end
 
 local blinkers = {}
+local blinkersToRemove = {}
 
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.animation.blinker
 local blinkerModule = {}
@@ -78,7 +79,7 @@ local blinkerMeta = {}
 blinkerMeta.__index = blinkerMeta
 blinkerModule.__index = blinkerMeta
 
-local function setBlinkerSettings(blinker,onDuration, offDuration, loop, cycles, default)
+local function setBlinkerSettings(inblinker,onDuration, offDuration, loop, cycles, default)
   if (type(onDuration) == "table") then
     onDuration = onDuration.onDuration
 		offDuration = onDuration.offDuration
@@ -86,22 +87,22 @@ local function setBlinkerSettings(blinker,onDuration, offDuration, loop, cycles,
 		cycles = onDuration.cycles
 		default = onDuration.default
   end
-  blinker.onDuration = onDuration or 200
-  blinker.offDuration = offDuration or 200
-  blinker.loop = loop or false
-  blinker.cycles = cycles or 6
-  blinker._default = default or true
+  inblinker.onDuration = onDuration or 200
+  inblinker.offDuration = offDuration or 200
+  inblinker.loop = loop or false
+  inblinker.cycles = cycles or 6
+  inblinker._default = default or true
   
-  blinker.counter = 0
-  blinker.running = false
-  blinker.valid = true
-  blinker.on = blinker._default
+  inblinker.counter = 0
+  inblinker.running = false
+  inblinker.valid = true
+  inblinker.on = inblinker._default
 end
 
 function blinkerModule.new(onDuration, offDuration, loop, cycles, default)
   local blinker = setmetatable({}, blinkerMeta)
   setBlinkerSettings(blinker,onDuration, offDuration, loop, cycles, default)
-  
+  blinker.t = 0
   blinker.counter = 0
   blinker.running = false
   blinker.valid = true
@@ -139,7 +140,7 @@ function blinkerMeta:update()
   elseif self.counter == 0 then
     self.on = self._default
     self.running = false
-    if self.loop then self:start() end
+    if self.loop then self:startLoop() end
   end
   --error("[ERR] playdate.graphics.animation.blinker:update() is not yet implemented.")
 end
@@ -147,6 +148,7 @@ end
 function blinkerMeta:start(onDuration, offDuration, loop, cycles, default)
   setBlinkerSettings(self,onDuration, offDuration, loop, cycles, default)
   self.running = true
+  self.counter = self.cycles
 end
 
 function blinkerMeta:startLoop()
