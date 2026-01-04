@@ -98,7 +98,7 @@ function module.clear(color)
     love.graphics.clear(c[1], c[2], c[3], c[4])
     playbit.graphics.lastClearColor = c
   else
-    @@ASSERT(color == 1 or color == 0 or color == 2, "Only values of 0 (black) or 1 (white) are supported.")
+    @@ASSERT(color == 1 or color == 0 or color == 2, "Only values of 0 (black) or 1 (white) 2 (transparent) are supported.")
     if color == 1 then
       local c = playbit.graphics.colorWhite
       love.graphics.clear(c[1], c[2], c[3], c[4])

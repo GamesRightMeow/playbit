@@ -157,19 +157,10 @@ function meta:drawInRect(x, y, width, height)
     playdate.graphics.clear(2)
     -- draw background
     if self.backgroundImage ~= nil then
-        if self.backgroundImage.slices ~= nil then
-            error("[ERR] playdate.ui.gridview:drawInRect() with 9slice is not yet implemented.")
+        if self.backgroundImage._imageSections ~= nil then
+            self.backgroundImage:drawInRect(0,0,width,height)
         else
-            --TODO: Implement drawTiled in image
-            --self.backgroundImage:drawTiled(0, 0, width, height)
-            local imageWidth , imageHeight = self.backgroundImage:getSize()
-            local numTilesX = math.ceil(width / imageWidth)
-            local numTilesY = math.ceil(height / imageHeight)
-            for i = 1, numTilesX do
-                for j = 1, numTilesY do
-                    self.backgroundImage:draw((i-1)*imageWidth, (j-1)*imageHeight)
-                end
-            end
+            self.backgroundImage:drawTiled(0, 0, width, height)
         end
     end
 
@@ -369,25 +360,26 @@ function meta:scrollToCell(section, row, column, animated)
     if self.scrollCellsToCenter then
         self:scrollCellToCenter(section, row, column, animated)
         return
-    end    
+    end
     cellX,cellY = self:_calculateCellPosition(section,row,column)
     local toXPos,toYPos = self._scrollPositionX , self._scrollPositionY
-    if self._scrollPositionX > cellX + self._cellWidth then
+    if self._scrollPositionX > cellX then
         toXPos = cellX
-    elseif self._scrollPositionX + self._drawRectWidth < cellX+ self._cellWidth  then
-        toXPos = cellX+ self._cellWidth - self._drawRectWidth 
+    elseif self._scrollPositionX + self._drawInsetWidth < cellX+ self._cellWidth  then
+        toXPos = cellX+ self._cellWidth - self._drawInsetWidth 
     end
-    if self._scrollPositionY> cellY + self._cellHeight then
+    if self._scrollPositionY> cellY then
         toYPos = cellY
-    elseif self._scrollPositionY + self._drawRectHeight < cellY+ self._cellHeight  then
-        toYPos = cellY+ self._cellHeight - self._drawRectHeight 
+    elseif self._scrollPositionY + self._drawInsetHeight < cellY+ self._cellHeight  then
+        toYPos = cellY+ self._cellHeight - self._drawInsetHeight 
     end
     self:setScrollPosition(toXPos,toYPos,animated)
 end
 
 function meta:scrollCellToCenter(section, row, column, animated)
     cellX,cellY = self:_calculateCellPosition(section,row,column)
-    self:setScrollPosition(cellX+self._cellWidth/2-self._drawInsetWidth/2,cellY+self._cellHeight/2-self._drawInsetWidth/2,animated)
+    print(cellX,cellY,cell)
+    self:setScrollPosition(cellX+self._cellWidth/2-self._drawInsetWidth/2,cellY+self._cellHeight/2-self._drawInsetHeight/2,animated)
 end
 
 function meta:scrollToRow(row, animated)

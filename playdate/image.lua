@@ -184,7 +184,21 @@ end
 
 -- TODO: handle overloaded signature (rect, flip)
 function meta:drawTiled(x, y, width, height, flip)
-  error("[ERR] playdate.graphics.image:drawTiled() is not yet implemented.")
+  local drawImage = playdate.graphics.image.new(width,height)
+  local imgWidth , imgHeight = self:getSize()
+  --TODO calculate width and height of image
+  -- draw image for each x,y to cover width and height of tiled
+  playdate.graphics.pushContext(drawImage)
+  playdate.graphics.clear(2)
+  local iLoop = math.ceil((width) / imgWidth)
+  local jLoop = math.ceil((height) / imgHeight)
+  for drawLoopI = 1,iLoop do
+    for drawLoopJ = 1,jLoop do
+      self:draw((drawLoopI-1)*imgWidth, (drawLoopJ-1)*imgHeight)
+    end
+  end
+  playdate.graphics.popContext()
+  drawImage:draw(x,y,flip)
 end
 
 function meta:drawBlurred(x, y, radius, numPasses, ditherType, flip, xPhase, yPhase)
