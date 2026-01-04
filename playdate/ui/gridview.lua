@@ -141,12 +141,18 @@ function meta:drawInRect(x, y, width, height)
     local changedSize = false
     if self._drawRectWidth ~= width then
         self._drawRectWidth = width
+        changedSize = true
+    end
+    if self._drawInsetWidth ~= width - self._contentInset[1] - self._contentInset[2] then
         self._drawInsetWidth = width - self._contentInset[1] - self._contentInset[2]
         changedSize = true
     end
     if self._drawRectHeight ~= height then
         self._drawRectHeight = height
-        self._drawInsetHeight = width - self._contentInset[3] - self._contentInset[4]
+        changedSize = true
+    end
+    if self._drawInsetHeight ~= height - self._contentInset[3] - self._contentInset[4] then
+        self._drawInsetHeight = height - self._contentInset[3] - self._contentInset[4]
         changedSize = true
     end
     if changedSize or self._drawImage == nil then
@@ -166,6 +172,7 @@ function meta:drawInRect(x, y, width, height)
 
     playdate.graphics.pushContext(self._drawInsetImage)
     playdate.graphics.clear(2)
+
     local drawWidth = self._drawInsetWidth
     local drawHeight = self._drawInsetHeight
     -- Draw all cells
@@ -363,22 +370,21 @@ function meta:scrollToCell(section, row, column, animated)
     end
     cellX,cellY = self:_calculateCellPosition(section,row,column)
     local toXPos,toYPos = self._scrollPositionX , self._scrollPositionY
-    if self._scrollPositionX > cellX then
-        toXPos = cellX
-    elseif self._scrollPositionX + self._drawInsetWidth < cellX+ self._cellWidth  then
-        toXPos = cellX+ self._cellWidth - self._drawInsetWidth 
+    if self._scrollPositionX > cellX - self._cellPadding[1] then
+        toXPos = cellX - self._cellPadding[1]
+    elseif self._scrollPositionX + self._drawInsetWidth < cellX + self._cellWidth + self._cellPadding[2] then
+        toXPos = cellX + self._cellPadding[2] + self._cellWidth - self._drawInsetWidth 
     end
-    if self._scrollPositionY> cellY then
-        toYPos = cellY
-    elseif self._scrollPositionY + self._drawInsetHeight < cellY+ self._cellHeight  then
-        toYPos = cellY+ self._cellHeight - self._drawInsetHeight 
+    if self._scrollPositionY > cellY - self._cellPadding[3] then
+        toYPos = cellY - self._cellPadding[3]
+    elseif self._scrollPositionY + self._drawInsetHeight < cellY+ self._cellHeight + self._cellPadding[4] then
+        toYPos = cellY + self._cellPadding[4] + self._cellHeight - self._drawInsetHeight 
     end
     self:setScrollPosition(toXPos,toYPos,animated)
 end
 
 function meta:scrollCellToCenter(section, row, column, animated)
     cellX,cellY = self:_calculateCellPosition(section,row,column)
-    print(cellX,cellY,cell)
     self:setScrollPosition(cellX+self._cellWidth/2-self._drawInsetWidth/2,cellY+self._cellHeight/2-self._drawInsetHeight/2,animated)
 end
 
