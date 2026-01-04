@@ -22,6 +22,7 @@ module.kImageFlippedXY = 3
 
 module.kColorWhite = 1
 module.kColorBlack = 0
+module.kColorClear = 2
 -- TODO: clear and XOR support
 
 kTextAlignment = {
@@ -97,13 +98,17 @@ function module.clear(color)
     love.graphics.clear(c[1], c[2], c[3], c[4])
     playbit.graphics.lastClearColor = c
   else
-    @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
+    @@ASSERT(color == 1 or color == 0 or color == 2, "Only values of 0 (black) or 1 (white) are supported.")
     if color == 1 then
       local c = playbit.graphics.colorWhite
       love.graphics.clear(c[1], c[2], c[3], c[4])
       playbit.graphics.lastClearColor = c
-    else
+    elseif color == 0 then
       local c = playbit.graphics.colorBlack
+      love.graphics.clear(c[1], c[2], c[3], c[4])
+      playbit.graphics.lastClearColor = c
+    else
+      local c = playbit.graphics.colorClear
       love.graphics.clear(c[1], c[2], c[3], c[4])
       playbit.graphics.lastClearColor = c
     end
@@ -120,9 +125,9 @@ function module.setImageDrawMode(mode)
     playbit.graphics.shader:send("mode", 1)
   elseif mode == module.kDrawModeFillBlack or mode == "fillBlack" then
     playbit.graphics.shader:send("mode", 2)
-  elseif mode == module.kDrawModeInverted or mode == "inverted" then
+  elseif mode == module.kDrawModeFillBlack or mode == "inverted" then
     playbit.graphics.shader:send("mode", 6)
-  elseif mode == module.kDrawModeWhiteTransparent or mode == "whiteTransparent" then
+  elseif mode == module.kDrawModeFillBlack or mode == "whiteTransparent" then
     playbit.graphics.shader:send("mode", 4)
   else
     error("[ERR] Draw mode '"..mode.."' is not yet implemented.")

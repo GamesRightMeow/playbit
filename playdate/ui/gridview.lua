@@ -1,4 +1,6 @@
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-ui.gridview
+import 'CoreLibs/timer'
+import 'CoreLibs/easing'
 
 playdate.ui = playdate.ui or {}
 
@@ -12,162 +14,488 @@ module.__index = meta
 module.needsDisplay = false
 
 function module.new(cellWidth, cellHeight)
-    error("[ERR] playdate.ui.gridview.new() is not yet implemented.")
+    local gridview = setmetatable({}, meta)
+    gridview._drawImage = playdate.graphics.image.new(cellWidth,cellHeight)
+    gridview._selectedRow = 1
+    gridview._selectedColumn = 1
+    gridview._selectedSection = 1
+    gridview._cellWidth = cellWidth
+    gridview._cellHeight = cellHeight
+    gridview.backgroundImage = nil
+    gridview.isScrolling = false
+    gridview.scrollEasingFunction = playdate.easingFunctions.outCubic
+    gridview.easingAmplitude = nil
+    gridview.easingPeriod = nil
+    gridview._numSections = 1
+    gridview._numRows = {1}
+    gridview._sectionStartY = {0}
+    gridview._numColumns = 1
+    gridview._cellPadding = {0,0,0,0}  -- left, right, top , bottom 
+    gridview._contentInset = {0,0,0,0} -- left, right, top , bottom 
+    gridview._sectionHeaderHeight = 0
+    gridview._sectionHeaderPadding = {0,0,0,0} -- left, right, top , bottom 
+    gridview._horizontalDividerHeight = cellHeight / 2
+    gridview._horizontalDivider = {}
+    gridview._scrollDuration = 250
+    gridview._scrollPositionX = 0
+    gridview._scrollPositionY = 0
+    gridview._scrollToPositionX = 0
+    gridview._scrollToPositionY = 0
+    gridview._scrollToStartPositionX = 0
+    gridview._scrollToStartPositionY = 0
+    gridview._maxX = cellWidth
+    gridview._maxY = cellHeight
+    gridview._drawRectWidth = cellWidth
+    gridview._drawRectHeight = cellHeight
+    gridview._drawInsetWidth = cellWidth
+    gridview._drawInsetHeight = cellHeight
+    gridview._scrollTimer = playdate.timer.new(250,0,1,gridview.scrollEasingFunction)
+    gridview.scrollCellsToCenter = true
+    gridview._maxY = cellHeight
+    gridview._maxX = cellWidth
+    gridview.changeRowOnColumnWrap = true
+    local gridViewLocal = gridview
+    gridview._scrollTimer.updateCallback = function(timer)
+        gridViewLocal._scrollPositionX = gridViewLocal._scrollToStartPositionX + timer.value * (gridViewLocal._scrollToPositionX-gridViewLocal._scrollToStartPositionX)
+        gridViewLocal._scrollPositionY = gridViewLocal._scrollToStartPositionY + timer.value * (gridViewLocal._scrollToPositionY-gridViewLocal._scrollToStartPositionY)
+    end
+    gridview._scrollTimer.timerEndedCallback = function(timer)
+        gridViewLocal._scrollPositionX = gridViewLocal._scrollToPositionX
+        gridViewLocal._scrollPositionY = gridViewLocal._scrollToPositionY
+        gridViewLocal.isScrolling = false
+    end
+    gridview._needToRecalculateSectionStartY = true
+    gridview:_calculateSectionStartY()
+    
+    return gridview
 end
-
+function meta:_scrollGridview(x,y)
+    --NOTE: Need to change originalValues to deal with timer reseting easing Function
+    self._scrollTimer.originalValues.easingFunction = self.scrollEasingFunction
+    self._scrollToStartPositionX = self._scrollPositionX
+    self._scrollToStartPositionY = self._scrollPositionY
+    self._scrollToPositionX = x
+    self._scrollToPositionY = y
+    self._scrollTimer:reset()
+    self._scrollTimer:start()
+end
+function meta:_calculateSectionStartY()
+    local curHeight = 0
+    self._sectionStartY = {}
+    for sectionIndex = 1, self._numSections, 1 do
+        self._sectionStartY[sectionIndex] = curHeight
+        curHeight = curHeight + self._numRows[sectionIndex] * (self._cellHeight + self._cellPadding[3] + self._cellPadding[4])
+        if self._sectionHeaderHeight > 0 then
+            curHeight = curHeight + self._sectionHeaderHeight + self._sectionHeaderPadding[3] + self._sectionHeaderPadding[4]
+        end
+        if self._horizontalDivider[sectionIndex] ~= nil then
+            for hdRow = 1, self._numRows[sectionIndex], 1 do
+                if self._horizontalDivider[sectionIndex][hdRow] then
+                    curHeight = curHeight + self._horizontalDividerHeight
+                end
+            end
+        end
+    end
+    self._maxY = curHeight
+    self._maxX = self._numColumns * (self._cellWidth +self._cellPadding[1] + self._cellPadding[2])
+    self._needToRecalculateSectionStartY = false
+end
+function meta:_calculateCellPosition(section,row,column)
+    local cellX, cellY = 0 , 0
+    cellY = cellY + self._sectionStartY[section]
+    cellY = cellY + self._sectionHeaderHeight + self._sectionHeaderPadding[3] + self._sectionHeaderPadding[4]
+    cellY = cellY + (self._cellPadding[3]) * row + (row-1)*(self._cellHeight + self._cellPadding[4])
+    if self._horizontalDivider[section] ~= nil then
+        for hdRow = 1, row, 1 do
+            if self._horizontalDivider[section][hdRow] then
+                cellY = cellY + self._horizontalDividerHeight
+            end
+        end
+    end
+    cellX = cellX + (self._cellPadding[1]) * column + (column-1)*(self._cellWidth + self._cellPadding[2])
+    return cellX,cellY
+end
 -- drawing: https://sdk.play.date/2.6.2/Inside%20Playdate.html#_drawing_3
 function meta:drawCell(section, row, column, selected, x, y, width, height)
-    error("[ERR] playdate.ui.gridview:drawCell() is not yet implemented.")
+    playdate.graphics.setColor(0)
+	playdate.graphics.drawRect(x, y, width, height)
+	if selected then
+		playdate.graphics.fillRect(x + 2, y + 2, width - 4, height - 4)
+	end
 end
 
 function meta:drawSectionHeader(section, x, y, width, height)
-    error("[ERR] playdate.ui.gridview:drawSectionHeader() is not yet implemented.")
+    playdate.graphics.setColor(0)
+	playdate.graphics.fillRect(x, y, width, height)
 end
 
 function meta:drawHorizontalDivider(x, y, width, height)
-    error("[ERR] playdate.ui.gridview:drawHorizontalDivider() is not yet implemented.")
+    playdate.graphics.setColor(0)
+	playdate.graphics.fillRect(x+2, y+(height-1)/2, width-4, 2)
 end
 
 function meta:drawInRect(x, y, width, height)
-    error("[ERR] playdate.ui.gridview:drawInRect() is not yet implemented.")
+    if self._needToRecalculateSectionStartY then
+        self:_calculateSectionStartY()
+    end
+    local changedSize = false
+    if self._drawRectWidth ~= width then
+        self._drawRectWidth = width
+        self._drawInsetWidth = width - self._contentInset[1] - self._contentInset[2]
+        changedSize = true
+    end
+    if self._drawRectHeight ~= height then
+        self._drawRectHeight = height
+        self._drawInsetHeight = width - self._contentInset[3] - self._contentInset[4]
+        changedSize = true
+    end
+    if changedSize or self._drawImage == nil then
+        self._drawImage = playdate.graphics.image.new(self._drawRectWidth,self._drawRectHeight)
+        self._drawInsetImage = playdate.graphics.image.new(self._drawInsetWidth,self._drawInsetHeight)
+    end
+    playdate.graphics.pushContext(self._drawImage)
+    playdate.graphics.clear(2)
+    -- draw background
+    if self.backgroundImage ~= nil then
+        if self.backgroundImage.slices ~= nil then
+            error("[ERR] playdate.ui.gridview:drawInRect() with 9slice is not yet implemented.")
+        else
+            --TODO: Implement drawTiled in image
+            --self.backgroundImage:drawTiled(0, 0, width, height)
+            local imageWidth , imageHeight = self.backgroundImage:getSize()
+            local numTilesX = math.ceil(width / imageWidth)
+            local numTilesY = math.ceil(height / imageHeight)
+            for i = 1, numTilesX do
+                for j = 1, numTilesY do
+                    self.backgroundImage:draw((i-1)*imageWidth, (j-1)*imageHeight)
+                end
+            end
+        end
+    end
+
+    playdate.graphics.pushContext(self._drawInsetImage)
+    playdate.graphics.clear(2)
+    local drawWidth = self._drawInsetWidth
+    local drawHeight = self._drawInsetHeight
+    -- Draw all cells
+    local cellWidth,cellHeight = self._cellWidth,self._cellHeight
+    for curSection = 1 , self._numSections do
+        if self._sectionStartY[curSection+1] == nil or self._sectionStartY[curSection+1] >= self._scrollPositionY then
+            -- if start of next section is after scroll position then this section 
+            -- needs to be drawn or we would have stopped already
+            if self._sectionHeaderHeight ~= 0 then
+                self:drawSectionHeader(curSection,self._sectionHeaderPadding[1]+curX,self._sectionHeaderPadding[3]+curY,drawWidth,self._sectionHeaderHeight)
+            end
+            local horizontalDividerCounter = 0
+            for curRow = 1, self._numRows[curSection] do
+                local rowY = - self._scrollPositionY +horizontalDividerCounter * self._horizontalDividerHeight + self._sectionStartY[curSection]+self._sectionHeaderHeight+self._sectionHeaderPadding[3]+self._sectionHeaderPadding[4] + self._cellPadding[3] + (curRow-1)* (cellHeight+self._cellPadding[3]+self._cellPadding[4])                
+                if self._horizontalDivider[curSection] ~= nil then
+                    if self._horizontalDivider[curSection][curRow] then
+                        horizontalDividerCounter = horizontalDividerCounter + 1
+                        self:drawHorizontalDivider(0,rowY,drawWidth,self._horizontalDividerHeight)
+                    end
+                end
+                rowY = - self._scrollPositionY + horizontalDividerCounter * self._horizontalDividerHeight + self._sectionStartY[curSection]+self._sectionHeaderHeight+self._sectionHeaderPadding[3]+self._sectionHeaderPadding[4] + self._cellPadding[3] + (curRow-1)* (cellHeight+self._cellPadding[3]+self._cellPadding[4])
+                
+                for curColumn = 1, self._numColumns do
+                    local isSelected,cellX,cellY
+                    isSelected = false
+                    if self._selectedSection == curSection and self._selectedRow == curRow and self._selectedColumn == curColumn then
+                        isSelected = true
+                    end                    
+                    cellX = - self._scrollPositionX + (self._cellPadding[1]) * curColumn + (curColumn-1)*(self._cellWidth + self._cellPadding[2])
+                    cellY = rowY + self._cellPadding[3]
+                    self:drawCell(curSection,curRow,curColumn,isSelected,cellX,cellY,cellWidth,cellHeight)
+                end
+            end
+        end
+    end
+    playdate.graphics.popContext()
+    self._drawInsetImage:draw(self._contentInset[1],self._contentInset[3])
+    playdate.graphics.popContext()
+    self._drawImage:draw(x,y)
 end
 
 -- configuration: https://sdk.play.date/2.6.2/Inside%20Playdate.html#_configuration
 function meta:setNumberOfSections(num)
-    error("[ERR] playdate.ui.gridview:setNumberOfSections() is not yet implemented.")
+    if num > 0 then
+        if num > self._numSections then
+            for i = self._numSections+1, num, 1 do
+                self._numRows[i] = 1
+            end
+        elseif num < self._numSections then
+            for i = num+1, self._numSections, 1 do
+                self._numRows[i] = nil
+            end
+        end
+        self._numSections = num
+        self._needToRecalculateSectionStartY = true
+    end
 end
 
 function meta:getNumberOfSections()
-    error("[ERR] playdate.ui.gridview:getNumberOfSections() is not yet implemented.")
+    return self._numSections
 end
 
 function meta:setNumberOfRowsInSection(section, num)
-    error("[ERR] playdate.ui.gridview:setNumberOfRowsInSection() is not yet implemented.")
+    if num > 0 then
+        self._numRows[section] = num
+        self._needToRecalculateSectionStartY = true
+    end
 end
 
 function meta:getNumberOfRowsInSection(section)
-    error("[ERR] playdate.ui.gridview:getNumberOfRowsInSection() is not yet implemented.")
+    return self._numRows[section]
 end
 
 function meta:setNumberOfColumns(num)
-    error("[ERR] playdate.ui.gridview:setNumberOfColumns() is not yet implemented.")
+    if num > 0 then
+        self._numColumns = num
+        self._needToRecalculateSectionStartY = true
+    end
 end
 
 function meta:getNumberOfColumns()
-    error("[ERR] playdate.ui.gridview:getNumberOfColumns() is not yet implemented.")
+    return self._numColumns
 end
 
 function meta:setNumberOfRows(...)
-    error("[ERR] playdate.ui.gridview:setNumberOfRows() is not yet implemented.")
+    local numSections = select ('#', ...)
+    if numSections > self._numSections then
+        self:setNumberOfSections(numSections)
+    end
+    for i = 1, numSections, 1 do
+        self:setNumberOfRowsInSection(i,select (i, ...))
+    end
 end
 
 function meta:setCellSize(cellWidth, cellHeight)
-    error("[ERR] playdate.ui.gridview:setCellSize() is not yet implemented.")
+    if cellWidth > 0 then
+        self._cellWidth = cellWidth
+        self._needToRecalculateSectionStartY = true
+    end
+    if cellHeight > 0 then
+        self._cellHeight = cellHeight
+        self._needToRecalculateSectionStartY = true
+    end
 end
 
 function meta:setCellPadding(left, right, top, bottom)
-    error("[ERR] playdate.ui.gridview:setCellPadding() is not yet implemented.")
+    self._cellPadding = {left,right,top,bottom}
 end
 
 function meta:setContentInset(left, right, top, bottom)
-    error("[ERR] playdate.ui.gridview:setContentInset() is not yet implemented.")
+    self._contentInset = {left,right,top,bottom}
+    self._drawInsetWidth = self._drawRectWidth - left - right
+    self._drawInsetHeight = self._drawRectHeight - top - bottom
 end
 
 function meta:getCellBounds(section, row, column, gridWidth)
-    error("[ERR] playdate.ui.gridview:getCellBounds() is not yet implemented.")
+    -- playdate seems to give x and y relative to top left not top right as mentioned in the documentation
+    local cellX,cellY = self:_calculateCellPosition(section,row,column)
+    local x = cellX - self._scrollPositionX + self._contentInset[1]
+    local y = cellY - self._scrollPositionY + self._contentInset[3]
+    if self._cellWidth > 0 then
+        return x,y,self._cellWidth,self._cellHeight
+    else
+        assert(gridWidth ~= nil, 'if cell width is 0 or nil gridWidth must be given')
+        return x,y,gridWidth - self._contentInset[1] - self._contentInset[2]
+    end
 end
 
 function meta:setSectionHeaderHeight(height)
-    error("[ERR] playdate.ui.gridview:setSectionHeaderHeight() is not yet implemented.")
+    if height ~= nil then
+        self._sectionHeaderHeight = height
+    end
+    self._needToRecalculateSectionStartY = true
 end
 
 function meta:getSectionHeaderHeight()
-    error("[ERR] playdate.ui.gridview:getSectionHeaderHeight() is not yet implemented.")
+    return self._sectionHeaderHeight
 end
 
 function meta:setSectionHeaderPadding(left, right, top, bottom)
-    error("[ERR] playdate.ui.gridview:setSectionHeaderPadding() is not yet implemented.")
+    self._sectionHeaderPadding = {left,right,top,bottom}
+    if self._sectionHeaderHeight ~= 0 then
+        self._needToRecalculateSectionStartY = true
+    end
 end
 
 function meta:setHorizontalDividerHeight(height)
-    error("[ERR] playdate.ui.gridview:setHorizontalDividerHeight() is not yet implemented.")
+    if height ~= nil then
+        self._horizontalDividerHeight = height
+        self._needToRecalculateSectionStartY = true
+    end
 end
 
 function meta:addHorizontalDividerAbove(section, row)
-    error("[ERR] playdate.ui.gridview:addHorizontalDividerAbove() is not yet implemented.")
+    local dividerData = {}
+    if self._horizontalDivider[section] == nil then
+        self._horizontalDivider[section] = {}
+    end
+    self._horizontalDivider[section][row] = true
+    self._needToRecalculateSectionStartY = true
 end
 
 function meta:removeHorizontalDividers()
-    error("[ERR] playdate.ui.gridview:removeHorizontalDividers() is not yet implemented.")
+    self._horizontalDivider = {}
+    self._needToRecalculateSectionStartY = true
 end
 
 -- scrolling: https://sdk.play.date/2.6.2/Inside%20Playdate.html#_scrolling_2
 function meta:setScrollDuration(ms)
-    error("[ERR] playdate.ui.gridview:setScrollDuration() is not yet implemented.")
+    ms = math.max(0,ms)
+    self._scrollDuration = ms
 end
 
 function meta:setScrollPosition(x, y, animated)
-    error("[ERR] playdate.ui.gridview:setScrollPosition() is not yet implemented.")
+    if x < 0 then x = 0 end
+    if y < 0 then y = 0 end
+    if y > self._maxY - self._drawInsetHeight then y = self._maxY - self._drawInsetHeight end
+    if x > self._maxX - self._drawInsetWidth then x = self._maxX - self._drawInsetWidth end
+    if animated ~= false then
+        self:_scrollGridview(x,y)
+    else
+        self._scrollPositionX = x
+        self._scrollPositionY = y
+    end
 end
 
 function meta:getScrollPosition()
-    error("[ERR] playdate.ui.gridview:getScrollPosition() is not yet implemented.")
+    return self._scrollPositionX ,  self._scrollPositionY
 end
 
 function meta:scrollToCell(section, row, column, animated)
-    error("[ERR] playdate.ui.gridview:scrollToCell() is not yet implemented.")
+    if self.scrollCellsToCenter then
+        self:scrollCellToCenter(section, row, column, animated)
+        return
+    end    
+    cellX,cellY = self:_calculateCellPosition(section,row,column)
+    local toXPos,toYPos = self._scrollPositionX , self._scrollPositionY
+    if self._scrollPositionX > cellX + self._cellWidth then
+        toXPos = cellX
+    elseif self._scrollPositionX + self._drawRectWidth < cellX+ self._cellWidth  then
+        toXPos = cellX+ self._cellWidth - self._drawRectWidth 
+    end
+    if self._scrollPositionY> cellY + self._cellHeight then
+        toYPos = cellY
+    elseif self._scrollPositionY + self._drawRectHeight < cellY+ self._cellHeight  then
+        toYPos = cellY+ self._cellHeight - self._drawRectHeight 
+    end
+    self:setScrollPosition(toXPos,toYPos,animated)
 end
 
 function meta:scrollCellToCenter(section, row, column, animated)
-    error("[ERR] playdate.ui.gridview:scrollCellToCenter() is not yet implemented.")
+    cellX,cellY = self:_calculateCellPosition(section,row,column)
+    self:setScrollPosition(cellX+self._cellWidth/2-self._drawInsetWidth/2,cellY+self._cellHeight/2-self._drawInsetWidth/2,animated)
 end
 
 function meta:scrollToRow(row, animated)
-    error("[ERR] playdate.ui.gridview:scrollToRow() is not yet implemented.")
+    self:scrollToCell(self._selectedSection,row,self._selectedColumn,animated)
 end
 
 function meta:scrollToTop(animated)
-    error("[ERR] playdate.ui.gridview:scrollToTop() is not yet implemented.")
+    self:setScrollPosition(self._scrollPositionX,0,animated)
 end
 
 -- selection: https://sdk.play.date/2.6.2/Inside%20Playdate.html#_selection
 function meta:setSelection(section, row, column)
-    error("[ERR] playdate.ui.gridview:setSelection() is not yet implemented.")
+    self._selectedSection, self._selectedRow, self._selectedColumn = section, row, column
 end
 
 function meta:getSelection()
-    error("[ERR] playdate.ui.gridview:getSelection() is not yet implemented.")
+    return self._selectedSection, self._selectedRow, self._selectedColumn
 end
 
 function meta:setSelectedRow()
-    error("[ERR] playdate.ui.gridview:setSelectedRow() is not yet implemented.")
+    self._selectedRow = 1
 end
 
 function meta:getSelectedRow()
-    error("[ERR] playdate.ui.gridview:getSelectedRow() is not yet implemented.")
+    return self._selectedRow
 end
 
 function meta:selectNextRow(wrapSelection, scrollToSelection, animate)
-    error("[ERR] playdate.ui.gridview:selectNextRow() is not yet implemented.")
+    local didChange = false
+    if self._selectedRow < self._numRows[self._selectedSection] then
+        self._selectedRow = self._selectedRow + 1
+        didChange = true
+    else
+        if self._selectedSection == self._numSections and wrapSelection == true then
+            self._selectedSection = 1 
+            self._selectedRow = 1
+            didChange = true
+        elseif self._selectedSection < self._numSections then
+            self._selectedSection = self._selectedSection + 1
+            self._selectedRow = 1
+            didChange = true
+        end
+    end
+    if didChange and scrollToSelection ~= false then
+        self:scrollToCell(self._selectedSection,self._selectedRow,self._selectedColumn,animate)
+    end
 end
 
 function meta:selectPreviousRow(wrapSelection, scrollToSelection, animate)
-    error("[ERR] playdate.ui.gridview:selectPreviousRow() is not yet implemented.")
+    local didChange = false
+    if self._selectedRow > 1 then
+        self._selectedRow = self._selectedRow - 1
+        didChange = true
+    else
+        if self._selectedSection == 1 and wrapSelection == true then
+            self._selectedSection = self._numSections 
+            self._selectedRow = self._numRows[self._selectedSection]
+            didChange = true
+        elseif self._selectedSection > 1 then
+            self._selectedSection = self._selectedSection - 1
+            self._selectedRow = self._numRows[self._selectedSection]
+            didChange = true
+        end
+    end
+    if didChange and scrollToSelection ~= false then
+        self:scrollToCell(self._selectedSection,self._selectedRow,self._selectedColumn,animate)
+    end
 end
 
 function meta:selectNextColumn(wrapSelection, scrollToSelection, animate)
-    error("[ERR] playdate.ui.gridview:selectNextColumn() is not yet implemented.")
+    local didChange = false
+    --TODO: test : if self.changeRowOnColumnWrap 
+    if self._selectedColumn < self._numColumns then
+        self._selectedColumn = self._selectedColumn + 1
+        didChange = true
+    elseif self._selectedColumn == self._selectedColumn and self._numColumns > 1 and wrapSelection then
+        self._selectedColumn = 1
+        didChange = true
+        if self.changeRowOnColumnWrap then
+            self:selectNextRow(wrapSelection,scrollToSelection,animate)
+            didChange = false
+        end
+        
+    end
+    if didChange and scrollToSelection ~= false then
+        self:scrollToCell(self._selectedSection,self._selectedRow,self._selectedColumn,animate)
+    end
 end
 
 function meta:selectPreviousColumn(wrapSelection, scrollToSelection, animate)
-    error("[ERR] playdate.ui.gridview:selectPreviousColumn() is not yet implemented.")
+    local didChange = false
+    --TODO: test : if self.changeRowOnColumnWrap
+    if self._selectedColumn > 1 then
+        self._selectedColumn = self._selectedColumn - 1
+        didChange = true
+    elseif self._selectedColumn == 1 and self._numColumns > 1 and wrapSelection then
+        self._selectedColumn = self._numColumns
+        didChange = true
+        if self.changeRowOnColumnWrap then
+            self:selectPreviousRow(wrapSelection,scrollToSelection,animate)
+            didChange = false
+        end
+    end
+    if didChange and scrollToSelection ~= false then
+        self:scrollToCell(self._selectedSection,self._selectedRow,self._selectedColumn,animate)
+    end
 end
 
 -- properties: https://sdk.play.date/2.6.2/Inside%20Playdate.html#_properties
-module.backgroundImage = nil
-module.isScrolling = nil
-module.scrollEasingFunction = nil
-module.easingAmplitude = nil
-module.easingPeriod = nil
-module.changeRowOnColumnWrap = nil
-module.scrollCellsToCenter = nil
+
+
