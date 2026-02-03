@@ -25,7 +25,10 @@ function module.new(path, cellsWide, cellsSize)
     folder = string.sub(path, 1, #path - ends)
     pattern = string.sub(path, #path - ends + 2).."-table-"
   end
-
+  local tableFindStart, tableFindEnd = string.find(pattern, "-table-")
+  if tableFindStart ~= nil then
+    pattern = string.sub(pattern, 1, tableFindEnd)
+  end
   -- escape dashes
   pattern = string.gsub(pattern, "%-", "%%%-")
   -- TODO: escape other magic chars?
@@ -42,7 +45,6 @@ function module.new(path, cellsWide, cellsSize)
       break
     end
   end
-
   -- parse frame width and height out of filename
   local matches = string.gmatch(actualFilename, "%-(%d+)")
   local frameWidth = tonumber(matches())
@@ -59,9 +61,9 @@ function module.new(path, cellsWide, cellsSize)
   local columns = w / frameWidth
 
   local images = {}
+  local imageCounter = 1
   for r = 0, rows - 1, 1 do
     for c = 0, columns - 1, 1 do
-      
       local imageData = love.image.newImageData(frameWidth, frameHeight)
       for x = 0, frameWidth - 1, 1 do
         for y = 0, frameHeight - 1, 1 do
@@ -72,7 +74,10 @@ function module.new(path, cellsWide, cellsSize)
 
       local image = playdate.graphics.image.new(frameWidth, frameHeight)
       image.data:replacePixels(imageData)
+      image.imageData = imageData
       table.insert(images, image)
+      imagetable[imageCounter] = image
+      imageCounter = imageCounter + 1
     end
   end
   
@@ -85,11 +90,11 @@ function module.new(path, cellsWide, cellsSize)
   imagetable._columns = columns
   imagetable._frameWidth = frameWidth
   imagetable._frameHeight = frameHeight
-
   return imagetable
 end
 
 function meta:drawImage(n, x, y, flip)
+  if self._images[n] == nil then return end
   self._images[n]:draw(x, y, flip)
 end
 

@@ -45,14 +45,12 @@ function module.new(cellWidth, cellHeight)
     gridview._scrollToStartPositionY = 0
     gridview._maxX = cellWidth
     gridview._maxY = cellHeight
-    gridview._drawRectWidth = cellWidth
-    gridview._drawRectHeight = cellHeight
+    gridview._drawRectWidth = nil
+    gridview._drawRectHeight = nil
     gridview._drawInsetWidth = cellWidth
     gridview._drawInsetHeight = cellHeight
     gridview._scrollTimer = playdate.timer.new(250,0,1,gridview.scrollEasingFunction)
     gridview.scrollCellsToCenter = true
-    gridview._maxY = cellHeight
-    gridview._maxX = cellWidth
     gridview.changeRowOnColumnWrap = true
     local gridViewLocal = gridview
     gridview._scrollTimer.updateCallback = function(timer)
@@ -133,85 +131,171 @@ function meta:drawHorizontalDivider(x, y, width, height)
     playdate.graphics.setColor(0)
 	playdate.graphics.fillRect(x+2, y+(height-1)/2, width-4, 2)
 end
-
-function meta:drawInRect(x, y, width, height)
-    if self._needToRecalculateSectionStartY then
-        self:_calculateSectionStartY()
+function module.drawInRect(inGridview,x,y,width,height)
+    if inGridview == nil then return end
+    if inGridview._needToRecalculateSectionStartY then
+        inGridview:_calculateSectionStartY()
     end
     local changedSize = false
-    if self._drawRectWidth ~= width then
-        self._drawRectWidth = width
+    if inGridview._drawRectWidth ~= width then
+        inGridview._drawRectWidth = width
         changedSize = true
     end
-    if self._drawInsetWidth ~= width - self._contentInset[1] - self._contentInset[2] then
-        self._drawInsetWidth = width - self._contentInset[1] - self._contentInset[2]
+    if inGridview._drawInsetWidth ~= width - inGridview._contentInset[1] - inGridview._contentInset[2] then
+        inGridview._drawInsetWidth = width - inGridview._contentInset[1] - inGridview._contentInset[2]
         changedSize = true
     end
-    if self._drawRectHeight ~= height then
-        self._drawRectHeight = height
+    if inGridview._drawRectHeight ~= height then
+        inGridview._drawRectHeight = height
         changedSize = true
     end
-    if self._drawInsetHeight ~= height - self._contentInset[3] - self._contentInset[4] then
-        self._drawInsetHeight = height - self._contentInset[3] - self._contentInset[4]
+    if inGridview._drawInsetHeight ~= height - inGridview._contentInset[3] - inGridview._contentInset[4] then
+        inGridview._drawInsetHeight = height - inGridview._contentInset[3] - inGridview._contentInset[4]
         changedSize = true
     end
-    if changedSize or self._drawImage == nil then
-        self._drawImage = playdate.graphics.image.new(self._drawRectWidth,self._drawRectHeight)
-        self._drawInsetImage = playdate.graphics.image.new(self._drawInsetWidth,self._drawInsetHeight)
+    if changedSize or inGridview._drawImage == nil then
+        inGridview._drawImage = playdate.graphics.image.new(inGridview._drawRectWidth,inGridview._drawRectHeight)
+        inGridview._drawInsetImage = playdate.graphics.image.new(inGridview._drawInsetWidth,inGridview._drawInsetHeight)
     end
-    playdate.graphics.pushContext(self._drawImage)
+    playdate.graphics.pushContext(inGridview._drawImage)
     playdate.graphics.clear(2)
     -- draw background
-    if self.backgroundImage ~= nil then
-        if self.backgroundImage._imageSections ~= nil then
-            self.backgroundImage:drawInRect(0,0,width,height)
+    
+    if inGridview.backgroundImage ~= nil then
+        if inGridview.backgroundImage._imageSections ~= nil then
+            inGridview.backgroundImage:drawInRect(0,0,width,height)
         else
-            self.backgroundImage:drawTiled(0, 0, width, height)
+            inGridview.backgroundImage:drawTiled(0, 0, width, height)
         end
     end
-
-    playdate.graphics.pushContext(self._drawInsetImage)
+    playdate.graphics.pushContext(inGridview._drawInsetImage)
     playdate.graphics.clear(2)
 
-    local drawWidth = self._drawInsetWidth
-    local drawHeight = self._drawInsetHeight
+    local drawWidth = inGridview._drawInsetWidth
+    local drawHeight = inGridview._drawInsetHeight
     -- Draw all cells
-    local cellWidth,cellHeight = self._cellWidth,self._cellHeight
-    for curSection = 1 , self._numSections do
-        if self._sectionStartY[curSection+1] == nil or self._sectionStartY[curSection+1] >= self._scrollPositionY then
+
+
+
+    local cellWidth,cellHeight = inGridview._cellWidth,inGridview._cellHeight
+
+    for curSection = 1 , inGridview._numSections do
+        if inGridview._sectionStartY[curSection+1] == nil or inGridview._sectionStartY[curSection+1] >= inGridview._scrollPositionY then
             -- if start of next section is after scroll position then this section 
             -- needs to be drawn or we would have stopped already
-            if self._sectionHeaderHeight ~= 0 then
-                self:drawSectionHeader(curSection,self._sectionHeaderPadding[1]+curX,self._sectionHeaderPadding[3]+curY,drawWidth,self._sectionHeaderHeight)
+            if inGridview._sectionHeaderHeight ~= 0 then
+                local xPos = inGridview._sectionHeaderPadding[1]+x
+                local yPos = inGridview._sectionHeaderPadding[3]+y + inGridview._sectionStartY[curSection]- inGridview._scrollPositionY
+                inGridview:drawSectionHeader(curSection,xPos,yPos,drawWidth,inGridview._sectionHeaderHeight)
             end
             local horizontalDividerCounter = 0
-            for curRow = 1, self._numRows[curSection] do
-                local rowY = - self._scrollPositionY +horizontalDividerCounter * self._horizontalDividerHeight + self._sectionStartY[curSection]+self._sectionHeaderHeight+self._sectionHeaderPadding[3]+self._sectionHeaderPadding[4] + self._cellPadding[3] + (curRow-1)* (cellHeight+self._cellPadding[3]+self._cellPadding[4])                
-                if self._horizontalDivider[curSection] ~= nil then
-                    if self._horizontalDivider[curSection][curRow] then
+            for curRow = 1, inGridview._numRows[curSection] do
+                local rowY = - inGridview._scrollPositionY +horizontalDividerCounter * inGridview._horizontalDividerHeight + inGridview._sectionStartY[curSection]+inGridview._sectionHeaderHeight+inGridview._sectionHeaderPadding[3]+inGridview._sectionHeaderPadding[4] + inGridview._cellPadding[3] + (curRow-1)* (cellHeight+inGridview._cellPadding[3]+inGridview._cellPadding[4])                
+                if inGridview._horizontalDivider[curSection] ~= nil then
+                    if inGridview._horizontalDivider[curSection][curRow] then
                         horizontalDividerCounter = horizontalDividerCounter + 1
-                        self:drawHorizontalDivider(0,rowY,drawWidth,self._horizontalDividerHeight)
+                        inGridview:drawHorizontalDivider(0,rowY,drawWidth,inGridview._horizontalDividerHeight)
                     end
                 end
-                rowY = - self._scrollPositionY + horizontalDividerCounter * self._horizontalDividerHeight + self._sectionStartY[curSection]+self._sectionHeaderHeight+self._sectionHeaderPadding[3]+self._sectionHeaderPadding[4] + self._cellPadding[3] + (curRow-1)* (cellHeight+self._cellPadding[3]+self._cellPadding[4])
+                rowY = - inGridview._scrollPositionY + horizontalDividerCounter * inGridview._horizontalDividerHeight + inGridview._sectionStartY[curSection]+inGridview._sectionHeaderHeight+inGridview._sectionHeaderPadding[3]+inGridview._sectionHeaderPadding[4] + inGridview._cellPadding[3] + (curRow-1)* (cellHeight+inGridview._cellPadding[3]+inGridview._cellPadding[4])
                 
-                for curColumn = 1, self._numColumns do
+                for curColumn = 1, inGridview._numColumns do
                     local isSelected,cellX,cellY
                     isSelected = false
-                    if self._selectedSection == curSection and self._selectedRow == curRow and self._selectedColumn == curColumn then
+                    if inGridview._selectedSection == curSection and inGridview._selectedRow == curRow and inGridview._selectedColumn == curColumn then
                         isSelected = true
                     end                    
-                    cellX = - self._scrollPositionX + (self._cellPadding[1]) * curColumn + (curColumn-1)*(self._cellWidth + self._cellPadding[2])
-                    cellY = rowY + self._cellPadding[3]
-                    self:drawCell(curSection,curRow,curColumn,isSelected,cellX,cellY,cellWidth,cellHeight)
+                    cellX = - inGridview._scrollPositionX + (inGridview._cellPadding[1]) * curColumn + (curColumn-1)*(inGridview._cellWidth + inGridview._cellPadding[2])
+                    cellY = rowY + inGridview._cellPadding[3]
+                    inGridview:drawCell(curSection,curRow,curColumn,isSelected,cellX,cellY,cellWidth,cellHeight)
                 end
             end
         end
     end
     playdate.graphics.popContext()
-    self._drawInsetImage:draw(self._contentInset[1],self._contentInset[3])
+    inGridview._drawInsetImage:draw(inGridview._contentInset[1],inGridview._contentInset[3])
     playdate.graphics.popContext()
-    self._drawImage:draw(x,y)
+    inGridview._drawImage:draw(x,y)
+end
+function meta:drawInRect(x, y, width, height)
+    playdate.ui.gridview.drawInRect(self,x,y,width,height)
+    -- if self._needToRecalculateSectionStartY then
+    --     self:_calculateSectionStartY()
+    -- end
+    -- local changedSize = false
+    -- if self._drawRectWidth ~= width then
+    --     self._drawRectWidth = width
+    --     changedSize = true
+    -- end
+    -- if self._drawInsetWidth ~= width - self._contentInset[1] - self._contentInset[2] then
+    --     self._drawInsetWidth = width - self._contentInset[1] - self._contentInset[2]
+    --     changedSize = true
+    -- end
+    -- if self._drawRectHeight ~= height then
+    --     self._drawRectHeight = height
+    --     changedSize = true
+    -- end
+    -- if self._drawInsetHeight ~= height - self._contentInset[3] - self._contentInset[4] then
+    --     self._drawInsetHeight = height - self._contentInset[3] - self._contentInset[4]
+    --     changedSize = true
+    -- end
+    -- if changedSize or self._drawImage == nil then
+    --     self._drawImage = playdate.graphics.image.new(self._drawRectWidth,self._drawRectHeight)
+    --     self._drawInsetImage = playdate.graphics.image.new(self._drawInsetWidth,self._drawInsetHeight)
+    -- end
+    -- playdate.graphics.pushContext(self._drawImage)
+    -- playdate.graphics.clear(2)
+    -- -- draw background
+    -- if self.backgroundImage ~= nil then
+    --     if self.backgroundImage._imageSections ~= nil then
+    --         self.backgroundImage:drawInRect(0,0,width,height)
+    --     else
+    --         self.backgroundImage:drawTiled(0, 0, width, height)
+    --     end
+    -- end
+
+    -- playdate.graphics.pushContext(self._drawInsetImage)
+    -- playdate.graphics.clear(2)
+
+    -- local drawWidth = self._drawInsetWidth
+    -- local drawHeight = self._drawInsetHeight
+    -- -- Draw all cells
+    -- local cellWidth,cellHeight = self._cellWidth,self._cellHeight
+    -- for curSection = 1 , self._numSections do
+    --     if self._sectionStartY[curSection+1] == nil or self._sectionStartY[curSection+1] >= self._scrollPositionY then
+    --         -- if start of next section is after scroll position then this section 
+    --         -- needs to be drawn or we would have stopped already
+    --         if self._sectionHeaderHeight ~= 0 then
+    --             self:drawSectionHeader(curSection,self._sectionHeaderPadding[1]+x,self._sectionHeaderPadding[3]+y,drawWidth,self._sectionHeaderHeight)
+    --         end
+    --         local horizontalDividerCounter = 0
+    --         for curRow = 1, self._numRows[curSection] do
+    --             local rowY = - self._scrollPositionY +horizontalDividerCounter * self._horizontalDividerHeight + self._sectionStartY[curSection]+self._sectionHeaderHeight+self._sectionHeaderPadding[3]+self._sectionHeaderPadding[4] + self._cellPadding[3] + (curRow-1)* (cellHeight+self._cellPadding[3]+self._cellPadding[4])                
+    --             if self._horizontalDivider[curSection] ~= nil then
+    --                 if self._horizontalDivider[curSection][curRow] then
+    --                     horizontalDividerCounter = horizontalDividerCounter + 1
+    --                     self:drawHorizontalDivider(0,rowY,drawWidth,self._horizontalDividerHeight)
+    --                 end
+    --             end
+    --             rowY = - self._scrollPositionY + horizontalDividerCounter * self._horizontalDividerHeight + self._sectionStartY[curSection]+self._sectionHeaderHeight+self._sectionHeaderPadding[3]+self._sectionHeaderPadding[4] + self._cellPadding[3] + (curRow-1)* (cellHeight+self._cellPadding[3]+self._cellPadding[4])
+                
+    --             for curColumn = 1, self._numColumns do
+    --                 local isSelected,cellX,cellY
+    --                 isSelected = false
+    --                 if self._selectedSection == curSection and self._selectedRow == curRow and self._selectedColumn == curColumn then
+    --                     isSelected = true
+    --                 end                    
+    --                 cellX = - self._scrollPositionX + (self._cellPadding[1]) * curColumn + (curColumn-1)*(self._cellWidth + self._cellPadding[2])
+    --                 cellY = rowY + self._cellPadding[3]
+    --                 self:drawCell(curSection,curRow,curColumn,isSelected,cellX,cellY,cellWidth,cellHeight)
+    --             end
+    --         end
+    --     end
+    -- end
+    -- playdate.graphics.popContext()
+    -- self._drawInsetImage:draw(self._contentInset[1],self._contentInset[3])
+    -- playdate.graphics.popContext()
+    -- self._drawImage:draw(x,y)
 end
 
 -- configuration: https://sdk.play.date/2.6.2/Inside%20Playdate.html#_configuration
@@ -284,8 +368,10 @@ end
 
 function meta:setContentInset(left, right, top, bottom)
     self._contentInset = {left,right,top,bottom}
-    self._drawInsetWidth = self._drawRectWidth - left - right
-    self._drawInsetHeight = self._drawRectHeight - top - bottom
+    if self._drawRectHeight ~= nil then
+        self._drawInsetWidth = self._drawRectWidth - left - right
+        self._drawInsetHeight = self._drawRectHeight - top - bottom
+    end
 end
 
 function meta:getCellBounds(section, row, column, gridWidth)
@@ -347,10 +433,10 @@ function meta:setScrollDuration(ms)
 end
 
 function meta:setScrollPosition(x, y, animated)
-    if x < 0 then x = 0 end
-    if y < 0 then y = 0 end
     if y > self._maxY - self._drawInsetHeight then y = self._maxY - self._drawInsetHeight end
     if x > self._maxX - self._drawInsetWidth then x = self._maxX - self._drawInsetWidth end
+    if x < 0 then x = 0 end
+    if y < 0 then y = 0 end
     if animated ~= false then
         self:_scrollGridview(x,y)
     else
@@ -384,8 +470,12 @@ function meta:scrollToCell(section, row, column, animated)
 end
 
 function meta:scrollCellToCenter(section, row, column, animated)
-    cellX,cellY = self:_calculateCellPosition(section,row,column)
-    self:setScrollPosition(cellX+self._cellWidth/2-self._drawInsetWidth/2,cellY+self._cellHeight/2-self._drawInsetHeight/2,animated)
+    local cellX,cellY = self:_calculateCellPosition(section,row,column)
+    -- top left of cell (relative to top left of gridview)
+    local cellXCenter, cellYCenter = cellX +self._cellWidth/2 , cellY+self._cellHeight/2
+    local gridviewCenterX, gridviewCenterY = self._drawInsetWidth/2 , self._drawInsetHeight / 2
+    self:setScrollPosition(cellXCenter-gridviewCenterX,cellYCenter-gridviewCenterY,animated)
+    --self:setScrollPosition(cellX+self._cellWidth/2-self._drawInsetWidth/2,cellY+self._cellHeight/2-self._drawInsetHeight/2,animated)
 end
 
 function meta:scrollToRow(row, animated)

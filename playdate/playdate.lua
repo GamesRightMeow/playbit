@@ -8,6 +8,7 @@ require("playdate.file")
 require("playdate.datastore")
 require("playdate.accelerometer")
 require("playdate.json")
+require("playdate.pathfinder")
 
 -- ████████╗██╗███╗   ███╗███████╗
 -- ╚══██╔══╝██║████╗ ████║██╔════╝
@@ -31,11 +32,23 @@ function module.getTime()
     millisecond = 0,
   }
 end
-
+function module.setRefreshRate(rate)
+  if rate <= 0 then
+    min_dt = 0 
+    return
+  end
+  min_dt = 1/rate
+end
 function module.getCurrentTimeMilliseconds()
   return love.timer.getTime() * 1000
 end
-
+local elapsedStartTime = love.timer.getTime()
+function module.getElapsedTime()
+  return love.timer.getTime() - elapsedStartTime
+end
+function module.resetElapsedTime()
+  elapsedStartTime = love.timer.getTime()
+end
 function module.getSecondsSinceEpoch()
   -- os.time() without params always returns in system local time, so we must convert to UTC
   local nowLocal = os.time()
@@ -274,6 +287,22 @@ local supportedCallbackKeys = {
 }
 
 function love.keypressed(key)
+  if playdate.keyboard._visible then
+    if key == 'return' or key == 'enter' then
+      playdate.keyboard._closeOk()
+    elseif key == 'escape' then
+      playdate.keyboard._closeCancel()
+    elseif key == 'backspace' or key == 'delete' then
+      playdate.keyboard._backspace()
+    end
+    return
+  elseif key == 'escape' then
+    if playdate.menu.isVisible == false then
+      playdate.openSystemMenu()
+    else
+      playdate.closeSystemMenu()
+    end
+  end
   inputStates["kb_"..key] = JUST_PRESSED
 
   --[[ Playdate only has a limited range of supported keys, so Playbit exposes the separate
@@ -357,3 +386,56 @@ function module.apiVersion()
   -- TODO: return Playbit version instead?
   error("[ERR] playdate.apiVersion() is not yet implemented.")
 end
+
+module.inputHandlers = {}
+module.handlerStack = {}
+function module.inputHandlers.pop()
+  if #module.handlerStack == 0 then
+    return
+  end
+  local handler = table.remove(module.handlerStack)
+  for key, value in pairs(handler) do
+    playdate[key] = value
+  end
+end
+function module.inputHandlers.push(handler, masksPreviousHandlers)
+  local curHandler = {
+    AButtonDown = playdate.AButtonDown,
+    AButtonHeld = playdate.AButtonHeld,
+    AButtonUp = playdate.AButtonUp,
+    BButtonDown = playdate.BButtonDown,
+    BButtonHeld = playdate.BButtonHeld,
+    BButtonUp = playdate.BButtonUp,
+    downButtonDown = playdate.downButtonDown,
+    downButtonUp = playdate.downButtonUp,
+    leftButtonDown = playdate.leftButtonDown,
+    leftButtonUp = playdate.leftButtonUp,
+    rightButtonDown = playdate.rightButtonDown,
+    rightButtonUp = playdate.rightButtonUp,
+    upButtonDown = playdate.upButtonDown,
+    upButtonUp = playdate.upButtonUp,
+    cranked = playdate.cranked
+  }
+  table.insert(module.handlerStack,curHandler)
+  if masksPreviousHandlers then
+    playdate.AButtonDown = nil
+    playdate.AButtonHeld = nil
+    playdate.AButtonUp = nil
+    playdate.BButtonDown = nil
+    playdate.BButtonHeld = nil
+    playdate.BButtonUp = nil
+    playdate.downButtonDown = nil
+    playdate.downButtonUp = nil
+    playdate.leftButtonDown = nil
+    playdate.leftButtonUp = nil
+    playdate.rightButtonDown = nil
+    playdate.rightButtonUp = nil
+    playdate.upButtonDown = nil
+    playdate.upButtonUp = nil
+    playdate.cranked = nil
+  end
+  for key, value in pairs(handler) do
+    playdate[key] = value
+  end
+end
+

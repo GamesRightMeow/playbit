@@ -73,16 +73,34 @@ end
 
 -- TODO: handle the overloaded signature (text, rect, leadingAdjustment, wrapMode, alignment)
 function meta:drawText(str, x, y, width, height, leadingAdjustment, wrapMode, alignment)
-  @@ASSERT(width == nil, "[ERR] Parameter width is not yet implemented.")
-  @@ASSERT(height == nil, "[ERR] Parameter height is not yet implemented.")
+  --@@ASSERT(width == nil, "[ERR] Parameter width is not yet implemented.")
+  --@@ASSERT(height == nil, "[ERR] Parameter height is not yet implemented.")
   @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
   @@ASSERT(wrapMode == nil, "[ERR] Parameter wrapMode is not yet implemented.")
   @@ASSERT(alignment == nil, "[ERR] Parameter alignment is not yet implemented.")
+  local drawInRect = false
+  if width ~= nil or height ~= nil then
+    drawInRect = true
+    if width == nil then width = 400 end
+    if height == nil then height = 240 end
+    local drawImage = playdate.graphics.image.new(width,height)
+    playdate.graphics.pushContext(self._drawImage)
+    playdate.graphics.clear(2)
+  end
+
   local currentFont = love.graphics.getFont()
   love.graphics.setFont(self.data)
+  local textWidth = self.data:getWidth( str )
+  local textHeight = self.data:getHeight( )
   love.graphics.print(str, x, y)
   love.graphics.setFont(currentFont)
   playbit.graphics.updateContext()
+
+  if drawInRect then
+    playdate.graphics.popContext()
+    drawImage:draw(x,y)
+  end
+  return textWidth,textHeight
 end
 
 -- 0=left 1=right 2=center
@@ -97,23 +115,23 @@ function meta:drawTextAligned(str, x, y, alignment, leadingAdjustment)
     x = x - width * 0.5  
   end
   -- left, draw normally
-  
   local currentFont = love.graphics.getFont()
   love.graphics.setFont(self.data)
   love.graphics.print(str, x, y)
   love.graphics.setFont(currentFont)
   playbit.graphics.updateContext()
 end
-
-function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
-  y = y - 1
-  
-  local lineHeight = self:getHeight() + self:getLeading() + leadingAdjustment
-  
-  if lineHeight > height then
-    -- even one line won't fit
-    return 0, 0, false
+function meta:_getTextSizeForMaxWidth(text,maxWidth, leadingAdjustment)
+  @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
+  if text == nil then
+    return 0 , 0
   end
+  local width = maxWidth
+
+  if leadingAdjustment == nil then
+    leadingAdjustment = 0
+  end
+  local lineHeight = self:getHeight() + self:getLeading() + leadingAdjustment
 
   local line = ""
   local lineCount = 0
@@ -131,28 +149,26 @@ function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, trun
     -- trimm trailing space
     line = string.sub(line, 1, #line - 1)
 
-    if lineHeight * (lineCount + 1) > height 
-    or lineHeight * (lineCount + 2) > height then
-      -- this line or the next line surpasses specified max height
-      line = line..truncationString
-      local lineWidth = self:getTextWidth(line)
-      if lineWidth > largestLineWidth then
-        largestLineWidth = lineWidth
-      end
+    -- if lineHeight * (lineCount + 1) > height 
+    -- or lineHeight * (lineCount + 2) > height then
+    --   -- this line or the next line surpasses specified max height
+    --   line = line..truncationString
+    --   local lineWidth = self:getTextWidth(line)
+    --   if lineWidth > largestLineWidth then
+    --     largestLineWidth = lineWidth
+    --   end
 
-      self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
-      line = nil
-      lineCount = lineCount + 1
-      truncated = true
-      break
-    end
+    --   line = nil
+    --   lineCount = lineCount + 1
+    --   truncated = true
+    --   break
+    -- end
 
     local lineWidth = self:getTextWidth(line)
     if lineWidth > largestLineWidth then
       largestLineWidth = lineWidth
     end
 
-    self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
     line = w.." "
     lineCount = lineCount + 1
 
@@ -161,7 +177,6 @@ function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, trun
 
   if line then
     -- print last line if shorter than specified width
-    self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
     lineCount = lineCount + 1
 
     local lineWidth = self:getTextWidth(line)
@@ -170,5 +185,97 @@ function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, trun
     end
   end
   
+  return largestLineWidth, (lineHeight * lineCount) - leadingAdjustment
+end
+function meta:_drawTextInBoxAligned(str,x,y,width,height, textAlignment)
+--self:drawTextAligned(line, x, y + lineHeight * lineCount,width,lineHeight, textAlignment)
+--function meta:drawTextAligned(str, x, y, alignment, leadingAdjustment)
+  @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
+  local textwidth = self:getTextWidth(str)
+  if textAlignment == 1 then
+    -- right
+    x = x + width - textwidth
+  elseif textAlignment == 2 then
+    -- center
+    x = x + width * 0.5 - textwidth * 0.5  
+  end
+  -- left, draw normally
+  local currentFont = love.graphics.getFont()
+  love.graphics.setFont(self.data)
+  love.graphics.print(str, x, y)
+  love.graphics.setFont(currentFont)
+  playbit.graphics.updateContext()
+end
+function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
+  y = y - 1
+  truncationString = truncationString or ''
+  if leadingAdjustment == nil then
+    leadingAdjustment = 0
+  end
+  local lineHeight = self:getHeight() + self:getLeading() + leadingAdjustment
+  if lineHeight > height then
+    -- even one line won't fit
+    return 0, 0, false
+  end
+
+  local line = ""
+  local lineCount = 0
+  local largestLineWidth = 0
+  local truncated = false
+  for s in text:gmatch("[^\r\n]+") do
+    line = ""
+    for w in string.gmatch(s, "%S+") do
+      -- append words to line until it doesn't fit
+      local l = line..w
+      if self:getTextWidth(l) <= width then
+        line = l.." "
+        goto continue
+      end
+
+      -- trimm trailing space
+      line = string.sub(line, 1, #line - 1)
+
+      if lineHeight * (lineCount + 1) > height 
+      or lineHeight * (lineCount + 2) > height then
+        -- this line or the next line surpasses specified max height
+        line = line..truncationString
+        local lineWidth = self:getTextWidth(line)
+        if lineWidth > largestLineWidth then
+          largestLineWidth = lineWidth
+        end
+
+        self:_drawTextInBoxAligned(line,x,y+ lineHeight * lineCount,width,lineHeight, textAlignment)
+        --self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
+        line = nil
+        lineCount = lineCount + 1
+        truncated = true
+        break
+      end
+
+      local lineWidth = self:getTextWidth(line)
+      if lineWidth > largestLineWidth then
+        largestLineWidth = lineWidth
+      end
+
+      --self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
+      self:_drawTextInBoxAligned(line,x,y+ lineHeight * lineCount,width,lineHeight, textAlignment)
+      line = w.." "
+      lineCount = lineCount + 1
+
+      ::continue::
+    end
+
+    if line then
+      -- print last line if shorter than specified width
+      --self:drawTextAligned(line, x, y + lineHeight * lineCount, textAlignment)
+      self:_drawTextInBoxAligned(line,x,y+ lineHeight * lineCount,width,lineHeight, textAlignment)
+      lineCount = lineCount + 1
+
+      local lineWidth = self:getTextWidth(line)
+      if lineWidth > largestLineWidth then
+        largestLineWidth = lineWidth
+      end
+    end
+  end
   return largestLineWidth, (lineHeight * lineCount) - leadingAdjustment, truncated
 end

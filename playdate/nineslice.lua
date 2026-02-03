@@ -57,6 +57,7 @@ function meta:drawInRect(x, y, width, height)
       end
     end
   end
+  
   if self._drawImage == nil then
     self._drawImage= playdate.graphics.image.new(width,height)
   end

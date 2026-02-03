@@ -15,6 +15,7 @@ module.colorBlack = module.COLOR_BLACK
 module.colorClear = module.COLOR_CLEAR
 module.shader = love.graphics.newShader("playdate/shader")
 module.drawOffset = { x = 0, y = 0}
+module._drawOffset = { x = 0, y = 0}
 module.drawColorIndex = 1
 module.drawColor = module.colorWhite
 module.backgroundColorIndex = 0

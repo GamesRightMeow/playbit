@@ -93,11 +93,11 @@ function meta:read(numberOfBytes)
 end
 
 function meta:write(string)
-  error("[ERR] playdate.file:write() is not yet implemented.")
+  self._data:write( string )
 end
 
 function meta:flush()
-  error("[ERR] playdate.file:flush() is not yet implemented.")
+  self._data:flush()
 end
 
 function meta:seek(offset, whence)
@@ -109,7 +109,8 @@ function meta:tell()
 end
 
 function module.exists(path)
-  error("[ERR] playdate.file.exists() is not yet implemented.")
+  info = love.filesystem.getInfo( path )
+  return info~=nil
 end
 
 function module.isdir(path)
