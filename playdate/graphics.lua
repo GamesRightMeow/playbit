@@ -122,7 +122,7 @@ end
 function module._refreshXORNXOR()
   -- refresh the XOR or NXOR image in the shader before drawing
   local mode = playbit.graphics.drawMode
-  if mode == module.kDrawModeXOR or mode == "XOR" or mode == module.kDrawModeNXOR or mode == "NXOR"then
+  if mode == module.kDrawModeXOR or mode == "XOR" or mode == module.kDrawModeNXOR or mode == "NXOR" then
     module.setImageDrawMode(mode)
   end
 end

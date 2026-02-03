@@ -34,7 +34,10 @@ function module.new(widthOrPath, height, bgcolor)
 
   return img
 end
-
+function meta:_setImageFromImageData(inImageData)
+  self.imageData = inImageData
+  self.data = love.graphics.newImage(inImageData) 
+end
 function meta:load(path)
   error("[ERR] playdate.graphics.image:load() is not yet implemented.")
 end

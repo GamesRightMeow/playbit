@@ -17,6 +17,7 @@ moduleitem.__index = metaitem
 
 module.menuitems = {}
 module.isVisible = false
+module.firstFrame = false
 module.savedUpdate = nil
 module.menuGridView = nil
 module.menuPosition = 400
@@ -25,15 +26,28 @@ module.menuClosedPosition = 400
 module.menuClosing = false
 module.menuOpening = false
 module.font = SYSTEM_FONT
+module.bgLoveImage = nil
+module.imageChannel = love.thread.newChannel( )
+module.savedDrawOffsetX = 0
+module.savedDrawOffsetY = 0
+
 function playdate.openSystemMenu()
   --TODO take background screen shot
+  if module.isVisible then
+    return
+  end
+  module.savedDrawOffsetX = playbit.graphics.drawOffset.x
+  module.savedDrawOffsetY = playbit.graphics.drawOffset.y
+  playdate.graphics.setDrawOffset(0,0)
+  love.graphics.captureScreenshot( module.imageChannel )
   module.isVisible = true
+  module.firstFrame = true
   module.savedUpdate = playdate.update
   playdate.update = playdate.systemMenuUpdate
   module.menuGridView = playdate.ui.gridview.new(186,25)
   local bg = playdate.graphics.nineSlice.new('playdate/systemmenu',7,7,17,18)
   module.menuGridView.backgroundImage = bg
-  module.menuGridView:setNumberOfRows(3)
+  module.menuGridView:setNumberOfRows(#module.menuitems)
   module.menuGridView:setNumberOfColumns(1)
   module.menuGridView:setCellPadding(2,2,2,2)
   module.menuGridView:setContentInset(7,7,7,7)
@@ -46,9 +60,12 @@ function playdate.openSystemMenu()
 end
 function playdate.closedSystemMenu()
   module.isVisible = false
+  playdate.graphics.setDrawOffset(module.savedDrawOffsetX,module.savedDrawOffsetY)
   for i = 1, #module.menuitems, 1 do
     if module.runCallback[i] then
-      module.menuitems[i].callback(module.menuitems[i].value)
+      if module.menuitems[i].callback ~= nil then
+        module.menuitems[i].callback(module.menuitems[i].value)
+      end
     end
   end
   playdate.update = module.savedUpdate
@@ -57,6 +74,20 @@ function playdate.closeSystemMenu()
   module.menuClosing = true
 end
 function playdate.systemMenuUpdate()
+  if module.firstFrame == true then
+    
+    local imageData = module.imageChannel:pop()
+    if imageData == nil then
+      print('No image in channel')
+      return
+    else
+      print('Image in channel')
+      module.bgImage = playdate.graphics.image.new(400,240)
+      module.bgImage:_setImageFromImageData(imageData)
+      module.firstFrame = false
+    end
+  end
+  module.bgImage:draw(0,0)
   if module.menuOpening then
     module.menuPosition = module.menuPosition - 10
     if module.menuPosition <= module.menuOpenPosition then
@@ -80,31 +111,34 @@ function playdate.systemMenuUpdate()
   elseif playdate.buttonJustPressed(playdate.kButtonRight) or playdate.buttonJustPressed(playdate.kButtonA) then
     -- change option or tick box or run callback
     local selectedRow = module.menuGridView:getSelectedRow()
-    module.runCallback[selectedRow] = true
     if module.menuitems[selectedRow].options ~= nil then
+      module.runCallback[selectedRow] = true
       module.menuitems[selectedRow].index = module.menuitems[selectedRow].index + 1
       if module.menuitems[selectedRow].index > #module.menuitems[selectedRow].options then
         module.menuitems[selectedRow].index = 1
       end
       module.menuitems[selectedRow].value = module.menuitems[selectedRow].options[module.menuitems[selectedRow].index]
     elseif module.menuitems[selectedRow].value ~= nil then
+      module.runCallback[selectedRow] = true
       module.menuitems[selectedRow].value =  not module.menuitems[selectedRow].value
-    else
+    elseif playdate.buttonJustPressed(playdate.kButtonA) then
       -- Close menu and call menuitem's callback (and any callbacks already queued)
       -- setting a non - nil value means it will be called
+      module.runCallback[selectedRow] = true
       playdate.closeSystemMenu()
     end
   elseif playdate.buttonJustPressed(playdate.kButtonLeft) then
     -- change option or tick box
     local selectedRow = module.menuGridView:getSelectedRow()
-    module.runCallback[selectedRow] = true
     if module.menuitems[selectedRow].options ~= nil then
+      module.runCallback[selectedRow] = true
       module.menuitems[selectedRow].index = module.menuitems[selectedRow].index - 1
       if module.menuitems[selectedRow].index < 1 then
         module.menuitems[selectedRow].index = #module.menuitems[selectedRow].options
       end
       module.menuitems[selectedRow].value = module.menuitems[selectedRow].options[module.menuitems[selectedRow].index]
     elseif module.menuitems[selectedRow].value ~= nil then
+      module.runCallback[selectedRow] = true
       module.menuitems[selectedRow].value =  not module.menuitems[selectedRow].value
     end
   elseif playdate.buttonJustPressed(playdate.kButtonB) then
