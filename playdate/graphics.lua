@@ -96,6 +96,28 @@ function module.setDitherPattern(alpha,ditherType)
   local pattern = { 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55 }
   module.setPattern(pattern)
 end
+function module._clearNoUpdateContext(color)
+  if not color then
+    local c = playbit.graphics.backgroundColor
+    love.graphics.clear(c[1], c[2], c[3], c[4])
+    playbit.graphics.lastClearColor = c
+  else
+    @@ASSERT(color == 1 or color == 0 or color == 2, "Only values of 0 (black) or 1 (white) 2 (transparent) are supported.")
+    if color == 1 then
+      local c = playbit.graphics.colorWhite
+      love.graphics.clear(c[1], c[2], c[3], c[4])
+      playbit.graphics.lastClearColor = c
+    elseif color == 0 then
+      local c = playbit.graphics.colorBlack
+      love.graphics.clear(c[1], c[2], c[3], c[4])
+      playbit.graphics.lastClearColor = c
+    else
+      local c = playbit.graphics.colorClear
+      love.graphics.clear(c[1], c[2], c[3], c[4])
+      playbit.graphics.lastClearColor = c
+    end
+  end
+end
 function module.clear(color)
   if not color then
     local c = playbit.graphics.backgroundColor
@@ -423,7 +445,7 @@ function module.popContext()
   @@ASSERT(#playbit.graphics.contextStack > 0, "No pushed context.")
 
   -- pop context
-  table.remove(playbit.graphics.contextStack)
+  local poppedContext = table.remove(playbit.graphics.contextStack)
   love.graphics.pop()
   -- update current render target
   if #playbit.graphics.contextStack == 0 then
@@ -433,6 +455,8 @@ function module.popContext()
     local activeContext = playbit.graphics.contextStack[#playbit.graphics.contextStack]
     love.graphics.setCanvas(activeContext._canvas)    
   end
+  local imageData = poppedContext._canvas:newImageData()
+  poppedContext.data:replacePixels(imageData)
 end
 
 ----- Perlin Noise

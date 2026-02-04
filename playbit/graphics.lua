@@ -137,6 +137,7 @@ function module.setColors(white, black)
 end
 
 function module.updateContext()
+  if true then return end
   if #module.contextStack == 0 then
     return
   end

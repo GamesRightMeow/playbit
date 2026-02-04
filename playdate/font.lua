@@ -84,8 +84,8 @@ function meta:drawText(str, x, y, width, height, leadingAdjustment, wrapMode, al
     if width == nil then width = 400 end
     if height == nil then height = 240 end
     local drawImage = playdate.graphics.image.new(width,height)
-    playdate.graphics.pushContext(self._drawImage)
-    playdate.graphics.clear(2)
+    playdate.graphics.pushContext(drawImage)
+    playdate.graphics._clearNoUpdateContext()
   end
 
   local currentFont = love.graphics.getFont()

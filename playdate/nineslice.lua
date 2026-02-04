@@ -31,7 +31,11 @@ end
 function meta:getSize()
   return self._image:getSize()
 end
+
 function meta:drawInRect(x, y, width, height)
+  width = math.floor(width)
+  height = math.floor(height)
+  local startDrawTime = playdate.getElapsedTime()
   -- Implement image.drawTiled and use that:
   if width < self._rightSize + self._leftSize then width = self._rightSize + self._leftSize end
   if height < self._topSize + self._bottomSize then height = self._topSize + self._bottomSize end
@@ -57,7 +61,6 @@ function meta:drawInRect(x, y, width, height)
       end
     end
   end
-  
   if self._drawImage == nil then
     self._drawImage= playdate.graphics.image.new(width,height)
   end
@@ -70,7 +73,7 @@ function meta:drawInRect(x, y, width, height)
   local drawWidth = {self._leftSize,width-self._rightSize-self._leftSize,self._rightSize}
   local drawHeight = {self._topSize,height-self._bottomSize-self._topSize,self._bottomSize}
   playdate.graphics.pushContext(self._drawImage)
-  playdate.graphics.clear(2)
+  playdate.graphics._clearNoUpdateContext(2)
   for i = 1, 3, 1 do
     -- TL , TM , TR , ML, MM, MR , BL , BM , BR
     for j = 1,3,1 do
@@ -80,5 +83,7 @@ function meta:drawInRect(x, y, width, height)
     end
   end
   playdate.graphics.popContext()
+  print((startDrawTime - playdate.getElapsedTime())*-1000,'ms nine slice draw internal')
   self._drawImage:draw(x,y)
+  print((startDrawTime - playdate.getElapsedTime())*-1000,'ms nine slice draw external')
 end
