@@ -35,7 +35,6 @@ end
 function meta:drawInRect(x, y, width, height)
   width = math.floor(width)
   height = math.floor(height)
-  local startDrawTime = playdate.getElapsedTime()
   -- Implement image.drawTiled and use that:
   if width < self._rightSize + self._leftSize then width = self._rightSize + self._leftSize end
   if height < self._topSize + self._bottomSize then height = self._topSize + self._bottomSize end
@@ -83,7 +82,5 @@ function meta:drawInRect(x, y, width, height)
     end
   end
   playdate.graphics.popContext()
-  print((startDrawTime - playdate.getElapsedTime())*-1000,'ms nine slice draw internal')
   self._drawImage:draw(x,y)
-  print((startDrawTime - playdate.getElapsedTime())*-1000,'ms nine slice draw external')
 end

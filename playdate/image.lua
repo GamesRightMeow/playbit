@@ -115,7 +115,7 @@ function meta:drawAnchored(x, y, ax, ay, flip)
 end
 
 function meta:drawCentered(x, y, flip)
-  self:draw(x-self.data:getWidth()/2,y-self.data:getHeight())
+  self:draw(x-self.data:getWidth()/2,y-self.data:getHeight()/2)
   
 end
 

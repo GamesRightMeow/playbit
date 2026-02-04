@@ -132,7 +132,6 @@ function meta:drawHorizontalDivider(x, y, width, height)
 	playdate.graphics.fillRect(x+2, y+(height-1)/2, width-4, 2)
 end
 function module.drawInRect(inGridview,x,y,width,height)
-    local startDrawTime = playdate.getElapsedTime()
     if inGridview == nil then return end
     if inGridview._needToRecalculateSectionStartY then
         inGridview:_calculateSectionStartY()
@@ -161,7 +160,6 @@ function module.drawInRect(inGridview,x,y,width,height)
     playdate.graphics.pushContext(inGridview._drawImage)
     playdate.graphics._clearNoUpdateContext(2)
     -- draw background
-    print((startDrawTime - playdate.getElapsedTime())*-1000,'ms pre draw bg')
     if inGridview.backgroundImage ~= nil then
         if inGridview.backgroundImage._imageSections ~= nil then
             inGridview.backgroundImage:drawInRect(0,0,width,height)
@@ -169,10 +167,8 @@ function module.drawInRect(inGridview,x,y,width,height)
             inGridview.backgroundImage:drawTiled(0, 0, width, height)
         end
     end
-    print((startDrawTime - playdate.getElapsedTime())*-1000,'ms post draw bg')
     playdate.graphics.pushContext(inGridview._drawInsetImage)
     playdate.graphics._clearNoUpdateContext(2)
-    print((startDrawTime - playdate.getElapsedTime())*-1000,'ms post clear drawInset')
     local drawWidth = inGridview._drawInsetWidth
     local drawHeight = inGridview._drawInsetHeight
     -- Draw all cells
@@ -219,8 +215,6 @@ function module.drawInRect(inGridview,x,y,width,height)
     inGridview._drawInsetImage:draw(inGridview._contentInset[1],inGridview._contentInset[3])
     playdate.graphics.popContext()
     inGridview._drawImage:draw(x,y)
-    print((startDrawTime - playdate.getElapsedTime())*-1000,'ms Finished GV draw')
-    
 end
 function meta:drawInRect(x, y, width, height)
     playdate.ui.gridview.drawInRect(self,x,y,width,height)
