@@ -31,13 +31,27 @@ function class(name, properties, namespace)
 end
 
 function classTemp.extends(parent)
+  local subclass = classTemp.properties or {}
+
   if parent == nil then
     parent = Object
   elseif type(parent) == "string" then
     parent = _G[parent]
+  elseif parent:isa(Sprite) then
+    subclass._drawImage = nil
+    subclass.x, subclass.y = 0, 0
+    subclass.visible = true
+    subclass.zIndex = 0
+    subclass.collideRect = nil
+    subclass.animator = nil
+    subclass._ignoresDrawOffset = false
+    subclass.width, subclass.height = 0 , 0
+    subclass.centerX = 0.5
+    subclass.centerY = 0.5
+    subclass.drawClipOffsetX = 0
+    subclass.drawClipOffsetY = 0
   end
-
-  local subclass = classTemp.properties or {}
+  
   subclass.class = subclass
   subclass.className = classTemp.className
   subclass.super = parent
@@ -59,7 +73,6 @@ function classTemp.extends(parent)
   subclass.__eq = parent.__eq
   subclass.__lt = parent.__lt
   subclass.__le = parent.__le
-
   local meta = {}
   meta.__index = parent
   meta.__call = function (self, ...)

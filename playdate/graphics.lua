@@ -32,11 +32,11 @@ kTextAlignment = {
 }
 
 function module.setDrawOffset(x, y)
-  playbit.graphics.drawOffset.x = x
-  playbit.graphics.drawOffset.y = y
-  love.graphics.pop()
-  love.graphics.push()
-  love.graphics.translate(x, y)
+  playbit.graphics._drawOffset.x = x
+  playbit.graphics._drawOffset.y = y
+  -- love.graphics.pop()
+  -- love.graphics.push()
+  -- love.graphics.translate(x, y)
 end
 
 function module.getDrawOffset()
@@ -315,12 +315,23 @@ function module.checkAlphaCollision(image1, x1, y1, flip1, image2, x2, y2, flip2
 end
 
 function module.pushContext(image)
+
   -- TODO: PD docs say image is optional, but not passing an image just results in drawing to last context?
   @@ASSERT(image, "Missing image parameter.")
 
+  love.graphics.push()
+  love.graphics.origin()
   -- create canvas if it doesn't exist
   if not image._canvas then
     image._canvas = love.graphics.newCanvas(image:getSize())
+    love.graphics.setCanvas(image._canvas)
+    local tempPattern = playbit.graphics.drawPattern
+    local tempColor = playbit.graphics.drawColorIndex
+    playdate.graphics.setColor(1)
+    image:draw(0,0)
+    playdate.graphics.setColor(tempColor)
+    playdate.graphics.setPattern(tempPattern)
+    playbit.graphics.updateContext()
   end
   
   -- push context
@@ -329,17 +340,18 @@ function module.pushContext(image)
   -- update current render target
   love.graphics.setCanvas(image._canvas)
 end
-
 function module.popContext()
   @@ASSERT(#playbit.graphics.contextStack > 0, "No pushed context.")
 
   -- pop context
   table.remove(playbit.graphics.contextStack)
+  love.graphics.pop()
   -- update current render target
   if #playbit.graphics.contextStack == 0 then
     love.graphics.setCanvas(playbit.graphics.canvas)
+    --love.graphics.translate(playbit.graphics.drawOffset.x, playbit.graphics.drawOffset.y)
   else
     local activeContext = playbit.graphics.contextStack[#playbit.graphics.contextStack]
-    love.graphics.setCanvas(activeContext._canvas)
+    love.graphics.setCanvas(activeContext._canvas)    
   end
 end

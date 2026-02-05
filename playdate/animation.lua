@@ -87,11 +87,11 @@ local function setBlinkerSettings(inblinker,onDuration, offDuration, loop, cycle
 		cycles = onDuration.cycles
 		default = onDuration.default
   end
-  inblinker.onDuration = onDuration or 200
-  inblinker.offDuration = offDuration or 200
-  inblinker.loop = loop or false
-  inblinker.cycles = cycles or 6
-  inblinker._default = default or true
+  inblinker.onDuration = onDuration or inblinker.onDuration or 200
+  inblinker.offDuration = offDuration or inblinker.offDuration or 200
+  inblinker.loop = loop or inblinker.loop or false
+  inblinker.cycles = cycles or inblinker.cycles or 6
+  inblinker._default = default or inblinker._default or true
   
   inblinker.counter = 0
   inblinker.running = false
@@ -152,7 +152,8 @@ function blinkerMeta:start(onDuration, offDuration, loop, cycles, default)
 end
 
 function blinkerMeta:startLoop()
-  self:start(nil,nil,true)
+  self.running = true
+  self.counter = self.cycles
 end
 
 function blinkerMeta:stop()

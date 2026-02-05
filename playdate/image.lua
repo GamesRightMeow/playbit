@@ -8,16 +8,28 @@ meta.__index = meta
 module.__index = meta
 
 function module.new(widthOrPath, height, bgcolor)
-  @@ASSERT(bgcolor == nil, "[ERR] Parameter bgcolor is not yet implemented.")
+  local bgColorConst = playbit.graphics.colorClear
+  if bgcolor == playdate.graphics.kColorBlack then
+    bgColorConst = playbit.graphics.colorBlack
+  elseif bgcolor == playdate.graphics.kColorWhite then
+    bgColorConst = playbit.graphics.colorWhite
+  end
   local img = setmetatable({}, meta)
 
   if height then
     -- creating empty image with dimensions
     local imageData = love.image.newImageData(widthOrPath, height)
-    img.data = love.graphics.newImage(imageData)  
+    for i = 0, widthOrPath-1, 1 do
+      for j = 0, height-1 ,1 do
+        imageData:setPixel(i,j,bgColorConst[1],bgColorConst[2],bgColorConst[3],bgColorConst[4])
+      end
+    end
+    img.data = love.graphics.newImage(imageData)
+    img.imageData = imageData
   else
     -- creating image from file
-    img.data = love.graphics.newImage(widthOrPath..".png")  
+    img.imageData = love.image.newImageData( widthOrPath..".png" )
+    img.data = love.graphics.newImage(img.imageData)  
   end
 
   return img
@@ -28,7 +40,17 @@ function meta:load(path)
 end
 
 function meta:copy()
-  error("[ERR] playdate.graphics.image:copy() is not yet implemented.")
+  --TODO use clone to copy imagedata?
+  local img = setmetatable({}, meta)
+  local imageData
+  if self.imageData == nil then
+    imageData = love.image.newImageData(self.data:getWidth(), self.data:getHeight())
+  else
+    imageData = self.imageData:clone()
+  end
+  img.data = love.graphics.newImage(imageData)
+  img.imageData = imageData
+  return img
 end
 
 function meta:getSize()
@@ -65,13 +87,19 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
       y = y + h
     end
   end
-  
+  local dx,dy = 0,0
+  -- if #playbit.graphics.contextStack ~= 0 then
+  --   dx = playbit.graphics.drawOffset.x
+  --   dy = playbit.graphics.drawOffset.y
+  -- end
   if qx and qy and qw and qh then
     local w, h = self:getSize()
     playbit.graphics.quad:setViewport(qx, qy, qw, qh, w, h)
-    love.graphics.draw(self.data, playbit.graphics.quad, x, y, sx, sy)
+    love.graphics.draw(self.data, playbit.graphics.quad, x-dx, y-dy, sx, sy)
+  elseif qx then
+    love.graphics.draw(self.data, qx, x-dx, y-dy,0, sx, sy)
   else
-    love.graphics.draw(self.data, x, y, 0, sx, sy)
+    love.graphics.draw(self.data, x-dx, y-dy, 0, sx, sy)
   end
 
   love.graphics.setColor(r, g, b, 1)
@@ -83,11 +111,40 @@ function meta:drawAnchored(x, y, ax, ay, flip)
 end
 
 function meta:drawCentered(x, y, flip)
-  error("[ERR] playdate.graphics.image:drawCentered() is not yet implemented.")
+  self:draw(x-self.data:getWidth()/2,y-self.data:getHeight()/2)
+  
 end
 
 function meta:clear(color)
-  error("[ERR] playdate.graphics.image:clear() is not yet implemented.")
+  self._canvas = nil
+  local clearColor = playbit.graphics.colorWhite
+  if color == playdate.graphics.kColorBlack then
+    clearColor = playbit.graphics.colorBlack
+  elseif color == playdate.graphics.kColorClear then
+    clearColor = playbit.graphics.colorClear
+  end
+  if self.imageData == nil then
+    self.imageData = love.image.newImageData(self.data:getWidth(), self.data:getHeight())
+  end
+  -- for i = 0, self.data:getWidth()-1, 1 do
+  --   for j = 0, self.data:getHeight()-1 ,1 do
+  --     self.imageData:setPixel(i,j,clearColor[1],clearColor[2],clearColor[3],clearColor[4])
+  --     --self.imageData:setPixel(i,j,math.random(),math.random(),math.random(),1)
+  --   end
+  -- end
+  
+  local curcanvas = love.graphics.getCanvas( )
+  if self._canvas == nil then
+    self._canvas = love.graphics.newCanvas(self:getSize())
+  end
+  love.graphics.push()
+  love.graphics.setCanvas(self._canvas)
+  love.graphics.clear( clearColor[1],clearColor[2],clearColor[3],clearColor[4] )
+  love.graphics.pop()
+  love.graphics.setCanvas(curcanvas)
+  
+  self.imageData = self._canvas:newImageData()
+  self.data = love.graphics.newImage(self.imageData)
 end
 
 function meta:sample(x, y)
@@ -184,21 +241,15 @@ end
 
 -- TODO: handle overloaded signature (rect, flip)
 function meta:drawTiled(x, y, width, height, flip)
-  local drawImage = playdate.graphics.image.new(width,height)
+  
   local imgWidth , imgHeight = self:getSize()
-  --TODO calculate width and height of image
-  -- draw image for each x,y to cover width and height of tiled
-  playdate.graphics.pushContext(drawImage)
-  playdate.graphics.clear(2)
-  local iLoop = math.ceil((width) / imgWidth)
-  local jLoop = math.ceil((height) / imgHeight)
-  for drawLoopI = 1,iLoop do
-    for drawLoopJ = 1,jLoop do
-      self:draw((drawLoopI-1)*imgWidth, (drawLoopJ-1)*imgHeight)
-    end
-  end
-  playdate.graphics.popContext()
-  drawImage:draw(x,y,flip)
+  self.data:setWrap("repeat", "repeat")
+	quad = love.graphics.newQuad( 0,0, width,height, imgWidth,imgHeight )	-- assuming the image is 16x16
+  local r, g, b = love.graphics.getColor()
+  love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.draw(self.data, quad, x,y, 0, 1,1)
+  love.graphics.setColor(r, g, b, 1)
+  playbit.graphics.updateContext()
 end
 
 function meta:drawBlurred(x, y, radius, numPasses, ditherType, flip, xPhase, yPhase)
@@ -206,6 +257,9 @@ function meta:drawBlurred(x, y, radius, numPasses, ditherType, flip, xPhase, yPh
 end
 
 function meta:blurredImage(radius, numPasses, ditherType, padEdges, xPhase, yPhase)
+  if self.imageData == nil then
+    return self:copy()
+  end
   error("[ERR] playdate.graphics.image:blurredImage() is not yet implemented.")
 end
 
@@ -214,9 +268,31 @@ function meta:drawFaded(x, y, alpha, ditherType)
 end
 
 function meta:fadedImage(alpha, ditherType)
-  error("[ERR] playdate.graphics.image:fadedImage() is not yet implemented.")
-end
+  local ditherArray = {0.28125,0.65625,0.84375,0.21875,0.09375,0.53125,0.46875,0.71875,0.78125,0.59375,0.90625,0.40625,0.34375,0.96875,0.03125,0.15625}
+  local ditherArray = {0/16,12/16,3/16,15/16,8/16,4/16,11/16,7/16,2/16,14/16,1/16,13/16,10/16,6/16,9/16,5/16}
+  local counter = 1
+  local offset = 0
+  local maxcounter = #ditherArray
+  local fadedImg = self:copy()
 
+  local width , height = fadedImg.imageData:getWidth(), fadedImg.imageData:getHeight()
+  local startFade = love.timer.getTime()
+  for i = 0, width -1, 1 do
+    for j = 0, height -1, 1 do
+      counter = counter + 1 
+      if counter > maxcounter then
+        counter = 1
+      end
+      counter = 1+i+j*4
+      if ditherArray[(counter+offset)%maxcounter+1] > alpha then
+        fadedImg.imageData:setPixel(i,j,playbit.graphics.colorClear)
+      end
+    end
+  end
+  fadedImg.data = love.graphics.newImage(fadedImg.imageData)
+  return fadedImg
+  --error("[ERR] playdate.graphics.image:fadedImage() is not yet implemented.")
+end
 function meta:setInverted(flag)
   error("[ERR] playdate.graphics.image:setInverted() is not yet implemented.")
 end
