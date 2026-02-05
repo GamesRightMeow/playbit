@@ -118,6 +118,7 @@ end
 
 -- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
 function module.setImageDrawMode(mode)
+  if mode == nil then mode = module.kDrawModeCopy end
   playbit.graphics.drawMode = mode
   if mode == module.kDrawModeCopy or mode == "copy" then
     playbit.graphics.shader:send("mode", 0)
