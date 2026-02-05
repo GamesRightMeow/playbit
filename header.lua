@@ -32,9 +32,17 @@ playdate.graphics.setColor(playdate.graphics.kColorBlack)
 
 math.randomseed(os.time())
 
+SYSTEM_FONT = playdate.graphics.font.new("fonts/Phozon/Phozon")
 local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
 playdate.graphics.setFont(font)
-
+function love.textinput(t)
+  if playdate.keyboard._visible then
+    playdate.keyboard.text = playdate.keyboard.text .. t
+    if playdate.keyboard.textChangedCallback ~= nil then
+      playdate.keyboard.textChangedCallback()
+    end
+  end
+end
 function love.draw()
   -- must be changed at start of frame when canvas is not active
   local newCanvasWidth, newCanvasHeight = playbit.graphics.getCanvasSize()
