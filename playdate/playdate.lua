@@ -151,8 +151,7 @@ function module.getCrankChange()
     return change, acceleratedChange
 end
 
--- TODO: emulate via leftstick, keyboard...?
--- accelerometer defined in accelerometer.lua
+-- TODO: acceleramator, emulate via leftstick, keyboard...?
 
 function module.getCrankPosition()
   if module.isCrankDocked() then
@@ -331,8 +330,18 @@ function table.indexOfElement(table, element)
   return nil
 end
 
-function printTable(...)
-	error("[ERR] printTable() is not yet implemented.")
+function printTable(o)
+   if type(o) == 'table' then
+      local s = '{ '
+      for k,v in pairs(o) do
+         if type(k) ~= 'number' then k = '"'..k..'"' end
+         s = s .. '['..k..'] = ' .. printTable(v) .. ','
+      end
+      return s .. '} '
+   else
+      return tostring(o)
+   end
+	--error("[ERR] printTable() is not yet implemented.")
 end
 
 -- debug TODO: make a fancy header

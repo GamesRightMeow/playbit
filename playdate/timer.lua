@@ -23,7 +23,6 @@ function module.new(duration, startValue, ...)
 	else
 		endValue, easingFunction = select(1, ...)
 	end
-
   local timer = setmetatable({}, meta)
   timer._remainingDelay = nil 
   timer._hasReversed = false
@@ -58,7 +57,7 @@ function module.new(duration, startValue, ...)
 end
 
 function module.performAfterDelay(delay, func, ...)
-	error("[ERR] playdate.timer.performAfterDelay() is not yet implemented.")
+  local delayTimer = playdate.timer.new(delay,func,...)
 end
 
 function module.keyRepeatTimerWithDelay(initialDelay, repeatDelay, func, ...)

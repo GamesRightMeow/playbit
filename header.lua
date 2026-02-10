@@ -84,6 +84,8 @@ function love.draw()
 
   -- push main transform for draw offset
   love.graphics.push()
+  playbit.graphics.drawOffset.x = playbit.graphics._drawOffset.x
+  playbit.graphics.drawOffset.y = playbit.graphics._drawOffset.y
   love.graphics.translate(playbit.graphics.drawOffset.x, playbit.graphics.drawOffset.y)
 
   -- main update

@@ -22,6 +22,7 @@ module.kImageFlippedXY = 3
 
 module.kColorWhite = 1
 module.kColorBlack = 0
+module.kColorClear = 2
 -- TODO: clear and XOR support
 
 kTextAlignment = {
@@ -31,11 +32,11 @@ kTextAlignment = {
 }
 
 function module.setDrawOffset(x, y)
-  playbit.graphics.drawOffset.x = x
-  playbit.graphics.drawOffset.y = y
-  love.graphics.pop()
-  love.graphics.push()
-  love.graphics.translate(x, y)
+  playbit.graphics._drawOffset.x = x
+  playbit.graphics._drawOffset.y = y
+  -- love.graphics.pop()
+  -- love.graphics.push()
+  -- love.graphics.translate(x, y)
 end
 
 function module.getDrawOffset()
@@ -97,13 +98,17 @@ function module.clear(color)
     love.graphics.clear(c[1], c[2], c[3], c[4])
     playbit.graphics.lastClearColor = c
   else
-    @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
+    @@ASSERT(color == 1 or color == 0 or color == 2, "Only values of 0 (black) or 1 (white) 2 (transparent) are supported.")
     if color == 1 then
       local c = playbit.graphics.colorWhite
       love.graphics.clear(c[1], c[2], c[3], c[4])
       playbit.graphics.lastClearColor = c
-    else
+    elseif color == 0 then
       local c = playbit.graphics.colorBlack
+      love.graphics.clear(c[1], c[2], c[3], c[4])
+      playbit.graphics.lastClearColor = c
+    else
+      local c = playbit.graphics.colorClear
       love.graphics.clear(c[1], c[2], c[3], c[4])
       playbit.graphics.lastClearColor = c
     end
@@ -113,6 +118,7 @@ end
 
 -- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
 function module.setImageDrawMode(mode)
+  if mode == nil then mode = module.kDrawModeCopy end
   playbit.graphics.drawMode = mode
   if mode == module.kDrawModeCopy or mode == "copy" then
     playbit.graphics.shader:send("mode", 0)
@@ -120,9 +126,9 @@ function module.setImageDrawMode(mode)
     playbit.graphics.shader:send("mode", 1)
   elseif mode == module.kDrawModeFillBlack or mode == "fillBlack" then
     playbit.graphics.shader:send("mode", 2)
-  elseif mode == module.kDrawModeInverted or mode == "inverted" then
+  elseif mode == module.kDrawModeFillBlack or mode == "inverted" then
     playbit.graphics.shader:send("mode", 6)
-  elseif mode == module.kDrawModeWhiteTransparent or mode == "whiteTransparent" then
+  elseif mode == module.kDrawModeFillBlack or mode == "whiteTransparent" then
     playbit.graphics.shader:send("mode", 4)
   else
     error("[ERR] Draw mode '"..mode.."' is not yet implemented.")
@@ -310,12 +316,23 @@ function module.checkAlphaCollision(image1, x1, y1, flip1, image2, x2, y2, flip2
 end
 
 function module.pushContext(image)
+
   -- TODO: PD docs say image is optional, but not passing an image just results in drawing to last context?
   @@ASSERT(image, "Missing image parameter.")
 
+  love.graphics.push()
+  love.graphics.origin()
   -- create canvas if it doesn't exist
   if not image._canvas then
     image._canvas = love.graphics.newCanvas(image:getSize())
+    love.graphics.setCanvas(image._canvas)
+    local tempPattern = playbit.graphics.drawPattern
+    local tempColor = playbit.graphics.drawColorIndex
+    playdate.graphics.setColor(1)
+    image:draw(0,0)
+    playdate.graphics.setColor(tempColor)
+    playdate.graphics.setPattern(tempPattern)
+    playbit.graphics.updateContext()
   end
   
   -- push context
@@ -324,17 +341,18 @@ function module.pushContext(image)
   -- update current render target
   love.graphics.setCanvas(image._canvas)
 end
-
 function module.popContext()
   @@ASSERT(#playbit.graphics.contextStack > 0, "No pushed context.")
 
   -- pop context
   table.remove(playbit.graphics.contextStack)
+  love.graphics.pop()
   -- update current render target
   if #playbit.graphics.contextStack == 0 then
     love.graphics.setCanvas(playbit.graphics.canvas)
+    --love.graphics.translate(playbit.graphics.drawOffset.x, playbit.graphics.drawOffset.y)
   else
     local activeContext = playbit.graphics.contextStack[#playbit.graphics.contextStack]
-    love.graphics.setCanvas(activeContext._canvas)
+    love.graphics.setCanvas(activeContext._canvas)    
   end
 end
