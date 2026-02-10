@@ -148,11 +148,12 @@ function module.fillCircleAtPoint(x, y, radius)
 end
 
 function module.setLineWidth(width)
+  playbit.graphics.lineWidth = width
   love.graphics.setLineWidth(width)
 end
 
 function module.getLineWidth()
-  return love.graphics.getLineWidth()
+  return playbit.graphics.lineWidth
 end
 
 function module.drawRect(x, y, width, height)
@@ -334,31 +335,50 @@ function module.checkAlphaCollision(image1, x1, y1, flip1, image2, x2, y2, flip2
 end
 
 function module.pushContext(image)
-  -- TODO: PD docs say image is optional, but not passing an image just results in drawing to last context?
-  @@ASSERT(image, "Missing image parameter.")
-
-  -- create canvas if it doesn't exist
-  if not image._canvas then
-    image._canvas = love.graphics.newCanvas(image:getSize())
-  end
+  -- save current graphics state so it can be restored by popContext()
+  local context = {
+    image = image,
+    canvas = love.graphics.getCanvas(),
+    drawOffset = { x = playbit.graphics.drawOffset.x, y = playbit.graphics.drawOffset.y },
+    drawColorIndex = playbit.graphics.drawColorIndex,
+    backgroundColorIndex = playbit.graphics.backgroundColorIndex,
+    activeFont = playbit.graphics.activeFont,
+    drawMode = playbit.graphics.drawMode,
+    drawPattern = playbit.graphics.drawPattern,
+    lineWidth = playbit.graphics.lineWidth
+  }
 
   -- push context
-  table.insert(playbit.graphics.contextStack, image)
+  table.insert(playbit.graphics.contextStack, context)
 
-  -- update current render target
-  love.graphics.setCanvas(image._canvas)
+  if image then
+    -- create canvas if it doesn't exist
+    if not image._canvas then
+      image._canvas = love.graphics.newCanvas(image:getSize())
+    end
+
+    -- update current render target
+    love.graphics.setCanvas(image._canvas)
+  end
 end
 
 function module.popContext()
   @@ASSERT(#playbit.graphics.contextStack > 0, "No pushed context.")
 
   -- pop context
-  table.remove(playbit.graphics.contextStack)
-  -- update current render target
-  if #playbit.graphics.contextStack == 0 then
-    love.graphics.setCanvas(playbit.graphics.canvas)
-  else
-    local activeContext = playbit.graphics.contextStack[#playbit.graphics.contextStack]
-    love.graphics.setCanvas(activeContext._canvas)
+  local context = table.remove(playbit.graphics.contextStack)
+
+  -- restore render target
+  love.graphics.setCanvas(context.canvas)
+
+  module.setImageDrawMode(context.drawMode)
+  module.setDrawOffset(context.drawOffset.x, context.drawOffset.y)
+  module.setBackgroundColor(context.backgroundColorIndex)
+  module.setColor(context.drawColorIndex)
+  module.setFont(context.activeFont)
+  module.setLineWidth(context.lineWidth)
+
+  if context.drawPattern then
+    module.setPattern(context.drawPattern)
   end
 end
