@@ -31,6 +31,7 @@ function module.new(imageOrTilemap)
   sprite.animator = nil
 
   sprite._updatesEnabled = true
+  sprite._collisionsEnabled = true
 
   sprite:setCenter(0.5, 0.5)
 
@@ -174,11 +175,11 @@ function meta:alphaCollision(anotherSprite)
 end
 
 function meta:setCollisionsEnabled(flag)
-  error("[ERR] playdate.graphics.sprite.setCollisionsEnabled() is not yet implemented.")
+  self._collisionsEnabled = flag
 end
 
 function meta:collisionsEnabled()
-  error("[ERR] playdate.graphics.sprite.collisionsEnabled() is not yet implemented.")
+  return self._collisionsEnabled
 end
 
 function meta:setGroups(groups)
@@ -321,9 +322,13 @@ function meta:checkCollisions(goalX, goalY)
   local normalX, normalY = 0, 0
   local overlaps = false
 
+  if not self._collisionsEnabled then
+    return goalX, goalY, collisions, #collisions
+  end
+
   -- already overlapping another sprite?
   for _, other in ipairs(allSprites) do
-    if other ~= self and other.collideRect and checkAABBCollision(self, other) then
+    if other ~= self and other._collisionsEnabled and other.collideRect and checkAABBCollision(self, other) then
       overlaps = true
       break
     end
@@ -331,7 +336,7 @@ function meta:checkCollisions(goalX, goalY)
 
   -- Check for possible future collisions
   for _, other in ipairs(allSprites) do
-    if other ~= self and other.collideRect then
+    if other ~= self and other._collisionsEnabled and other.collideRect then
       local tImpact, nx, ny = sweptAABB(self, other, self.x, self.y, goalX, goalY)
 
       if tImpact then
