@@ -89,7 +89,9 @@ end
 
 function meta:setImage(image)
   self.image = image
-  self.width, self.height = image:getSize()
+  if image then
+    self.width, self.height = image:getSize()
+  end
 end
 
 function meta:getImage()
