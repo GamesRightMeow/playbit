@@ -586,22 +586,6 @@ function meta:setRedrawsOnImageChange(flag)
   error("[ERR] playdate.graphics.sprite.setRedrawsOnImageChange() is not yet implemented.")
 end
 
-function meta:draw()
-  if self.visible and self.image then
-    local r, g, b = love.graphics.getColor()
-    love.graphics.setColor(1, 1, 1, 1)
-
-    love.graphics.draw(self.image.data,
-      self.x, self.y,
-      self.angle,
-      self.scaleX, self.scaleY,
-      self.width * self.centerX, self.height * self.centerY
-    )
-
-    love.graphics.setColor(r, g, b, 1)
-  end
-end
-
 local function updateAll()
   for _, spr in ipairs(allSprites) do
     if spr.animator then
@@ -621,7 +605,22 @@ end
 
 local function drawAll()
   for _, spr in ipairs(allSprites) do
-    spr:draw()
+    if spr.visible then
+      if spr.image then
+        playbit.graphics.setDrawMode("image")
+        love.graphics.draw(spr.image.data,
+            spr.x, spr.y,
+            spr.angle,
+            spr.scaleX, spr.scaleY,
+            spr.width * spr.centerX, spr.height * spr.centerY)
+
+      elseif spr.draw then
+        love.graphics.push()
+        love.graphics.translate(spr.x, spr.y)
+        spr:draw(0, 0, spr.width, spr.height)
+        love.graphics.pop()
+      end
+    end
   end
 end
 
