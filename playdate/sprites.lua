@@ -539,11 +539,13 @@ function meta:setTilemap(tilemap)
 end
 
 function meta:setAnimator(animator, moveWithCollisions, removeOnCollision)
-  error("[ERR] playdate.graphics.sprite.setAnimator() is not yet implemented.")
+  -- assert(moveWithCollisions == nil, "[ERR] moveWithCollisions is not yet supported")
+  -- assert(removeOnCollision == nil, "[ERR] removeOnCollision is not yet supported")
+  self.animator = animator
 end
 
 function meta:removeAnimator()
-  error("[ERR] playdate.graphics.sprite.removeAnimator() is not yet implemented.")
+  self.animator = nil
 end
 
 function meta:setClipRect(x, y, width, height)
