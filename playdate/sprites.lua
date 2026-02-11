@@ -20,17 +20,6 @@ local allSprites = {}
 function module.new(imageOrTilemap)
   local sprite = setmetatable({}, meta)
 
-  local hasSpr = sprite == nil and 'no sprite' or 'has sprite'
-
-  print("sprite " .. hasSpr)
-  -- printTable(sprite)
-
-  local hasImg = imageOrTilemap == nil and 'no image' or 'has image'
-
-
-  print("imageOrTilemap " .. hasImg)
-  -- printTable(imageOrTilemap)
-
   if imageOrTilemap then
     sprite:setImage(imageOrTilemap)
   end
@@ -597,27 +586,17 @@ end
 
 function meta:draw()
   if self.visible and self.image then
-    -- if self.scaleX then
-    --     self.image:drawScaled(self.x, self.y, self.scaleX, self.scaleY)
-    -- elseif self.angle then
-    --     self.image:drawRotated(self.x, self.y, self.angle)
-    -- else
-    --     self.image:draw(self.x, self.y)
-    -- end
     local r, g, b = love.graphics.getColor()
     love.graphics.setColor(1, 1, 1, 1)
 
-    -- love.graphics.push()
     love.graphics.draw(self.image.data,
       self.x, self.y,
       self.angle,
       self.scaleX, self.scaleY,
       self.width * self.centerX, self.height * self.centerY
     )
-    -- love.graphics.pop()
 
     love.graphics.setColor(r, g, b, 1)
-    playdate.graphics._updateContext()
   end
 end
 
