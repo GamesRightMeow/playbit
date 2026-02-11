@@ -499,15 +499,19 @@ function meta:setIgnoresDrawOffset(flag)
 end
 
 function meta:setBounds(x, y, width, height)
-  error("[ERR] playdate.graphics.sprite.setBounds() is not yet implemented.")
+  if y == nil then
+    self.x, self.y, self.width, self.height = x:unpack()
+  else
+    self.x, self.y, self.width, self.height = x, y, width, height
+  end
 end
 
 function meta:getBounds()
-  error("[ERR] playdate.graphics.sprite.getBounds() is not yet implemented.")
+  return self.x, self.y, self.width, self.height
 end
 
 function meta:getBoundsRect()
-  error("[ERR] playdate.graphics.sprite.getBoundsRect() is not yet implemented.")
+  return playdate.geometry.rect.new(self.x, self.y, self.width, self.height)
 end
 
 function meta:setOpaque(flag)
