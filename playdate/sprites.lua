@@ -41,6 +41,8 @@ function module.new(imageOrTilemap)
   sprite.collideRect = nil
   sprite.animator = nil
 
+  sprite._updatesEnabled = true
+
   sprite:setCenter(0.5, 0.5)
 
   sprite:resetGroupMask()
@@ -465,11 +467,11 @@ function meta:getRotation()
 end
 
 function meta:setUpdatesEnabled(flag)
-  error("[ERR] playdate.graphics.sprite.setUpdatesEnabled() is not yet implemented.")
+  self._updatesEnabled = false
 end
 
 function meta:updatesEnabled()
-  error("[ERR] playdate.graphics.sprite.updatesEnabled() is not yet implemented.")
+  return self._updatesEnabled
 end
 
 function meta:setTag(tag)
@@ -623,6 +625,11 @@ local function updateAll()
       if spr.animator:ended() then
         spr.animator = nil
       end
+    end
+
+    -- call sprite:update() implementation
+    if spr.update and spr._updatesEnabled then
+        spr:update()
     end
   end
 end
