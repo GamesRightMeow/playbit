@@ -1,3 +1,4 @@
+require("playdate.object")
 local bit = require("bit") -- LuaJIT's bitwise operations
 
 local module = {}
@@ -641,5 +642,13 @@ function module.redrawBackground()
     module.backgroundCallback()
   end
 end
+
+
+-- allow sprite to be inheritable
+module.className = "Sprite"
+module.super = Object
+module.baseObject = module.new
+setmetatable(module, meta)
+setmetatable(meta, Object)
 
 return module
