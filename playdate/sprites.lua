@@ -49,14 +49,50 @@ function module.new(imageOrTilemap)
   return sprite
 end
 
+function module.getAllSprites(func)
+  return { unpack(allSprites) }
+end
+
 function module.performOnallSprites(func)
   for i = 1, #allSprites do
     func(allSprites[i])
   end
 end
 
+function module.spriteCount(func)
+  return #allSprites
+end
+
+function module.removeAll()
+  error("[ERR] playdate.graphics.sprite.removeAll() is not yet implemented.")
+end
+
+function module.removeSprites(spritesArray)
+  error("[ERR] playdate.graphics.sprite.removeSprites() is not yet implemented.")
+end
+
 function module.spriteWithText(text, maxWidth, maxHeight, backgroundColor, leadingAdjustment, truncationString, alignment, font)
-  error("spriteWithText not implemented!")
+  error("[ERR] playdate.graphics.sprite.spriteWithText() is not yet implemented.")
+end
+
+function module.addSprite(sprite)
+  sprite:add()
+end
+
+function module.removeSprite(sprite)
+  sprite:remove()
+end
+
+function module.setAlwaysRedraw(flag)
+  error("[ERR] playdate.graphics.sprite.setAlwaysRedraw() is not yet implemented.")
+end
+
+function module.getAlwaysRedraw()
+  error("[ERR] playdate.graphics.sprite.getAlwaysRedraw() is not yet implemented.")
+end
+
+function meta:copy()
+  error("[ERR] playdate.graphics.sprite.copy() is not yet implemented.")
 end
 
 function meta:setImage(image)
@@ -124,10 +160,31 @@ function meta:getCollideRect()
 end
 
 function meta:getCollideBounds()
+  error("[ERR] playdate.graphics.sprite.getCollideBounds() is not yet implemented.")
+end
+
+function meta:clearCollideRect()
+  self.collideRect = nil
 end
 
 function meta:setCollisionResponse(response)
   self.collisionResponse = response
+end
+
+function module.allOverlappingSprites()
+  error("[ERR] playdate.graphics.sprite.allOverlappingSprites() is not yet implemented.")
+end
+
+function meta:alphaCollision(anotherSprite)
+  error("[ERR] playdate.graphics.sprite.alphaCollision() is not yet implemented.")
+end
+
+function meta:setCollisionsEnabled(flag)
+  error("[ERR] playdate.graphics.sprite.setCollisionsEnabled() is not yet implemented.")
+end
+
+function meta:collisionsEnabled()
+  error("[ERR] playdate.graphics.sprite.collisionsEnabled() is not yet implemented.")
 end
 
 function meta:setGroups(groups)
@@ -361,6 +418,30 @@ function meta:moveWithCollisions(goalX, goalY)
   return actualX, actualY, collisions, count
 end
 
+function module.querySpritesAtPoint(x, y)
+  error("[ERR] playdate.graphics.sprite.querySpritesAtPoint() is not yet implemented.")
+end
+
+function module.querySpritesInRect(x, y, width, height)
+  error("[ERR] playdate.graphics.sprite.querySpritesInRect() is not yet implemented.")
+end
+
+function module.querySpritesAlongLine(x1, y1, x2, y2)
+  error("[ERR] playdate.graphics.sprite.querySpritesAlongLine() is not yet implemented.")
+end
+
+function module.querySpriteInfoAlongLine(x1, y1, x2, y2)
+  error("[ERR] playdate.graphics.sprite.querySpriteInfoAlongLine() is not yet implemented.")
+end
+
+function module.addEmptyCollisionSprite(x, y, w, h)
+  error("[ERR] playdate.graphics.sprite.addEmptyCollisionSprite() is not yet implemented.")
+end
+
+function module.addWallSprites(tilemap, emptyIDs, xOffset, yOffset)
+  error("[ERR] playdate.graphics.sprite.addWallSprites() is not yet implemented.")
+end
+
 function meta:setScale(scale, yScale)
   self.scaleX = scale
   self.scaleY = yScale or scale
@@ -382,6 +463,58 @@ function meta:getRotation()
   return self.angle
 end
 
+function meta:setUpdatesEnabled(flag)
+  error("[ERR] playdate.graphics.sprite.setUpdatesEnabled() is not yet implemented.")
+end
+
+function meta:updatesEnabled()
+  error("[ERR] playdate.graphics.sprite.updatesEnabled() is not yet implemented.")
+end
+
+function meta:setTag(tag)
+  error("[ERR] playdate.graphics.sprite.setTag() is not yet implemented.")
+end
+
+function meta:getTag()
+  error("[ERR] playdate.graphics.sprite.getTag() is not yet implemented.")
+end
+
+function meta:setImageDrawMode(mode)
+  error("[ERR] playdate.graphics.sprite.setImageDrawMode() is not yet implemented.")
+end
+
+function meta:setImageFlip(flip, flipCollideRect)
+  error("[ERR] playdate.graphics.sprite.setImageFlip() is not yet implemented.")
+end
+
+function meta:getImageFlip()
+  error("[ERR] playdate.graphics.sprite.getImageFlip() is not yet implemented.")
+end
+
+function meta:setIgnoresDrawOffset(flag)
+  error("[ERR] playdate.graphics.sprite.setIgnoresDrawOffset() is not yet implemented.")
+end
+
+function meta:setBounds(x, y, width, height)
+  error("[ERR] playdate.graphics.sprite.setBounds() is not yet implemented.")
+end
+
+function meta:getBounds()
+  error("[ERR] playdate.graphics.sprite.getBounds() is not yet implemented.")
+end
+
+function meta:getBoundsRect()
+  error("[ERR] playdate.graphics.sprite.getBoundsRect() is not yet implemented.")
+end
+
+function meta:setOpaque(flag)
+  error("[ERR] playdate.graphics.sprite.setOpaque() is not yet implemented.")
+end
+
+function meta:isOpaque()
+  error("[ERR] playdate.graphics.sprite.isOpaque() is not yet implemented.")
+end
+
 function meta:setVisible(flag)
   self.visible = flage
 end
@@ -401,6 +534,58 @@ end
 
 function meta:getCenterPoint()
   return self.x - self.width * self.centerX, self.y - self.height * self.centerY
+end
+
+function meta:setTilemap(tilemap)
+  error("[ERR] playdate.graphics.sprite.setTilemap() is not yet implemented.")
+end
+
+function meta:setAnimator(animator, moveWithCollisions, removeOnCollision)
+  error("[ERR] playdate.graphics.sprite.setAnimator() is not yet implemented.")
+end
+
+function meta:removeAnimator()
+  error("[ERR] playdate.graphics.sprite.removeAnimator() is not yet implemented.")
+end
+
+function meta:setClipRect(x, y, width, height)
+  error("[ERR] playdate.graphics.sprite.setClipRect() is not yet implemented.")
+end
+
+function meta:clearClipRect()
+  error("[ERR] playdate.graphics.sprite.clearClipRect() is not yet implemented.")
+end
+
+function module.setClipRectsInRange(x, y, width, height, startz, endz)
+  error("[ERR] playdate.graphics.sprite.setClipRectsInRange() is not yet implemented.")
+end
+
+function module.clearClipRectsInRange(startz, endz)
+  error("[ERR] playdate.graphics.sprite.clearClipRectsInRange() is not yet implemented.")
+end
+
+function meta:setStencilImage(stencil, tile)
+  error("[ERR] playdate.graphics.sprite.setStencilImage() is not yet implemented.")
+end
+
+function meta:setStencilPattern(level, ditherType)
+  error("[ERR] playdate.graphics.sprite.setStencilPattern() is not yet implemented.")
+end
+
+function meta:clearStencil()
+  error("[ERR] playdate.graphics.sprite.clearStencil() is not yet implemented.")
+end
+
+function meta:markDirty()
+  -- do nothing.
+end
+
+function module.addDirtyRect(x, y, width, height)
+  -- do nothing.
+end
+
+function meta:setRedrawsOnImageChange(flag)
+  error("[ERR] playdate.graphics.sprite.setRedrawsOnImageChange() is not yet implemented.")
 end
 
 function meta:draw()
@@ -451,7 +636,7 @@ function module.setBackgroundDrawingCallback(callback)
   module.backgroundCallback = callback
 end
 
-function module.drawBackground()
+function module.redrawBackground()
   if module.backgroundCallback then
     module.backgroundCallback()
   end
