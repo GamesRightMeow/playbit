@@ -7,7 +7,6 @@ require("playdate.playdate")
 --[[ not really a way around including this one, but probably doesn't really
 matter as all games are going to need to import graphics to draw stuff ]]--
 require("playdate.graphics")
-require("playdate.sprite")
 
 function import(path)
   if string.match(path, "^CoreLibs/") then

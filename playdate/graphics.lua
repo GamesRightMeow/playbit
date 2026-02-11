@@ -5,6 +5,7 @@ require("playdate.font")
 require("playdate.image")
 require("playdate.imagetable")
 require("playdate.tilemap")
+require("playdate.sprites")
 
 module.kDrawModeCopy = 0
 module.kDrawModeWhiteTransparent = 1
