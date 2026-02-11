@@ -332,7 +332,7 @@ function meta:checkCollisions(goalX, goalY)
 
   -- already overlapping another sprite?
   for _, other in ipairs(allSprites) do
-    if other ~= self and checkAABBCollision(self, other) then
+    if other ~= self and other.collideRect and checkAABBCollision(self, other) then
       overlaps = true
       break
     end
@@ -340,7 +340,7 @@ function meta:checkCollisions(goalX, goalY)
 
   -- Check for possible future collisions
   for _, other in ipairs(allSprites) do
-    if other ~= self then
+    if other ~= self and other.collideRect then
       local tImpact, nx, ny = sweptAABB(self, other, self.x, self.y, goalX, goalY)
 
       if tImpact then
