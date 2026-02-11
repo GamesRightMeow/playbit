@@ -615,7 +615,7 @@ function meta:draw()
   end
 end
 
-function module.updateAll()
+local function updateAll()
   for _, spr in ipairs(allSprites) do
     if spr.animator then
       local p = spr.animator:currentValue()
@@ -627,10 +627,15 @@ function module.updateAll()
   end
 end
 
-function module.drawAll()
+local function drawAll()
   for _, spr in ipairs(allSprites) do
     spr:draw()
   end
+end
+
+function module.update()
+  updateAll()
+  drawAll()
 end
 
 function module.setBackgroundDrawingCallback(callback)
@@ -642,7 +647,6 @@ function module.redrawBackground()
     module.backgroundCallback()
   end
 end
-
 
 -- allow sprite to be inheritable
 module.className = "Sprite"
