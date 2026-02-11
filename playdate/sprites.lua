@@ -498,7 +498,7 @@ function meta:getImageFlip()
 end
 
 function meta:setIgnoresDrawOffset(flag)
-  error("[ERR] playdate.graphics.sprite.setIgnoresDrawOffset() is not yet implemented.")
+  self._ignoresDrawOffset = flag
 end
 
 function meta:setBounds(x, y, width, height)
@@ -620,6 +620,12 @@ end
 local function drawAll()
   for _, spr in ipairs(allSprites) do
     if spr.visible then
+
+      if spr._ignoresDrawOffset then
+        love.graphics.push()
+        love.graphics.origin()
+      end
+
       if spr.image then
         playbit.graphics.setDrawMode("image")
         love.graphics.draw(spr.image.data,
@@ -634,6 +640,11 @@ local function drawAll()
         spr:draw(0, 0, spr.width, spr.height)
         love.graphics.pop()
       end
+
+      if spr._ignoresDrawOffset then
+        love.graphics.pop()
+      end
+
     end
   end
 end
