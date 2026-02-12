@@ -56,11 +56,19 @@ function module.spriteCount(func)
 end
 
 function module.removeAll()
-  error("[ERR] playdate.graphics.sprite.removeAll() is not yet implemented.")
+  for _, spr in ipairs(allSprites) do
+    spr.added = false
+  end
+
+  allSprites = {}
 end
 
 function module.removeSprites(spritesArray)
-  error("[ERR] playdate.graphics.sprite.removeSprites() is not yet implemented.")
+  if spritesArray then
+    for _, spr in ipairs(spritesArray) do
+      spr:remove()
+    end
+  end
 end
 
 function module.spriteWithText(text, maxWidth, maxHeight, backgroundColor, leadingAdjustment, truncationString, alignment, font)
