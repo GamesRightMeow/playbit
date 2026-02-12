@@ -45,7 +45,7 @@ function module.getAllSprites(func)
   return { unpack(allSprites) }
 end
 
-function module.performOnallSprites(func)
+function module.performOnAllSprites(func)
   for i = 1, #allSprites do
     func(allSprites[i])
   end
