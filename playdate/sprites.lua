@@ -38,7 +38,6 @@ function module.new(imageOrTilemap)
   sprite:resetGroupMask()
   sprite:resetCollidesWithGroupsMask()
 
-  table.insert(allSprites, sprite)
   return sprite
 end
 
