@@ -604,7 +604,7 @@ local function updateAll()
     end
 
     -- call sprite:update() implementation
-    if spr.update and spr._updatesEnabled then
+    if spr._updatesEnabled and spr.update ~= module.update then
         spr:update()
     end
   end
