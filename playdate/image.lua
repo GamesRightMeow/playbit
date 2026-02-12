@@ -28,11 +28,22 @@ function meta:load(path)
 end
 
 function meta:copy()
-  error("[ERR] playdate.graphics.image:copy() is not yet implemented.")
+  local img = setmetatable({}, meta)
+  img.data = self.data
+  img.sx = self.sx
+  img.sy = self.sy
+  return img
 end
 
 function meta:getSize()
-  return self.data:getWidth(), self.data:getHeight()
+  local w, h = self.data:getWidth(), self.data:getHeight()
+
+  if self.sx then
+    w = math.floor(w * self.sx)
+    h = math.floor(h * self.sy)
+  end
+
+  return w, h
 end
 
 function module.imageSizeAtPath(path)
@@ -50,8 +61,7 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
   local sx = 1
   local sy = 1
   if flip then
-    local w = self.data:getWidth()
-    local h = self.data:getHeight()
+    local w, h = self:getSize()
     if flip == playdate.graphics.kImageFlippedX then
       sx = -1
       x = x + w
@@ -65,12 +75,16 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
       y = y + h
     end
   end
-  
+
   if qx and qy and qw and qh then
     local w, h = self:getSize()
     playbit.graphics.quad:setViewport(qx, qy, qw, qh, w, h)
-    love.graphics.draw(self.data, playbit.graphics.quad, x, y, sx, sy)
+    love.graphics.draw(self.data, playbit.graphics.quad, x, y, 0, sx, sy)
   else
+    if self.sx then
+      sx = sx * self.sx
+      sy = sy * self.sy
+    end
     love.graphics.draw(self.data, x, y, 0, sx, sy)
   end
 
@@ -103,7 +117,6 @@ function meta:drawRotated(x, y, angle, scale, yscale)
   love.graphics.setColor(1, 1, 1, 1)
 
   -- playdate.image.drawRotated() draws the texture centered, so emulate that
-  love.graphics.push()
   local w = self.data:getWidth() * 0.5
   local h = self.data:getHeight() * 0.5
 
@@ -111,10 +124,10 @@ function meta:drawRotated(x, y, angle, scale, yscale)
   w = math.floor(w)
   h = math.floor(h)
 
-  love.graphics.translate(x, y)
-  love.graphics.rotate(math.rad(angle))
-  love.graphics.draw(self.data, -w, -h)
-  love.graphics.pop()
+  local sx = self.sx or 1
+  local sy = self.sy or 1
+
+  love.graphics.draw(self.data, x, y, math.rad(angle), sx, sy, w, h)
 
   love.graphics.setColor(r, g, b, 1)
   playbit.graphics.updateContext()
@@ -131,18 +144,28 @@ function meta:drawScaled(x, y, scale, yscale)
   local r, g, b = love.graphics.getColor()
   love.graphics.setColor(1, 1, 1, 1)
 
-  love.graphics.push()
-  love.graphics.translate(x, y)
-  love.graphics.scale(scale, yscale)
-  love.graphics.draw(self.data, 0, 0)
-  love.graphics.pop()
+  local sx = self.sx or 1
+  local sy = self.sy or 1
+
+  sx = sx * scale
+  sy = sy * (yscale or scale)
+
+  love.graphics.draw(self.data, x, y, 0, sx, sy)
 
   love.graphics.setColor(r, g, b, 1)
   playbit.graphics.updateContext()
 end
 
 function meta:scaledImage(scale, yscale)
-  error("[ERR] playdate.graphics.image:scaledImage() is not yet implemented.")
+  local img = self:copy()
+
+  local sx = img.sx or 1
+  local sy = img.sy or 1
+
+  img.sx = sx * scale
+  img.sy = sy * (yscale or scale)
+
+  return img
 end
 
 
