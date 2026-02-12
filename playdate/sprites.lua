@@ -644,13 +644,20 @@ function module.update()
 end
 
 function module.setBackgroundDrawingCallback(callback)
-  module.backgroundCallback = callback
+  local backgroundSprite = module.new()
+  backgroundSprite:setSize(playdate.display.getSize())
+  backgroundSprite:setCenter(0, 0)
+  backgroundSprite:setZIndex(-32768)
+  backgroundSprite:setIgnoresDrawOffset(true)
+  backgroundSprite:setUpdatesEnabled(false)
+  backgroundSprite.draw = function(self, x, y, w, h)
+    callback(x, y, w, h)
+  end
+  backgroundSprite:add()
+  return backgroundSprite
 end
 
 function module.redrawBackground()
-  if module.backgroundCallback then
-    module.backgroundCallback()
-  end
 end
 
 -- allow sprite to be inheritable
