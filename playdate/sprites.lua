@@ -16,6 +16,7 @@ module.__index = meta
 
 
 local allSprites = {}
+local sort = false
 
 function module.new(imageOrTilemap)
   local sprite = setmetatable({}, meta)
@@ -26,10 +27,10 @@ function module.new(imageOrTilemap)
 
   sprite.x, sprite.y = 0, 0
   sprite.visible = true
-  sprite.zIndex = 0
   sprite.collideRect = nil
   sprite.animator = nil
 
+  sprite._zIndex = 0
   sprite._updatesEnabled = true
   sprite._collisionsEnabled = true
 
@@ -130,7 +131,7 @@ function meta:add()
   if not self.added then
     table.insert(allSprites, self)
     self.added = true
-    table.sort(allSprites, function(a, b) return a.zIndex < b.zIndex end)
+    sort = true
   end
 end
 
@@ -145,12 +146,12 @@ function meta:remove()
 end
 
 function meta:setZIndex(index)
-  self.zIndex = index
-  table.sort(allSprites, function(a, b) return a.zIndex < b.zIndex end)
+  self._zIndex = index
+  sort = true
 end
 
 function meta:getZIndex()
-  return self.zIndex
+  return self._zIndex
 end
 
 function meta:setCollideRect(x, y, w, h)
@@ -618,6 +619,11 @@ local function updateAll()
 end
 
 local function drawAll()
+  if sort then
+    table.sort(allSprites, function(a, b) return a._zIndex < b._zIndex end)
+    sort = false
+  end
+
   for _, spr in ipairs(allSprites) do
     if spr.visible then
 
