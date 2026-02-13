@@ -21,18 +21,20 @@ local sort = false
 function module.new(imageOrTilemap)
   local sprite = setmetatable({}, meta)
 
+  sprite.x, sprite.y = 0, 0
+  sprite.width, sprite.height = 0, 0
+
   if imageOrTilemap then
     sprite:setImage(imageOrTilemap)
   end
 
-  sprite.x, sprite.y = 0, 0
-  sprite.visible = true
-  sprite.collideRect = nil
-  sprite.animator = nil
-
+  sprite._collideRect = nil
+  sprite._animator = nil
   sprite._zIndex = 0
   sprite._imageFlip = 0
   sprite._collideRectFlip = 0
+  sprite._added = false
+  sprite._visible = true
   sprite._updatesEnabled = true
   sprite._collisionsEnabled = true
 
@@ -60,7 +62,7 @@ end
 
 function module.removeAll()
   for _, spr in ipairs(allSprites) do
-    spr.added = false
+    spr._added = false
   end
 
   allSprites = {}
@@ -99,7 +101,7 @@ function meta:copy()
 end
 
 function meta:setImage(image)
-  self.image = image
+  self._image = image
   if image then
     self.width, self.height = image:getSize()
   end
@@ -110,7 +112,7 @@ function meta:setImage(image)
 end
 
 function meta:getImage()
-  return self.image
+  return self._image
 end
 
 function meta:setSize(w, h)
@@ -134,9 +136,9 @@ function meta:moveBy(x, y)
 end
 
 function meta:add()
-  if not self.added then
+  if not self._added then
     table.insert(allSprites, self)
-    self.added = true
+    self._added = true
     sort = true
   end
 end
@@ -145,7 +147,7 @@ function meta:remove()
   for i, sprite in ipairs(allSprites) do
     if sprite == self then
       table.remove(allSprites, i)
-      self.added = false
+      self._added = false
       return
     end
   end
@@ -161,11 +163,11 @@ function meta:getZIndex()
 end
 
 function meta:setCollideRect(x, y, w, h)
-  self.collideRect = { x = x, y = y, width = w, height = h }
+  self._collideRect = { x = x, y = y, width = w, height = h }
 end
 
 function meta:getCollideRect()
-  return self.collideRect
+  return self._collideRect
 end
 
 function meta:getCollideBounds()
@@ -173,11 +175,11 @@ function meta:getCollideBounds()
 end
 
 function meta:clearCollideRect()
-  self.collideRect = nil
+  self._collideRect = nil
 end
 
 function meta:setCollisionResponse(response)
-  self.collisionResponse = response
+  self._collisionResponse = response
 end
 
 function module.allOverlappingSprites()
@@ -197,59 +199,59 @@ function meta:collisionsEnabled()
 end
 
 function meta:setGroups(groups)
-  self.groupMask = 0x00000000
+  self._groupMask = 0x00000000
 
   for _, group in ipairs(groups) do
     if group >= 1 and group <= 32 then
-      self.groupMask = bit.bor(self.groupMask, bit.lshift(1, group - 1))
+      self._groupMask = bit.bor(self._groupMask, bit.lshift(1, group - 1))
     end
   end
 end
 
 function meta:setCollidesWithGroups(groups)
-  self.collidesWithGroupsMask = 0x00000000
+  self._collidesWithGroupsMask = 0x00000000
   for _, group in ipairs(groups) do
     if group >= 1 and group <= 32 then
-      self.collidesWithGroupsMask = bit.bor(self.collidesWithGroupsMask, bit.lshift(1, group - 1))
+      self._collidesWithGroupsMask = bit.bor(self._collidesWithGroupsMask, bit.lshift(1, group - 1))
     end
   end
 end
 
 function meta:setGroupMask(mask)
-  self.groupMask = mask
+  self._groupMask = mask
 end
 
 function meta:getGroupMask()
-  return self.groupMask
+  return self._groupMask
 end
 
 function meta:setCollidesWithGroupsMask(mask)
-  self.collidesWithGroupsMask = mask
+  self._collidesWithGroupsMask = mask
 end
 
 function meta:getCollidesWithGroupsMask()
-  return self.collidesWithGroupsMask
+  return self._collidesWithGroupsMask
 end
 
 function meta:resetGroupMask()
-  self.groupMask = 0x00000000
+  self._groupMask = 0x00000000
 end
 
 function meta:resetCollidesWithGroupsMask()
-  self.collidesWithGroupsMask = 0x00000000
+  self._collidesWithGroupsMask = 0x00000000
 end
 
 function meta:canCollideWith(other)
-  return bit.band(self.collidesWithGroupsMask, other.groupMask) ~= 0
+  return bit.band(self._collidesWithGroupsMask, other._groupMask) ~= 0
 end
 
 local function checkAABBCollision(self, other)
   if not self:canCollideWith(other) then return false end
-  if not self.collideRect or not other.collideRect then return false end
-  return self.x + self.collideRect.x < other.x + other.collideRect.x + other.collideRect.width and
-      self.x + self.collideRect.x + self.collideRect.width > other.x + other.collideRect.x and
-      self.y + self.collideRect.y < other.y + other.collideRect.y + other.collideRect.height and
-      self.y + self.collideRect.y + self.collideRect.height > other.y + other.collideRect.y
+  if not self._collideRect or not other._collideRect then return false end
+  return self.x + self._collideRect.x < other.x + other._collideRect.x + other._collideRect.width and
+      self.x + self._collideRect.x + self._collideRect.width > other.x + other._collideRect.x and
+      self.y + self._collideRect.y < other.y + other._collideRect.y + other._collideRect.height and
+      self.y + self._collideRect.y + self._collideRect.height > other.y + other._collideRect.y
 end
 
 
@@ -291,14 +293,14 @@ local function sweptAABB(self, other, startX, startY, endX, endY)
     local key, ds = axis[1], axis[2]
 
     -- Get bounds of moving sprite
-    local sMin, sMax = startX + self.collideRect.x, startX + self.collideRect.x + self.collideRect.width
+    local sMin, sMax = startX + self._collideRect.x, startX + self._collideRect.x + self._collideRect.width
     -- Get bounds of colliding object
-    local oMin, oMax = other.x + other.collideRect.x, other.x + other.collideRect.x + other.collideRect.width
+    local oMin, oMax = other.x + other._collideRect.x, other.x + other._collideRect.x + other._collideRect.width
 
     -- Adjust values for Y axis if needed
     if key == "y" then
-      sMin, sMax = startY + self.collideRect.y, startY + self.collideRect.y + self.collideRect.height
-      oMin, oMax = other.y + other.collideRect.y, other.y + other.collideRect.y + other.collideRect.height
+      sMin, sMax = startY + self._collideRect.y, startY + self._collideRect.y + self._collideRect.height
+      oMin, oMax = other.y + other._collideRect.y, other.y + other._collideRect.y + other._collideRect.height
     end
 
     -- **Get the earliest and latest possible collision times for this axis**
@@ -342,7 +344,7 @@ function meta:checkCollisions(goalX, goalY)
 
   -- already overlapping another sprite?
   for _, other in ipairs(allSprites) do
-    if other ~= self and other._collisionsEnabled and other.collideRect and checkAABBCollision(self, other) then
+    if other ~= self and other._collisionsEnabled and other._collideRect and checkAABBCollision(self, other) then
       overlaps = true
       break
     end
@@ -350,7 +352,7 @@ function meta:checkCollisions(goalX, goalY)
 
   -- Check for possible future collisions
   for _, other in ipairs(allSprites) do
-    if other ~= self and other._collisionsEnabled and other.collideRect then
+    if other ~= self and other._collisionsEnabled and other._collideRect then
       local tImpact, nx, ny = sweptAABB(self, other, self.x, self.y, goalX, goalY)
 
       if tImpact then
@@ -359,14 +361,14 @@ function meta:checkCollisions(goalX, goalY)
         table.insert(collisions, {
           sprite = self,
           other = other,
-          type = self.collisionResponse,
+          type = self._collisionResponse,
           overlaps = overlaps,
           ti = tImpact,
           move = { x = moveX * ti, y = moveY * ti },
           normal = { x = normalX, y = normalY },
           touch = { x = self.x + moveX * ti, y = self.y + moveY * ti },
-          spriteRect = self.collideRect,
-          otherRect = other.collideRect
+          spriteRect = self._collideRect,
+          otherRect = other._collideRect
         })
       end
     end
@@ -379,7 +381,7 @@ end
 --     local actualX, actualY, collisions, count = self:checkCollisions(goalX, goalY)
 
 --     -- Move only if there were no collisions
---     if count == 0 or self.collisionResponse == "overlap" then
+--     if count == 0 or self._collisionResponse == "overlap" then
 --         self:moveTo(actualX, actualY)
 --     end
 
@@ -399,11 +401,11 @@ function meta:moveWithCollisions(goalX, goalY)
     local other = col.other
     local response = "freeze"     -- Default collision behavior
 
-    -- **Check if `collisionResponse` is a function or string**
-    if type(self.collisionResponse) == "function" then
-      response = self:collisionResponse(other) or "freeze"       -- Call function with `other`
-    elseif type(self.collisionResponse) == "string" then
-      response = self.collisionResponse
+    -- **Check if `_collisionResponse` is a function or string**
+    if type(self._collisionResponse) == "function" then
+      response = self:_collisionResponse(other) or "freeze"       -- Call function with `other`
+    elseif type(self._collisionResponse) == "string" then
+      response = self._collisionResponse
     end
 
     -- **Handle Different Collision Types**
@@ -550,20 +552,20 @@ function meta:isOpaque()
 end
 
 function meta:setVisible(flag)
-  self.visible = flage
+  self._visible = flage
 end
 
 function meta:isVisible()
-  return self.visible
+  return self._visible
 end
 
 function meta:setCenter(x, y)
-  self.centerX = x
-  self.centerY = y
+  self._centerX = x
+  self._centerY = y
 end
 
 function meta:getCenter()
-  return self.centerX, self.centerY
+  return self._centerX, self._centerY
 end
 
 function meta:getCenterPoint()
@@ -577,11 +579,11 @@ end
 function meta:setAnimator(animator, moveWithCollisions, removeOnCollision)
   -- assert(moveWithCollisions == nil, "[ERR] moveWithCollisions is not yet supported")
   -- assert(removeOnCollision == nil, "[ERR] removeOnCollision is not yet supported")
-  self.animator = animator
+  self._animator = animator
 end
 
 function meta:removeAnimator()
-  self.animator = nil
+  self._animator = nil
 end
 
 function meta:setClipRect(x, y, width, height)
@@ -626,11 +628,11 @@ end
 
 local function updateAll()
   for _, spr in ipairs(allSprites) do
-    if spr.animator then
-      local p = spr.animator:currentValue()
+    if spr._animator then
+      local p = spr._animator:currentValue()
       spr:moveTo(p.x, p.y)
-      if spr.animator:ended() then
-        spr.animator = nil
+      if spr._animator:ended() then
+        spr._animator = nil
       end
     end
 
@@ -648,14 +650,14 @@ local function drawAll()
   end
 
   for _, spr in ipairs(allSprites) do
-    if spr.visible then
+    if spr._visible then
 
       if spr._ignoresDrawOffset then
         love.graphics.push()
         love.graphics.origin()
       end
 
-      if spr.image then
+      if spr._image then
         playbit.graphics.setDrawMode("image")
 
         local sx = spr.scaleX or 1
@@ -670,11 +672,11 @@ local function drawAll()
           end
         end
 
-        love.graphics.draw(spr.image.data,
+        love.graphics.draw(spr._image.data,
             spr.x, spr.y,
             spr.angle,
             sx, sy,
-            spr.width * spr.centerX, spr.height * spr.centerY)
+            spr.width * spr._centerX, spr.height * spr._centerY)
 
       elseif spr.draw then
         love.graphics.push()
