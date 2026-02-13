@@ -3,6 +3,9 @@ playbit = playbit or {}
 local module = {}
 playbit.graphics = module
 
+module.SCR_WIDTH  = 400
+module.SCR_HEIGHT = 240
+
 -- #b0aea7
 module.COLOR_WHITE = { 176 / 255, 174 / 255, 167 / 255, 1 }
 -- #312f28
@@ -10,6 +13,21 @@ module.COLOR_BLACK = { 49 / 255, 47 / 255, 40 / 255, 1 }
 
 module.colorWhite = module.COLOR_WHITE
 module.colorBlack = module.COLOR_BLACK
+
+module.shaders =
+{
+  final   = love.graphics.newShader("playbit/shaders/final.glsl"),
+  color   = love.graphics.newShader("playbit/shaders/color.glsl"),
+  pattern = love.graphics.newShader("playbit/shaders/pattern.glsl"),
+  image   = { }
+}
+
+local shader = love.filesystem.read("playbit/shaders/image.glsl")
+for i = 0, 9 do
+  local src = "#define DRAW_MODE " .. i .. "\n" .. shader
+  module.shaders.image[i] = love.graphics.newShader(src)
+end
+
 module.shader = love.graphics.newShader("playdate/shader")
 module.drawOffset = { x = 0, y = 0}
 module.drawColorIndex = 1
@@ -17,21 +35,23 @@ module.drawColor = module.colorWhite
 module.backgroundColorIndex = 0
 module.backgroundColor = module.colorBlack
 module.activeFont = {}
-module.drawMode = "copy"
+module.imageDrawMode = 0
+module.drawMode = nil
 module.canvas = love.graphics.newCanvas()
 module.contextStack = {}
 -- shared quad to reduce gc
 module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 module.lastClearColor = module.colorWhite
-module.drawPattern = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+module.drawPattern = nil
+module.lineWidth = 1
 
 local canvasScale = 1
-local canvasWidth = 400
-local canvasHeight = 240
+local canvasWidth = module.SCR_WIDTH
+local canvasHeight = module.SCR_HEIGHT
 local canvasX = 0
 local canvasY = 0
-local windowWidth = 400
-local windowHeight = 240
+local windowWidth = module.SCR_WIDTH
+local windowHeight = module.SCR_HEIGHT
 local fullscreen = false
 local fullscreenType = "desktop"
 
@@ -122,44 +142,62 @@ end
 ---@param white table An array of 4 values that correspond to RGBA that range from 0 to 1.
 ---@param black table An array of 4 values that correspond to RGBA that range from 0 to 1.
 function module.setColors(white, black)
-  if white == nil then
-    white = module.COLOR_WHITE
-  end
-  if black == nil then
-    black = module.COLOR_BLACK
-  end
-  
-  module.colorWhite = white
-  module.colorBlack = black
-  module.shader:send("white", white)
-  module.shader:send("black", black)
+  module.colorWhite = white or module.COLOR_WHITE
+  module.colorBlack = black or module.COLOR_BLACK
+  module.shaders.final:send("white", white)
+  module.shaders.final:send("black", black)
+end
 
-  if module.backgroundColorIndex == 1 then
-    module.backgroundColor = module.colorWhite
-  else
-    module.backgroundColor = module.colorBlack
+local function copyAndSwapCanvases()
+  local shader = love.graphics.getShader()
+
+  -- create second canvas if needed of the same size.
+  if not module.canvas2 then
+    local w, h = module.canvas:getWidth(), module.canvas:getHeight()
+    module.canvas2 = love.graphics.newCanvas(w, h)
   end
 
-  if module.drawColorIndex == 1 then
-    module.drawColor = module.colorWhite
-  else
-    module.drawColor = module.colorBlack
+  -- copy original canvas to another one
+  love.graphics.push()
+  love.graphics.origin()
+  love.graphics.setCanvas(module.canvas2)
+  love.graphics.setShader()
+  love.graphics.draw(module.canvas)
+  love.graphics.pop()
+
+  -- swap canvases.
+  module.canvas, module.canvas2 = module.canvas2, module.canvas
+
+  -- restore shader and the color
+  love.graphics.setShader(shader)
+end
+
+local function getShader(mode)
+  if mode == "line" then
+    return module.shaders.color
+
+  elseif mode == "fill" then
+    if module.drawPattern then
+      return module.shaders.pattern
+    else
+      return module.shaders.color
+    end
+
+  elseif mode == "image" then
+    return module.shaders.image[module.imageDrawMode]
   end
 end
 
-function module.updateContext()
-  if #module.contextStack == 0 then
-    return
+function module.setDrawMode(mode)
+  if module.drawMode ~= mode then
+    module.drawMode = mode
+    local shader = getShader(mode)
+    -- TODO: we have to do this before every drawing call.
+    if shader:hasUniform("canvas") then
+      copyAndSwapCanvases()
+      shader:send("canvas", module.canvas2)
+    end
+    love.graphics.setShader(shader)
   end
-
-  local activeContext = module.contextStack[#module.contextStack]
-
-  -- love2d doesn't allow calling newImageData() when canvas is active
-  love.graphics.setCanvas()
-  local imageData = activeContext._canvas:newImageData()
-  love.graphics.setCanvas(activeContext._canvas)
-
-  -- update image
-  activeContext.data:replacePixels(imageData)
 end
 !end
