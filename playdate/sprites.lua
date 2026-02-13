@@ -31,6 +31,8 @@ function module.new(imageOrTilemap)
   sprite.animator = nil
 
   sprite._zIndex = 0
+  sprite._imageFlip = 0
+  sprite._collideRectFlip = 0
   sprite._updatesEnabled = true
   sprite._collisionsEnabled = true
 
@@ -101,6 +103,10 @@ function meta:setImage(image)
   if image then
     self.width, self.height = image:getSize()
   end
+
+  -- setting an image resets flip flags.
+  self._imageFlip = 0
+  self._collideRectFlip = 0
 end
 
 function meta:getImage()
@@ -491,11 +497,28 @@ function meta:setImageDrawMode(mode)
 end
 
 function meta:setImageFlip(flip, flipCollideRect)
-  error("[ERR] playdate.graphics.sprite.setImageFlip() is not yet implemented.")
+  if type(flip) == "string" then
+    flip = string.lower(flip)
+    if flip == "flipx" then
+      flip = 1
+    elseif flip == "flipy" then
+      flip = 2
+    elseif flip == "flipxy" then
+      flip = 3
+    else
+      flip = 0
+    end
+  end
+
+  self._imageFlip = flip
+
+  if flipCollideRect ~= nil then
+    self._collideRectFlip = flipCollideRect
+  end
 end
 
 function meta:getImageFlip()
-  error("[ERR] playdate.graphics.sprite.getImageFlip() is not yet implemented.")
+  return self._imageFlip
 end
 
 function meta:setIgnoresDrawOffset(flag)
@@ -634,10 +657,23 @@ local function drawAll()
 
       if spr.image then
         playbit.graphics.setDrawMode("image")
+
+        local sx = spr.scaleX or 1
+        local sy = spr.scaleY or 1
+
+        if spr._imageFlip ~= 0 then
+          if spr._imageFlip == 1 or spr._imageFlip == 3 then
+            sx = -sx
+          end
+          if spr._imageFlip == 2 or spr._imageFlip == 3 then
+            sy = -sy
+          end
+        end
+
         love.graphics.draw(spr.image.data,
             spr.x, spr.y,
             spr.angle,
-            spr.scaleX, spr.scaleY,
+            sx, sy,
             spr.width * spr.centerX, spr.height * spr.centerY)
 
       elseif spr.draw then
