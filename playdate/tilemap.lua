@@ -29,12 +29,18 @@ function meta:setSize(width, height)
   self._tiles = {}
 end
 
-function meta:setTileAtPosition(x, y, index)
-  self._tiles[x][y] = index -- index into the tilemap's imagetable
+function meta:setTileAtPosition(x, y, tile)
+  if x >= 1 and x <= self._width and y >= 1 and y <= self._height then
+    local index = (y - 1) * self._width + x
+    self._tiles[index] = tile -- index into the tilemap's imagetable
+  end
 end
 
 function meta:getTileAtPosition(x, y)
-  local index = x * y
+  if x < 1 or x > self._width or y < 1 or y > self._height then
+    return nil
+  end
+  local index = (y - 1) * self._width + x
   if index > #self._tiles then
     return 0
   end
@@ -42,28 +48,32 @@ function meta:getTileAtPosition(x, y)
 end
 
 function meta:draw(x, y, sourceRect)
-  @@ASSERT(x == nil, "[ERR] Parameter x is not yet implemented.")
-  @@ASSERT(y == nil, "[ERR] Parameter y is not yet implemented.")
   @@ASSERT(sourceRect == nil, "[ERR] Parameter sourceRect is not yet implemented.")
-
-  -- always render pure white so its not tinted
-  local r, g, b = love.graphics.getColor()
-  love.graphics.setColor(1, 1, 1, 1)
 
   local frameWidth = self._imagetable._frameWidth
   local frameHeight = self._imagetable._frameHeight
 
-  for i = 1, self._length do
-    local j = i - 1
-    local tile = self._tiles[i]
-    -- TODO: fix - overwriting the parameter values x, y
-    local x = math.floor(j % self._width) * frameHeight
-    local y = math.floor(j / self._width) * frameWidth
-    love.graphics.draw(self._imagetable._images[tile].data, x, y)
-  end
+  local draw = love.graphics.draw
+  local images = self._imagetable._images
+  local imagesCount = #images
+  local tiles = self._tiles
+  local index = 1
+  local sy = y
 
-  love.graphics.setColor(r, g, b, 1)
-  playbit.graphics.updateContext()
+  playbit.graphics.setDrawMode("image")
+
+  for j = 1, self._height do
+    local sx = x
+    for i = 1, self._width do
+      local tile = tiles[index]
+      if tile and tile > 0 and tile <= imagesCount then
+        draw(images[tile].data, sx, sy)
+      end
+      sx = sx + frameWidth
+      index = index + 1
+    end
+    sy = sy + frameHeight
+  end
 end
 
 function meta:getTiles()
@@ -72,6 +82,7 @@ end
 
 function meta:setTiles(data, width)
   self._width = width
+  self._height = math.floor(#data / width)
   self._length = width * self._height
   self._tiles = data
 end
@@ -85,11 +96,11 @@ function meta:drawIgnoringOffset(x, y, sourceRect)
 end
 
 function meta:getSize()
-  error("[ERR] playdate.graphics.tilemap:getSize() is not yet implemented.")
+  return self._width, self._height
 end
 
 function meta:getPixelSize()
-  error("[ERR] playdate.graphics.tilemap:getPixelSize() is not yet implemented.")
+  return self._width * self._imagetable._frameWidth, self._height * self._imagetable._frameHeight
 end
 
 function meta:getCollisionRects(emptyIDs)
