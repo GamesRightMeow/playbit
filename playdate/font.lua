@@ -39,7 +39,7 @@ function module.getSystemFont(variant)
 end
 
 function meta:getTextWidth(str)
-  --[[ 
+  --[[
     NOTE: width returned will not be the same as on Playdate
     if a tracking value is set in the font (.fnt)
     https://github.com/GamesRightMeow/playbit/issues/12
@@ -79,6 +79,7 @@ function meta:drawText(str, x, y, width, height, leadingAdjustment, wrapMode, al
   @@ASSERT(wrapMode == nil, "[ERR] Parameter wrapMode is not yet implemented.")
   @@ASSERT(alignment == nil, "[ERR] Parameter alignment is not yet implemented.")
   local currentFont = love.graphics.getFont()
+  playbit.graphics.setDrawMode("image")
   love.graphics.setFont(self.data)
   love.graphics.print(str, x, y)
   love.graphics.setFont(currentFont)
@@ -94,11 +95,12 @@ function meta:drawTextAligned(str, x, y, alignment, leadingAdjustment)
     x = x - width
   elseif alignment == 2 then
     -- center
-    x = x - width * 0.5  
+    x = x - width * 0.5
   end
   -- left, draw normally
-  
+
   local currentFont = love.graphics.getFont()
+  playbit.graphics.setDrawMode("image")
   love.graphics.setFont(self.data)
   love.graphics.print(str, x, y)
   love.graphics.setFont(currentFont)
@@ -107,9 +109,9 @@ end
 
 function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
   y = y - 1
-  
+
   local lineHeight = self:getHeight() + self:getLeading() + leadingAdjustment
-  
+
   if lineHeight > height then
     -- even one line won't fit
     return 0, 0, false
@@ -131,7 +133,7 @@ function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, trun
     -- trimm trailing space
     line = string.sub(line, 1, #line - 1)
 
-    if lineHeight * (lineCount + 1) > height 
+    if lineHeight * (lineCount + 1) > height
     or lineHeight * (lineCount + 2) > height then
       -- this line or the next line surpasses specified max height
       line = line..truncationString
@@ -169,6 +171,6 @@ function meta:_drawTextInRect(text, x, y, width, height, leadingAdjustment, trun
       largestLineWidth = lineWidth
     end
   end
-  
+
   return largestLineWidth, (lineHeight * lineCount) - leadingAdjustment, truncated
 end

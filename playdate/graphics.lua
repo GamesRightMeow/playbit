@@ -22,12 +22,41 @@ module.kImageFlippedXY = 3
 
 module.kColorWhite = 1
 module.kColorBlack = 0
+module.kColorClear = 2
 -- TODO: clear and XOR support
+
+module.kStrokeCentered = 0
+module.kStrokeInside = 1
+module.kStrokeOutside = 2
+
+module.kLineCapStyleButt = 0
+module.kLineCapStyleSquare = 1
+module.kLineCapStyleRound = 2
+
+module.kPolygonFillNonZero = 0
+module.kPolygonFillEvenOdd = 1
 
 kTextAlignment = {
 	left = 0,
 	right = 1,
 	center = 2,
+}
+
+local textToDrawMode = {
+  ["copy"] = module.kDrawModeCopy,
+  ["inverted"] = module.kDrawModeInverted,
+  ["xor"] = module.kDrawModeXOR,
+  ["nxor"] = module.kDrawModeNXOR,
+  ["whitetransparent"] = module.kDrawModeWhiteTransparent,
+  ["blacktransparent"] = module.kDrawModeBlackTransparent,
+  ["fillwhite"] = module.kDrawModeFillWhite,
+  ["fillblack"] = module.kDrawModeFillBlack
+}
+
+local colorByIndex = {
+  [0] = { 0, 0, 0, 1 },
+  [1] = { 1, 1, 1, 1 },
+  [2] = { 0, 0, 0, 0 }
 }
 
 function module.setDrawOffset(x, y)
@@ -43,37 +72,34 @@ function module.getDrawOffset()
 end
 
 function module.setBackgroundColor(color)
-  @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
+  @@ASSERT(color == 1 or color == 0 or color == 2, "Only values of 0 (black), 1 (white) or 2 (clear) are supported.")
   playbit.graphics.backgroundColorIndex = color
-  if color == 1 then
-    playbit.graphics.backgroundColor = playbit.graphics.colorWhite
-  else
-    playbit.graphics.backgroundColor = playbit.graphics.colorBlack
-  end
+  playbit.graphics.backgroundColor = colorByIndex[color]
   -- don't actually set love's bg color here since doing so immediately sets the color, and this is not consistent with PD
+end
+
+function module.getBackgroundColor(color)
+  return playbit.graphics.backgroundColorIndex
 end
 
 function module.setColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
   playbit.graphics.drawColorIndex = color
-  -- when drawing without a pattern, we must flip the pattern mask for white/black because of the way the shader draws patterns
-  if color == 1 then
-    local c = playbit.graphics.colorWhite
-    playbit.graphics.drawColor = c
-    -- reset pattern, as per PD behavior
-    module.setPattern({0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff})
-    love.graphics.setColor(c[1], c[2], c[3], c[4])
-  else
-    local c = playbit.graphics.colorBlack
-    playbit.graphics.drawColor = c
-    -- reset pattern, as per PD behavior
-    module.setPattern({0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
-    love.graphics.setColor(c[1], c[2], c[3], c[4])
-  end
+  local c = colorByIndex[color]
+  playbit.graphics.drawColor = c
+  playbit.graphics.shaders.color:send("drawColor", c)
+  -- color and pattern modes are mutually exclusive
+  playbit.graphics.drawPattern = nil
+  playbit.graphics.drawMode = nil
+end
+
+function module.getColor()
+  return playbit.graphics.drawColorIndex
 end
 
 function module.setPattern(pattern)
   playbit.graphics.drawPattern = pattern
+  playbit.graphics.drawMode = nil
 
   -- bitshifting does not work in shaders, so do it here in Lua
   local pixels = {}
@@ -87,8 +113,12 @@ function module.setPattern(pattern)
       end
     end
   end
-  
-  playbit.graphics.shader:send("pattern", unpack(pixels))
+
+  playbit.graphics.shaders.pattern:send("pattern", unpack(pixels))
+end
+
+function module.setDitherPattern(alpha, ditherType)
+  error("[ERR] playdate.graphics.setDitherPattern() is not yet implemented.")
 end
 
 function module.clear(color)
@@ -98,136 +128,280 @@ function module.clear(color)
     playbit.graphics.lastClearColor = c
   else
     @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
-    if color == 1 then
-      local c = playbit.graphics.colorWhite
-      love.graphics.clear(c[1], c[2], c[3], c[4])
-      playbit.graphics.lastClearColor = c
-    else
-      local c = playbit.graphics.colorBlack
-      love.graphics.clear(c[1], c[2], c[3], c[4])
-      playbit.graphics.lastClearColor = c
-    end
+    local c = colorByIndex[color]
+    love.graphics.clear(c[1], c[2], c[3], c[4])
+    playbit.graphics.lastClearColor = c
   end
   playbit.graphics.updateContext()
 end
 
 -- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
 function module.setImageDrawMode(mode)
-  playbit.graphics.drawMode = mode
-  if mode == module.kDrawModeCopy or mode == "copy" then
-    playbit.graphics.shader:send("mode", 0)
-  elseif mode == module.kDrawModeFillWhite or mode == "fillWhite" then
-    playbit.graphics.shader:send("mode", 1)
-  elseif mode == module.kDrawModeFillBlack or mode == "fillBlack" then
-    playbit.graphics.shader:send("mode", 2)
-  elseif mode == module.kDrawModeInverted or mode == "inverted" then
-    playbit.graphics.shader:send("mode", 6)
-  elseif mode == module.kDrawModeWhiteTransparent or mode == "whiteTransparent" then
-    playbit.graphics.shader:send("mode", 4)
-  else
-    error("[ERR] Draw mode '"..mode.."' is not yet implemented.")
+  if type(mode) == "string" then
+    mode = textToDrawMode[string.lower(mode)]
   end
+
+  playbit.graphics.imageDrawMode = mode
+  playbit.graphics.drawMode = nil
+end
+
+function module.getImageDrawMode()
+  return playbit.graphics.imageDrawMode
 end
 
 function module.drawCircleAtPoint(x, y, radius)
-  playbit.graphics.shader:send("mode", 8)
+  playbit.graphics.setDrawMode("line")
+
+  if type(x) ~= "number" then
+    local pt = x
+    radius = y
+    x, y = pt.x, pt.y
+  end
 
   love.graphics.circle("line", x, y, radius)
   playbit.graphics.updateContext()
-
-  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.fillCircleAtPoint(x, y, radius)
-  playbit.graphics.shader:send("mode", 8)
+  playbit.graphics.setDrawMode("fill")
+
+  if type(x) ~= "number" then
+    local pt = x
+    radius = y
+    x, y = pt.x, pt.y
+  end
 
   love.graphics.circle("fill", x, y, radius)
   playbit.graphics.updateContext()
+end
 
-  module.setImageDrawMode(playbit.graphics.drawMode)
+function module.drawEllipseInRect(x, y, width, height, startAngle, endAngle)
+  error("[ERR] playdate.graphics.drawEllipseInRect() is not yet implemented.")
+end
+
+function module.fillEllipseInRect(x, y, width, height, startAngle, endAngle)
+  error("[ERR] playdate.graphics.fillEllipseInRect() is not yet implemented.")
+end
+
+function module.drawPolygon(x1, y1, x2, y2, ...)
+  error("[ERR] playdate.graphics.drawPolygon() is not yet implemented.")
+end
+
+function module.fillPolygon(x1, y1, x2, y2, ...)
+  error("[ERR] playdate.graphics.fillPolygon() is not yet implemented.")
+end
+
+function module.setPolygonFillRule(rule)
+  error("[ERR] playdate.graphics.setPolygonFillRule() is not yet implemented.")
+end
+
+function module.drawTriangle(x1, y1, x2, y2, x3, y3)
+  error("[ERR] playdate.graphics.drawTriangle() is not yet implemented.")
+end
+
+function module.fillTriangle(x1, y1, x2, y2, x3, y3)
+  error("[ERR] playdate.graphics.fillTriangle() is not yet implemented.")
 end
 
 function module.setLineWidth(width)
+  -- PD examples use line width 0 but love2d does not support it.
+  if width < 1 then width = 1 end
   love.graphics.setLineWidth(width)
 end
 
+function module.getLineWidth()
+  return love.graphics.getLineWidth()
+end
+
+function module.setLineCapStyle(style)
+  error("[ERR] playdate.graphics.setLineCapStyle() is not yet implemented.")
+end
+
 function module.drawRect(x, y, width, height)
-  playbit.graphics.shader:send("mode", 8)
+  playbit.graphics.setDrawMode("line")
+
+  if type(x) ~= "number" then
+    local r = x
+    x, y, width, height = r:unpack()
+  end
 
   love.graphics.rectangle("line", x, y, width, height)
   playbit.graphics.updateContext()
-
-  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.fillRect(x, y, width, height)
-  playbit.graphics.shader:send("mode", 8)
+  playbit.graphics.setDrawMode("fill")
+
+  if type(x) ~= "number" then
+    local r = x
+    x, y, width, height = r:unpack()
+  end
 
   love.graphics.rectangle("fill", x, y, width, height)
   playbit.graphics.updateContext()
-
-  module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
 function module.drawRoundRect(x, y, width, height, radius)
   -- TODO: love's rectangle function doesn't draw the same way as Playdate's
-  -- playbit.graphics.shader:send("mode", 8)
+  -- playbit.graphics.setDrawMode("line")
 
   -- love.graphics.rectangle("line", x, y, width, height, radius, radius, 0)
   -- playbit.graphics.updateContext()
-
-  -- module.setImageDrawMode(playbit.graphics.drawMode)
   error("[ERR] playdate.graphics.drawRoundRect() is not yet implemented.")
 end
 
 function module.fillRoundRect(x, y, width, height, radius)
   -- TODO: love's rectangle function doesn't draw the same way as Playdate's
-  -- playbit.graphics.shader:send("mode", 8)
+  --   playbit.graphics.setDrawMode("fill")
 
   -- love.graphics.rectangle("fill", x, y, width, height, radius, radius, 0)
   -- playbit.graphics.updateContext()
-
-  -- module.setImageDrawMode(playbit.graphics.drawMode)
   error("[ERR] playdate.graphics.fillRoundRect() is not yet implemented.")
 end
 
 function module.drawLine(x1, y1, x2, y2)
-  playbit.graphics.shader:send("mode", 8)
+  playbit.graphics.setDrawMode("line")
+
+  if type(x1) ~= "number" then
+    local ls = x1
+    x1, y1, x2, y2 = ls:unpack()
+  end
 
   love.graphics.line(x1, y1, x2, y2)
   playbit.graphics.updateContext()
+end
 
-  module.setImageDrawMode(playbit.graphics.drawMode)
+function module.drawPolygon(x1, y1, x2, y2, ...)
+  playbit.graphics.setDrawMode("line")
+
+  if type(x1) ~= "number" then
+    local poly = x1
+    if poly:isClosed() then
+      love.graphics.polygon("line", unpack(poly._points))
+    else
+      love.graphics.line(unpack(poly._points))
+    end
+  else
+    love.graphics.polygon("line", x1, y1, x2, y2, ...)
+  end
+
+  playbit.graphics.updateContext()
 end
 
 function module.drawArc(x, y, radius, startAngle, endAngle)
-  playbit.graphics.shader:send("mode", 8)
+
+  local function normalizeAngle(deg)
+      return (deg % 360 + 360) % 360
+  end
+
+  if type(x) ~= "number" then
+    local arc = x
+    x, y, radius, startAngle, endAngle = arc.x, arc.y, arc.radius, arc.startAngle, arc.endAngle
+  end
+
+  -- Bring angles to interval [0, 360)
+  startAngle = normalizeAngle(startAngle)
+  endAngle = normalizeAngle(endAngle)
+
+  -- PD always draws from startAngle to endAngle clockwise.
+  if startAngle >= endAngle then
+    endAngle = endAngle + 360
+  end
 
   -- 0 degrees is 270 when drawing an arc on PD...
   startAngle = startAngle - 90
   endAngle = endAngle - 90
 
-  if startAngle == endAngle then
-    -- if startAngle and endAngle are the same, PD draws a full circle
-    love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle + 360), 16)
-  elseif startAngle > endAngle then
-    -- love2d adjusts for when the startAngle is larger, but PD does not, so we need to compensate
-    love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle + 360), 16)
-  else
-    love.graphics.arc("line", "open", x, y, radius, math.rad(endAngle), math.rad(startAngle), 16)
-  end
-  playbit.graphics.updateContext()
+  playbit.graphics.setDrawMode("line")
 
-  module.setImageDrawMode(playbit.graphics.drawMode)
+  love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle), 32)
+
+  playbit.graphics.updateContext()
 end
 
 function module.drawPixel(x, y)
-  playbit.graphics.shader:send("mode", 8)
+  playbit.graphics.setDrawMode("line")
 
   love.graphics.points(x, y)
   playbit.graphics.updateContext()
+end
 
-  module.setImageDrawMode(playbit.graphics.drawMode)
+function module.perlin(x, y, z, rep, octaves, persistence)
+  error("[ERR] playdate.graphics.perlin() is not yet implemented.")
+end
+
+function module.perlinArray(count, x, dx, y, dy, z, dz, rep, octaves, persistence)
+  error("[ERR] playdate.graphics.perlinArray() is not yet implemented.")
+end
+
+function module.generateQRCode(stringToEncode, desiredEdgeDimension, callback)
+  error("[ERR] playdate.graphics.generateQRCode() is not yet implemented.")
+end
+
+function module.drawSineWave(startX, startY, endX, endY, startAmplitude, endAmplitude, period, phaseShift)
+  error("[ERR] playdate.graphics.drawSineWave() is not yet implemented.")
+end
+
+function module.setClipRect(x, y, width, height)
+  error("[ERR] playdate.graphics.setClipRect() is not yet implemented.")
+end
+
+function module.getClipRect()
+  error("[ERR] playdate.graphics.getClipRect() is not yet implemented.")
+end
+
+function module.setScreenClipRect(x, y, width, height)
+  error("[ERR] playdate.graphics.setScreenClipRect() is not yet implemented.")
+end
+
+function module.getScreenClipRect()
+  error("[ERR] playdate.graphics.getScreenClipRect() is not yet implemented.")
+end
+
+function module.clearClipRect()
+  error("[ERR] playdate.graphics.clearClipRect() is not yet implemented.")
+end
+
+function module.setStencilImage(image, tile)
+  error("[ERR] playdate.graphics.setStencilImage() is not yet implemented.")
+end
+
+-- setStencilPattern(pattern)
+-- setStencilPattern(level, [ditherType])
+function module.setStencilPattern(row1, row2, row3, row4, row5, row6, row7, row8)
+  error("[ERR] playdate.graphics.setStencilPattern() is not yet implemented.")
+end
+
+function module.clearStencil()
+  error("[ERR] playdate.graphics.clearStencil() is not yet implemented.")
+end
+
+function module.clearStencilImage()
+  error("[ERR] playdate.graphics.clearStencilImage() is not yet implemented.")
+end
+
+function module.setStrokeLocation(location)
+  error("[ERR] playdate.graphics.setStrokeLocation() is not yet implemented.")
+end
+
+function module.getStrokeLocation()
+  error("[ERR] playdate.graphics.getStrokeLocation() is not yet implemented.")
+end
+
+function module.lockFocus(image)
+  error("[ERR] playdate.graphics.lockFocus() is not yet implemented.")
+end
+
+function module.unlockFocus()
+  error("[ERR] playdate.graphics.unlockFocus() is not yet implemented.")
+end
+
+function module.getDisplayImage()
+  error("[ERR] playdate.graphics.getDisplayImage() is not yet implemented.")
+end
+
+function module.getWorkingImage()
+  error("[ERR] playdate.graphics.getWorkingImage() is not yet implemented.")
 end
 
 function module.setFont(font)
@@ -239,6 +413,22 @@ function module.getFont()
   return playbit.graphics.activeFont
 end
 
+function module.setFontFamily(fontFamily)
+  error("[ERR] playdate.graphics.setFontFamily() is not yet implemented.")
+end
+
+function module.setFontTracking(pixels)
+  error("[ERR] playdate.graphics.setFontTracking() is not yet implemented.")
+end
+
+function module.getFontTracking()
+  error("[ERR] playdate.graphics.getFontTracking() is not yet implemented.")
+end
+
+function module.getSystemFont(variant)
+  error("[ERR] playdate.graphics.getSystemFont() is not yet implemented.")
+end
+
 function module.getTextSize(str, fontFamily, leadingAdjustment)
   @@ASSERT(fontFamily == nil, "[ERR] Parameter fontFamily is not yet implemented.")
   @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
@@ -247,7 +437,7 @@ function module.getTextSize(str, fontFamily, leadingAdjustment)
   return font:getWidth(str), font:getHeight()
 end
 
--- playdate.graphics.drawTextInRect(str, x, y, width, height, [leadingAdjustment, [truncationString, [alignment, [font]]]]) 
+-- playdate.graphics.drawTextInRect(str, x, y, width, height, [leadingAdjustment, [truncationString, [alignment, [font]]]])
 function module.drawTextInRect(text, x, ...)
   local y, width, height, leadingAdjustment, truncationString, textAlignment, font
   if type(x) == "number" then
@@ -317,7 +507,7 @@ function module.pushContext(image)
   if not image._canvas then
     image._canvas = love.graphics.newCanvas(image:getSize())
   end
-  
+
   -- push context
   table.insert(playbit.graphics.contextStack, image)
 
