@@ -1,6 +1,7 @@
 !if LOVE2D then
 require("playbit.graphics")
 
+
 --[[ since there is no CoreLibs/playdate, this file should always 
 be included here so the methods are always available ]]--
 require("playdate.playdate")
@@ -17,7 +18,7 @@ function import(path)
   path = string.gsub(path, "/", ".")
   return require(path)
 end
-
+require("playdate.systemmenu")
 local firstFrame = true
 local windowWidth, windowHeight = playbit.graphics.getWindowSize()
 
@@ -31,10 +32,22 @@ playdate.graphics.setBackgroundColor(playdate.graphics.kColorWhite)
 playdate.graphics.setColor(playdate.graphics.kColorBlack)
 
 math.randomseed(os.time())
-
+SYSTEM_FONT = playdate.graphics.font.new("fonts/Phozon/Phozon")
 local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
 playdate.graphics.setFont(font)
-
+function love.textinput(t)
+  if playdate.keyboard._visible then
+    playdate.keyboard.text = playdate.keyboard.text .. t
+    if playdate.keyboard.textChangedCallback ~= nil then
+      playdate.keyboard.textChangedCallback()
+    end
+  end
+end
+min_dt = 1/30 --fps
+next_time = love.timer.getTime()
+function love.update(dt)
+  next_time = next_time + min_dt
+end
 function love.draw()
   -- must be changed at start of frame when canvas is not active
   local newCanvasWidth, newCanvasHeight = playbit.graphics.getCanvasSize()
@@ -84,6 +97,8 @@ function love.draw()
 
   -- push main transform for draw offset
   love.graphics.push()
+  playbit.graphics.drawOffset.x = playbit.graphics._drawOffset.x
+  playbit.graphics.drawOffset.y = playbit.graphics._drawOffset.y
   love.graphics.translate(playbit.graphics.drawOffset.x, playbit.graphics.drawOffset.y)
 
   -- main update
@@ -119,6 +134,12 @@ function love.draw()
 
   -- update emulated input
   playdate.updateInput()
+  local cur_time = love.timer.getTime()
+  if next_time <= cur_time then
+    next_time = cur_time
+    return
+  end
+  love.timer.sleep(next_time - cur_time)
 end
 
 !end
