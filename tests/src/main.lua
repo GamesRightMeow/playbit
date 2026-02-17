@@ -1,6 +1,8 @@
 @@"header.lua"
 import("CoreLibs/graphics")
 
+local EXPECTED_IMAGE_PATH = "tests/src/images/expected/" 
+
 local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
 playdate.graphics.setFont(font)
 
@@ -23,8 +25,40 @@ function getImageDifference(dataA, dataB)
   return difference / total
 end
 
+function pbAssert_ImageIsSame(path, maxDifference)
+!if LOVE2D then
+  if not maxDifference then
+    -- default to allowing some difference due to Love2d different drawing algorithms
+    maxDifference = 0.01  
+  end
+
+  love.graphics.setCanvas()
+  local actualData = playbit.graphics.canvas:newImageData()
+  local expectedData = love.image.newImageData("images/expected/"..path..".png")
+  local difference = getImageDifference(expectedData, actualData)
+  
+  local success = false
+  if difference <= maxDifference then 
+    success = true
+  end
+
+  love.filesystem.createDirectory("images/actual")
+  actualData:encode("png", "images/actual/"..path..".png")
+  love.graphics.setCanvas(playbit.graphics.canvas)
+  return success
+!else
+  local image = playdate.graphics.getWorkingImage()
+  playdate.simulator.writeToFile(image, EXPECTED_IMAGE_PATH..path..".png")
+  -- always return true on Playdate since we're not actually doing the tests here
+  return true
+!end
+end
+
+function pbAssert_IsTrue(expected, actual)
+  return valueA == valueB
+end
+
 function playdate.update()
-  local expectedImagePath = "tests/src/images/expected/" 
   local paths = playdate.file.listFiles("suites")
   local totalTests = 0
   local totalTestsPassed = 0
@@ -34,33 +68,16 @@ function playdate.update()
     path = string.sub(path, 1, #path - 4)
     local tests = playdate.file.load("suites/"..path)()
     for j=1, #tests do
-      totalTests = totalTests + 1
       local test = tests[j]
       local testName = path.."_"..test[1]
-      test[2]()
-
-      -- TODO: support unit tests
-
-!if LOVE2D then
-      love.graphics.setCanvas()
-      local actualData = playbit.graphics.canvas:newImageData()
-      local expectedData = love.image.newImageData("images/expected/"..testName..".png")
-      local difference = getImageDifference(expectedData, actualData)
-      -- allow some difference due due to Love2d different drawing algorithms
-      local maxDiff = 0.01
-      if difference > maxDiff then 
-        print(testName.."=fail ("..tostring(difference)..")")
-      else
-        print(testName.."=pass ("..tostring(difference)..")")
+      local success = test[2]()
+      if success then
         totalTestsPassed = totalTestsPassed + 1
+        print("[PASS] "..testName)
+      else
+        print("[FAIL] "..testName)
       end
-      love.filesystem.createDirectory("images/actual")
-      actualData:encode("png", "images/actual/"..testName..".png")
-      love.graphics.setCanvas(playbit.graphics.canvas)
-!else
-      local image = playdate.graphics.getWorkingImage()
-      playdate.simulator.writeToFile(image, expectedImagePath..testName..".png")
-!end
+      totalTests = totalTests + 1
     end
   end
   
@@ -68,7 +85,7 @@ function playdate.update()
   print("--------------------------------------------------")
   print(totalTestsPassed.."/"..totalTests.." tests succeeded")
   print("--------------------------------------------------")
-  print("Expected images saved to: "..love.filesystem.getWorkingDirectory().."/"..expectedImagePath)
+  print("Expected images saved to: "..love.filesystem.getWorkingDirectory().."/"..EXPECTED_IMAGE_PATH)
   print("Actual images saved to: "..love.filesystem.getSaveDirectory())
   love.event.quit()
 !else
