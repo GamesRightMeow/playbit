@@ -1,5 +1,10 @@
 local build = require("build")
 
+--[[ Create output folder for playdate images as Playdate SDK
+will throw errors if it doesn't exist ]]--
+local fs = require("tools.filesystem")
+fs.createFolderIfNeeded("tests/src/images/expected/")
+
 build.build({ 
   assert = true,
   debug = true,
