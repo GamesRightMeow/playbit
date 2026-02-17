@@ -4,7 +4,7 @@ import("CoreLibs/graphics")
 local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
 playdate.graphics.setFont(font)
 
--- playdate saves images in B&W so adjust playbit shader
+-- playdate saves images in B&W so we need playbit to render in B&W too
 !if LOVE2D then
 playbit.graphics.setColors({1,1,1,1}, {0,0,0,1})
 !end
@@ -24,16 +24,22 @@ function getImageDifference(dataA, dataB)
 end
 
 function playdate.update()
+  local expectedImagePath = "tests/src/images/expected/" 
   local paths = playdate.file.listFiles("suites")
+  local totalTests = 0
+  local totalTestsPassed = 0
   for i=1, #paths do
     local path = paths[i]
     -- strip the extension
     path = string.sub(path, 1, #path - 4)
     local tests = playdate.file.load("suites/"..path)()
     for j=1, #tests do
+      totalTests = totalTests + 1
       local test = tests[j]
       local testName = path.."_"..test[1]
       test[2]()
+
+      -- TODO: support unit tests
 
 !if LOVE2D then
       love.graphics.setCanvas()
@@ -46,18 +52,23 @@ function playdate.update()
         print(testName.."=fail ("..tostring(difference)..")")
       else
         print(testName.."=pass ("..tostring(difference)..")")
+        totalTestsPassed = totalTestsPassed + 1
       end
       love.filesystem.createDirectory("images/actual")
       actualData:encode("png", "images/actual/"..testName..".png")
       love.graphics.setCanvas(playbit.graphics.canvas)
 !else
       local image = playdate.graphics.getWorkingImage()
-      playdate.simulator.writeToFile(image, "tests/src/images/expected/"..testName..".png")
+      playdate.simulator.writeToFile(image, expectedImagePath..testName..".png")
 !end
     end
   end
   
 !if LOVE2D then
+  print("--------------------------------------------------")
+  print(totalTestsPassed.."/"..totalTests.." tests succeeded")
+  print("--------------------------------------------------")
+  print("Expected images saved to: "..love.filesystem.getWorkingDirectory().."/"..expectedImagePath)
   print("Actual images saved to: "..love.filesystem.getSaveDirectory())
   love.event.quit()
 !else
