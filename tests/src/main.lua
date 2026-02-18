@@ -54,8 +54,16 @@ function pbAssert_ImageIsSame(path, maxDifference)
 !end
 end
 
-function pbAssert_IsTrue(expected, actual)
-  return valueA == valueB
+function pbAssert_IsTrue(expected)
+  if not expected then
+    error("Expected value is not true")
+  end
+end
+
+function pbAssert_IsEqual(expected, actual)
+  if valueA ~= valueB then
+    error("Expected: "..expected.." Actual: "..actual)
+  end
 end
 
 function playdate.update()
@@ -70,12 +78,12 @@ function playdate.update()
     for j=1, #tests do
       local test = tests[j]
       local testName = path.."_"..test[1]
-      local success = test[2]()
-      if success then
+      local result, message = pcall(test[2])
+      if result then
         totalTestsPassed = totalTestsPassed + 1
         print("[PASS] "..testName)
       else
-        print("[FAIL] "..testName)
+        print("[FAIL] "..testName.." > "..message)
       end
       totalTests = totalTests + 1
     end

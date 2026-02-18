@@ -3,7 +3,7 @@ local function drawText()
   playdate.graphics.drawText("HELLO WORLD", 0, 0)
   playdate.graphics.drawText("Foo", 100, 0)
   playdate.graphics.drawText("Bar", 0, 100)
-  return pbAssert_ImageIsSame("font_drawText")
+  pbAssert_ImageIsSame("font_drawText")
 end
 
 local function drawTextAligned()
@@ -11,7 +11,7 @@ local function drawTextAligned()
   playdate.graphics.drawTextAligned("HELLO WORLD", 200, 0, 1)
   playdate.graphics.drawTextAligned("PLAYDATE", 200, 32, 2)
   playdate.graphics.drawTextAligned("FOOBAR", 200, 64, 3)
-  return pbAssert_ImageIsSame("font_drawTextAligned")
+  pbAssert_ImageIsSame("font_drawTextAligned")
 end
 
 return {
