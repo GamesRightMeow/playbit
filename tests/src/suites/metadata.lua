@@ -1,27 +1,23 @@
-local function name()
+local tests = {}
+
+function tests.name()
   pbAssert.AreEqual(playdate.metadata.name, "Playbit Tests")
 end
 
-local function author()
+function tests.author()
   pbAssert.AreEqual(playdate.metadata.author, "Games Right Meow")
 end
 
-local function bundleID()
+function tests.bundleID()
   pbAssert.AreEqual(playdate.metadata.bundleID, "com.gamesrightmeow.playbit-tests")
 end
 
-local function version()
+function tests.version()
   pbAssert.AreEqual(playdate.metadata.version, "1.0.0")
 end
 
-local function buildNumber()
+function tests.buildNumber()
   pbAssert.AreEqual(playdate.metadata.buildNumber, "1")
 end
 
-return {
-  { "name", name },
-  { "author", author },
-  { "bundleID", bundleID },
-  { "version", version },
-  { "buildNumber", buildNumber },
-}
+return tests

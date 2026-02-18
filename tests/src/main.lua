@@ -13,23 +13,22 @@ playbit.graphics.setColors({1,1,1,1}, {0,0,0,1})
 !end
 
 function playdate.update()
-  local paths = playdate.file.listFiles("suites")
+  local suitePaths = playdate.file.listFiles("suites")
   local totalTests = 0
   local totalTestsPassed = 0
-  for i=1, #paths do
-    local path = paths[i]
+  for i=1, #suitePaths do
+    local suitePath = suitePaths[i]
     -- strip the extension
-    path = string.sub(path, 1, #path - 4)
-    local tests = playdate.file.load("suites/"..path)()
-    for j=1, #tests do
-      local test = tests[j]
-      local testName = path.."_"..test[1]
-      local result, message = pcall(test[2])
+    suitePath = string.sub(suitePath, 1, #suitePath - 4)
+    local suite = playdate.file.load("suites/"..suitePath)()
+    for testName, testMethod in pairs(suite) do
+      local fullTestName = suitePath.."_"..testName
+      local result, message = pcall(testMethod)
       if result then
         totalTestsPassed = totalTestsPassed + 1
-        print("[PASS] "..testName)
+        print("[PASS] "..fullTestName)
       else
-        print("[FAIL] "..testName.." > "..message)
+        print("[FAIL] "..fullTestName.." > "..message)
       end
       totalTests = totalTests + 1
     end

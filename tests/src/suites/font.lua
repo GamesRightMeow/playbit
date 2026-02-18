@@ -1,4 +1,6 @@
-local function drawText()
+local tests = {}
+
+function tests.drawText()
   playdate.graphics.clear(1)
   playdate.graphics.drawText("HELLO WORLD", 0, 0)
   playdate.graphics.drawText("Foo", 100, 0)
@@ -6,7 +8,7 @@ local function drawText()
   pbAssert.IsImageSimilar("font_drawText")
 end
 
-local function drawTextAligned()
+function tests.drawTextAligned()
   playdate.graphics.clear(1)
   playdate.graphics.drawTextAligned("HELLO WORLD", 200, 0, 1)
   playdate.graphics.drawTextAligned("PLAYDATE", 200, 32, 2)
@@ -14,7 +16,4 @@ local function drawTextAligned()
   pbAssert.IsImageSimilar("font_drawTextAligned")
 end
 
-return {
-  { "drawText", drawText },
-  { "drawTextAligned", drawTextAligned },
-}
+return tests
