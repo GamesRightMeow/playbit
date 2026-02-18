@@ -1,17 +1,17 @@
 local function name()
-  pbAssert_IsEqual("Playbit Tests", playdate.metadata.name)
+  pbAssert.AreEqual(playdate.metadata.name, "Playbit Tests")
 end
 
 local function author()
-  pbAssert_IsEqual("Games Right Meow", playdate.metadata.author)
+  pbAssert.AreEqual(playdate.metadata.author, "Games Right Meow")
 end
 
 local function bundleID()
-  pbAssert_IsEqual("com.gamesrightmeow.playbit-tests", playdate.metadata.bundleID)
+  pbAssert.AreEqual(playdate.metadata.bundleID, "com.gamesrightmeow.playbit-tests")
 end
 
 local function version()
-  pbAssert_IsEqual("1.0.0", playdate.metadata.version)
+  pbAssert.AreEqual(playdate.metadata.version, "1.0.0")
 end
 
 local function buildNumber()

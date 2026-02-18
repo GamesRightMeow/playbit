@@ -21,6 +21,12 @@ build.build({
     { "fonts/", "fonts" },
     { "tests/src/images/", "images/" },
     { "tests/src/main.lua", "main.lua" },
+    { "tests/src/pbassert.lua", "pbassert.lua" },
     { "tests/src/suites", "suites/" },
+    { "tests/src/metadata.json", "pdxinfo",
+      {
+        json = { build.pdxinfoProcessor, { incrementBuildNumber = false } }
+      }
+    }
   },
 })

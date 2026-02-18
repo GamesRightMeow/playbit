@@ -22,6 +22,7 @@ build.build({
     -- project
     { "fonts/", "fonts" },
     { "tests/src/main.lua", "main.lua" },
+    { "tests/src/pbassert.lua", "pbassert.lua" },
     { "tests/src/suites", "suites/" },
     { "tests/src/metadata.json", "pdxinfo",
       {
