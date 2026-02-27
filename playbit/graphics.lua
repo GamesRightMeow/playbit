@@ -7,11 +7,15 @@ playbit.graphics = module
 module.COLOR_WHITE = { 176 / 255, 174 / 255, 167 / 255, 1 }
 -- #312f28
 module.COLOR_BLACK = { 49 / 255, 47 / 255, 40 / 255, 1 }
+-- Clear
+module.COLOR_CLEAR = { 49 / 255, 47 / 255, 40 / 255, 0 }
 
 module.colorWhite = module.COLOR_WHITE
 module.colorBlack = module.COLOR_BLACK
+module.colorClear = module.COLOR_CLEAR
 module.shader = love.graphics.newShader("playdate/shader")
 module.drawOffset = { x = 0, y = 0}
+module._drawOffset = { x = 0, y = 0}
 module.drawColorIndex = 1
 module.drawColor = module.colorWhite
 module.backgroundColorIndex = 0
