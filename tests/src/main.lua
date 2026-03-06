@@ -23,6 +23,7 @@ function playdate.update()
     local suite = playdate.file.load("suites/"..suitePath)()
     for testName, testMethod in pairs(suite) do
       local fullTestName = suitePath.."_"..testName
+      playdate.graphics.clear()
       local result, message = pcall(testMethod)
       if result then
         totalTestsPassed = totalTestsPassed + 1
