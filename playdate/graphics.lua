@@ -232,7 +232,8 @@ end
 
 function module.setFont(font)
   playbit.graphics.activeFont = font
-  love.graphics.setFont(font.data)
+  local newFont = font or playbit.graphics.fallbackFont
+  love.graphics.setFont(newFont.data)
 end
 
 function module.getFont()
@@ -243,7 +244,7 @@ function module.getTextSize(str, fontFamily, leadingAdjustment)
   @@ASSERT(fontFamily == nil, "[ERR] Parameter fontFamily is not yet implemented.")
   @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
 
-  local font = playbit.graphics.activeFont
+  local font = playbit.graphics.activeFont or playbit.graphics.fallbackFont
   return font:getTextWidth(str), font:getHeight()
 end
 
@@ -257,7 +258,7 @@ function module.drawTextInRect(text, x, ...)
     error("[ERR] Support for the rect parameter is not yet implemented.")
   end
 
-  font = font or playbit.graphics.activeFont
+  font = font or playbit.graphics.activeFont or playbit.graphics.fallbackFont
 
   return font:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
 end
@@ -270,7 +271,7 @@ function module.drawText(text, x, y, width, height, fontFamily, leadingAdjustmen
   @@ASSERT(alignment == nil, "[ERR] Parameter alignment is not yet implemented.")
 
   @@ASSERT(text ~= nil, "Text is nil")
-  local font = playbit.graphics.activeFont
+  local font = playbit.graphics.activeFont or playbit.graphics.fallbackFont
   font:drawText(text, x, y, fontFamily, leadingAdjustment)
   playbit.graphics.updateContext()
 end
@@ -285,7 +286,8 @@ function module.getLocalizedText(key, language)
 end
 
 function module.drawTextAligned(text, x, y, alignment, leadingAdjustment)
-  module.getFont():drawTextAligned(text, x, y, alignment, leadingAdjustment)
+  local font = playbit.graphics.activeFont or playbit.graphics.fallbackFont
+  font:drawTextAligned(text, x, y, alignment, leadingAdjustment)
 end
 
 function module.drawLocalizedTextAligned(text, x, y, alignment, language, leadingAdjustment)
