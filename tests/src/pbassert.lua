@@ -90,13 +90,13 @@ function pbAssert.AreNotEqual(actual, expected)
 end
 
 function pbAssert.IsNil(actual)
-  if actual == nil then
+  if actual ~= nil then
     error("Actual was expected to be nil")
   end
 end
 
 function pbAssert.IsNotNil(actual)
-  if actual ~= nil then
+  if actual == nil then
     error("Actual was expected to be not nil")
   end
 end
