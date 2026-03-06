@@ -12,6 +12,22 @@ playdate.graphics.setFont(font)
 playbit.graphics.setColors({1,1,1,1}, {0,0,0,1})
 !end
 
+local logs = {}
+
+function logMessage(msg)
+  table.insert(logs, msg.."\n")
+  print(msg)
+end
+
+local function writeLogs()
+  local file = playdate.file.open("log.txt", playdate.file.kFileWrite)
+  for i=1, #logs do
+    file:write(logs[i])
+  end
+  file:flush()
+  file:close()
+end
+
 function playdate.update()
   local suitePaths = playdate.file.listFiles("suites")
   local totalTests = 0
@@ -28,22 +44,25 @@ function playdate.update()
       local result, message = pcall(testMethod)
       if result then
         totalTestsPassed = totalTestsPassed + 1
-        print("[PASS] "..fullTestName)
+        logMessage("[PASS] "..fullTestName)
       else
-        print("[FAIL] "..fullTestName.." > "..message)
+        logMessage("[FAIL] "..fullTestName.." > "..message)
       end
       totalTests = totalTests + 1
     end
   end
   
+  logMessage("--------------------------------------------------")
+  logMessage(totalTestsPassed.."/"..totalTests.." tests succeeded")
+  logMessage("--------------------------------------------------")
+
 !if LOVE2D then
-  print("--------------------------------------------------")
-  print(totalTestsPassed.."/"..totalTests.." tests succeeded")
-  print("--------------------------------------------------")
   print("Expected images saved to: "..love.filesystem.getWorkingDirectory().."/"..EXPECTED_IMAGE_PATH)
   print("Actual images saved to: "..love.filesystem.getSaveDirectory())
+  print("Playdate logs saved to: <PLAYDATE_SDK>/Disk/Data/com.gamesrightmeow.playbit-tests/log.txt")
   love.event.quit()
 !else
+  writeLogs()
   playdate.simulator.exit()
 !end
 end
