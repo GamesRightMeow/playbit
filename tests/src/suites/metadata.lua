@@ -1,22 +1,22 @@
 local tests = {}
 
-function tests.name()
+function tests.Name_HasValue()
   pbAssert.AreEqual(playdate.metadata.name, "Playbit Tests")
 end
 
-function tests.author()
+function tests.Author_HasValue()
   pbAssert.AreEqual(playdate.metadata.author, "Games Right Meow")
 end
 
-function tests.bundleID()
+function tests.BundleID_HasValue()
   pbAssert.AreEqual(playdate.metadata.bundleID, "com.gamesrightmeow.playbit-tests")
 end
 
-function tests.version()
+function tests.Version_HasValue()
   pbAssert.AreEqual(playdate.metadata.version, "1.0.0")
 end
 
-function tests.buildNumber()
+function tests.BuildNumber_HasValue()
   pbAssert.AreEqual(playdate.metadata.buildNumber, "1")
 end
 

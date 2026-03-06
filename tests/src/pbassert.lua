@@ -1,5 +1,6 @@
 pbAssert = {}
 
+local imageAssertPrefix = nil
 local usedImagePaths = {}
 
 local function getImageDifference(dataA, dataB)
@@ -16,11 +17,21 @@ local function getImageDifference(dataA, dataB)
   return difference / total
 end
 
+function pbAssert.setImagePrefix(value)
+  imageAssertPrefix = value
+end
+
 --- On Playdate this saves an image to file. On Love2d this compares the previously
 --- saved image from playdate to the Love2ds current buffer and does a pixel-by-pixel
 --- comparison to of the two. The resulting different is a float that represents the
 --- number of pixels that are different. 
 function pbAssert.IsImageSimilar(path, maxDifference)
+  if path and #path > 0 then
+    path = imageAssertPrefix.."_"..path
+  else
+    path = imageAssertPrefix
+  end
+
 !if LOVE2D then
   if not maxDifference then
     -- default to allowing some difference due to Love2d different drawing algorithms

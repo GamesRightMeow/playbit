@@ -24,6 +24,7 @@ function playdate.update()
     for testName, testMethod in pairs(suite) do
       local fullTestName = suitePath.."_"..testName
       playdate.graphics.clear()
+      pbAssert.setImagePrefix(fullTestName)
       local result, message = pcall(testMethod)
       if result then
         totalTestsPassed = totalTestsPassed + 1
