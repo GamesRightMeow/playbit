@@ -1,5 +1,7 @@
 pbAssert = {}
 
+local usedImagePaths = {}
+
 local function getImageDifference(dataA, dataB)
   -- assume both images are playdate sized i.e. 400x240 pixels
   local difference = 0
@@ -24,6 +26,11 @@ function pbAssert.IsImageSimilar(path, maxDifference)
     -- default to allowing some difference due to Love2d different drawing algorithms
     maxDifference = 0.01  
   end
+
+  if usedImagePaths[path] then
+    error("Image path '"..path.."' has already been used")
+  end
+  usedImagePaths[path] = true
 
   love.graphics.setCanvas()
   local actualData = playbit.graphics.canvas:newImageData()
