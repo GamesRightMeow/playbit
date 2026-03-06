@@ -1,11 +1,9 @@
 @@"header.lua"
 import("CoreLibs/graphics")
 import("pbassert")
+import("playbit/graphics")
 
 EXPECTED_IMAGE_PATH = "tests/src/images/expected/" 
-
-local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
-playdate.graphics.setFont(font)
 
 -- playdate saves images in B&W so we need playbit to render in B&W too
 !if LOVE2D then

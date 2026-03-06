@@ -85,8 +85,19 @@ function tests.Context_IsDrawn()
 end
 
 function tests.FontSize_IsReturned()
+  local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
+  playdate.graphics.setFont(font)
   local size = playdate.graphics.getTextSize("hello world")
   pbAssert.AreEqual(size, 88)
+  playdate.graphics.setFont(nil)
+end
+
+function tests.Font_IsReturned()
+  pbAssert.IsNil(playdate.graphics.getFont())
+  local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
+  playdate.graphics.setFont(font)
+  pbAssert.AreEqual(playdate.graphics.getFont(), font)
+  playdate.graphics.setFont(nil)
 end
 
 return tests
