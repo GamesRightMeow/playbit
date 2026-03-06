@@ -244,7 +244,7 @@ function module.getTextSize(str, fontFamily, leadingAdjustment)
   @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
 
   local font = playbit.graphics.activeFont
-  return font:getWidth(str), font:getHeight()
+  return font:getTextWidth(str), font:getHeight()
 end
 
 -- playdate.graphics.drawTextInRect(str, x, y, width, height, [leadingAdjustment, [truncationString, [alignment, [font]]]]) 
