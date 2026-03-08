@@ -238,6 +238,9 @@ end
 
 function module.getFont()
   return playbit.graphics.activeFont
+
+function module.getSystemFont()
+  return playbit.graphics.fallbackFont
 end
 
 function module.getTextSize(str, fontFamily, leadingAdjustment)
