@@ -26,6 +26,34 @@ local function writeLogs()
   file:close()
 end
 
+local function getLines(message)
+  local lines = {}
+  for s in string.gmatch(message, "[^\n]*") do
+    if #s > 1 then
+      table.insert(lines, s)
+    end
+  end
+  return lines
+end
+
+local function runTest(testMethod)
+  local success, callstack = xpcall(testMethod, debug.traceback)
+  if success then
+    return success, nil
+  else
+    local lines = getLines(callstack)
+    -- assume 1st line always has the assertion message
+    local firstSpace = string.find(lines[1], " ") + 1
+    local assertMsgStr = string.sub(lines[1], firstSpace)
+    -- assume 5th line is the line in the test
+    local firstSpace = string.find(lines[5], " ")
+    local testLineStr = string.sub(lines[5], 2, firstSpace)
+    -- build final message
+    local finalStr = testLineStr..assertMsgStr
+    return success, finalStr
+  end
+end
+
 function playdate.update()
   local suitePaths = playdate.file.listFiles("suites")
   local totalTests = 0
@@ -39,7 +67,7 @@ function playdate.update()
       local fullTestName = suitePath.."_"..testName
       playdate.graphics.clear()
       pbAssert.setImagePrefix(fullTestName)
-      local result, message = pcall(testMethod)
+      local result, message = runTest(testMethod)
       if result then
         totalTestsPassed = totalTestsPassed + 1
         logMessage("[ ] "..fullTestName)
