@@ -231,13 +231,18 @@ function module.drawPixel(x, y)
 end
 
 function module.setFont(font)
+  if font == nil then
+    -- font cannot be unset with nil
+    return
+  end
   playbit.graphics.activeFont = font
   local newFont = font or playbit.graphics.fallbackFont
   love.graphics.setFont(newFont.data)
 end
 
 function module.getFont()
-  return playbit.graphics.activeFont
+  return playbit.graphics.activeFont or playbit.graphics.fallbackFont
+end
 
 function module.getSystemFont()
   return playbit.graphics.fallbackFont

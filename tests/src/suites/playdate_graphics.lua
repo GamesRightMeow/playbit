@@ -93,7 +93,7 @@ function tests.FontSize_IsReturned()
 end
 
 function tests.Font_IsReturned()
-  pbAssert.IsNil(playdate.graphics.getFont())
+  pbAssert.AreEqual(playdate.graphics.getFont(), playdate.graphics.getSystemFont())
   local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
   playdate.graphics.setFont(font)
   pbAssert.AreEqual(playdate.graphics.getFont(), font)
