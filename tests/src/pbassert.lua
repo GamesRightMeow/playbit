@@ -79,13 +79,13 @@ end
 
 function pbAssert.AreEqual(actual, expected)
   if actual ~= expected then
-    error("Expected: "..tostring(expected).." Actual: "..tostring(actual))
+    error("Expected values to be equal. Expected="..tostring(expected).." Actual="..tostring(actual))
   end
 end
 
 function pbAssert.AreNotEqual(actual, expected)
   if actual == expected then
-    error("Expected: "..tostring(expected).." Actual: "..tostring(actual))
+    error("Expected values to be unequal. Expected="..tostring(expected).." Actual="..tostring(actual))
   end
 end
 
