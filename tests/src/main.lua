@@ -1,6 +1,7 @@
 @@"header.lua"
 import("CoreLibs/graphics")
 import("CoreLibs/string")
+import("CoreLibs/object")
 
 import("playbit/graphics")
 
