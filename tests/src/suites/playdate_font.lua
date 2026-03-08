@@ -14,4 +14,31 @@ function tests.DrawTextAligned_IsDrawn()
   pbAssert.IsImageSimilar()
 end
 
+function tests.GetTextWidth_IsReturned()
+  local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
+  local width = font:getTextWidth("hello world")
+  pbAssert.AreEqual(width, 88)
+end
+
+function tests.GetHeight_IsReturned()
+  local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
+  local width = font:getHeight()
+  pbAssert.AreEqual(width, 8)
+end
+
+function tests.GetLeading_IsReturned()
+  local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
+  local width = font:getLeading()
+  pbAssert.AreEqual(width, 0)
+end
+
+function tests.SetLeading_IsSet()
+  local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
+  local oldWidth = font:getLeading()
+  font:setLeading(10)
+  local width = font:getLeading()
+  pbAssert.AreNotEqual(width, oldWidth)
+  pbAssert.AreEqual(width, 10)
+end
+
 return tests
