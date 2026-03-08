@@ -42,9 +42,9 @@ function playdate.update()
       local result, message = pcall(testMethod)
       if result then
         totalTestsPassed = totalTestsPassed + 1
-        logMessage("[PASS] "..fullTestName)
+        logMessage("[ ] "..fullTestName)
       else
-        logMessage("[FAIL] "..fullTestName.." > "..message)
+        logMessage("[!] "..fullTestName.." > "..message)
       end
       totalTests = totalTests + 1
     end
