@@ -13,7 +13,7 @@ playbit.graphics.setColors({1,1,1,1}, {0,0,0,1})
 local logs = {}
 
 function logMessage(msg)
-  table.insert(logs, msg.."\n")
+  table.insert(logs, tostring(msg).."\n")
   print(msg)
 end
 
