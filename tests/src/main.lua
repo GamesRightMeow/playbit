@@ -1,7 +1,10 @@
 @@"header.lua"
 import("CoreLibs/graphics")
-import("pbassert")
+import("CoreLibs/string")
+
 import("playbit/graphics")
+
+import("pbassert")
 
 EXPECTED_IMAGE_PATH = "tests/src/images/expected/" 
 
