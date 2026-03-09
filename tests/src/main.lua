@@ -58,6 +58,14 @@ local function runTest(testMethod)
   end
 end
 
+local function cleanup()
+  -- reset any state between tests
+  playdate.graphics.clear()
+  playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
+  playdate.graphics.setColor(0)
+  playdate.graphics.setBackgroundColor(1)
+end
+
 function playdate.update()
   local suitePaths = playdate.file.listFiles("suites")
   local totalTests = 0
@@ -68,8 +76,8 @@ function playdate.update()
     suitePath = string.sub(suitePath, 1, #suitePath - 4)
     local suite = playdate.file.load("suites/"..suitePath)()
     for testName, testMethod in pairs(suite) do
+      cleanup()
       local fullTestName = suitePath.."_"..testName
-      playdate.graphics.clear()
       pbAssert.setImagePrefix(fullTestName)
       local result, message = runTest(testMethod)
       if result then
