@@ -82,8 +82,10 @@ function playdate.update()
     end
   end
   
-  logMessage("--------------------------------------------------")
-  logMessage(totalTestsPassed.."/"..totalTests.." tests succeeded")
+  logMessage("----------------- TEST SUMMARY -------------------")
+  logMessage(totalTests.." run")
+  logMessage(totalTestsPassed.." passed")
+  logMessage((totalTests - totalTestsPassed).." failed")
   logMessage("--------------------------------------------------")
 
 !if LOVE2D then
