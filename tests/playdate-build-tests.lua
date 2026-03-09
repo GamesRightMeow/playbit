@@ -21,6 +21,7 @@ build.build({
     { "playbit", "playbit" },
     -- project
     { "fonts/", "fonts" },
+    { "tests/src/images/", "images/" },
     { "tests/src/main.lua", "main.lua" },
     { "tests/src/pbassert.lua", "pbassert.lua" },
     { "tests/src/suites", "suites/" },

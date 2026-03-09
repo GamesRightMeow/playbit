@@ -180,4 +180,59 @@ function tests.Constants_AreCorrect()
   pbAssert.AreEqual(playdate.graphics.kDrawModeInverted, 7)
 end
 
+function tests.DrawMode_Copy()
+  playdate.graphics.setColor(playdate.graphics.kColorWhite)
+  playdate.graphics.fillRect(0, 0, 200, 240)
+  playdate.graphics.setColor(playdate.graphics.kColorBlack)
+  playdate.graphics.fillRect(200, 0, 200, 240)
+  local img = playdate.graphics.image.new("images/playbit-logo")
+  playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeCopy)
+  img:draw(0, 0)
+  pbAssert.IsImageSimilar()
+end
+
+function tests.DrawMode_Inverted()
+  playdate.graphics.setColor(playdate.graphics.kColorWhite)
+  playdate.graphics.fillRect(0, 0, 200, 240)
+  playdate.graphics.setColor(playdate.graphics.kColorBlack)
+  playdate.graphics.fillRect(200, 0, 200, 240)
+  local img = playdate.graphics.image.new("images/playbit-logo")
+  playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeInverted)
+  img:draw(0, 0)
+  pbAssert.IsImageSimilar()
+end
+
+function tests.DrawMode_DrawModeFillWhite()
+  playdate.graphics.setColor(playdate.graphics.kColorWhite)
+  playdate.graphics.fillRect(0, 0, 200, 240)
+  playdate.graphics.setColor(playdate.graphics.kColorBlack)
+  playdate.graphics.fillRect(200, 0, 200, 240)
+  local img = playdate.graphics.image.new("images/playbit-logo")
+  playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillWhite)
+  img:draw(0, 0)
+  pbAssert.IsImageSimilar()
+end
+
+function tests.DrawMode_DrawModeFillBlack()
+  playdate.graphics.setColor(playdate.graphics.kColorWhite)
+  playdate.graphics.fillRect(0, 0, 200, 240)
+  playdate.graphics.setColor(playdate.graphics.kColorBlack)
+  playdate.graphics.fillRect(200, 0, 200, 240)
+  local img = playdate.graphics.image.new("images/playbit-logo")
+  playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeFillBlack)
+  img:draw(0, 0)
+  pbAssert.IsImageSimilar()
+end
+
+function tests.DrawMode_DrawModeFillWhiteTransparent()
+  playdate.graphics.setColor(playdate.graphics.kColorWhite)
+  playdate.graphics.fillRect(0, 0, 200, 240)
+  playdate.graphics.setColor(playdate.graphics.kColorBlack)
+  playdate.graphics.fillRect(200, 0, 200, 240)
+  local img = playdate.graphics.image.new("images/playbit-logo")
+  playdate.graphics.setImageDrawMode(playdate.graphics.kDrawModeWhiteTransparent)
+  img:draw(0, 0)
+  pbAssert.IsImageSimilar()
+end
+
 return tests
