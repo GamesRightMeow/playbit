@@ -235,4 +235,17 @@ function tests.DrawMode_DrawModeFillWhiteTransparent()
   pbAssert.IsImageSimilar()
 end
 
+function tests.Pattern_IsDrawn()
+  playdate.graphics.setPattern({0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 170, 85, 170, 85, 170, 85, 170, 85})
+  playdate.graphics.fillRect(0, 0, 200, 240)
+  pbAssert.IsImageSimilar()
+end
+
+function tests.Pattern_IsCleared()
+  playdate.graphics.setPattern({0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 170, 85, 170, 85, 170, 85, 170, 85})
+  playdate.graphics.setColor(playdate.graphics.kColorBlack)
+  playdate.graphics.fillRect(0, 0, 200, 240)
+  pbAssert.IsImageSimilar()
+end
+
 return tests
