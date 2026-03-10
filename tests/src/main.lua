@@ -3,6 +3,7 @@ import("CoreLibs/graphics")
 import("CoreLibs/string")
 import("CoreLibs/object")
 import("CoreLibs/animation")
+import("CoreLibs/crank")
 
 import("playbit/graphics")
 
