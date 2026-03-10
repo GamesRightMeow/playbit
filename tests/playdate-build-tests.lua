@@ -3,7 +3,9 @@ local build = require("build")
 --[[ Create output folder for playdate images as Playdate SDK
 will throw errors if it doesn't exist ]]--
 local fs = require("tools.filesystem")
-fs.createFolderIfNeeded("tests/src/images/expected/")
+local p = fs.sanitizePath("tests/src/images/expected/")
+fs.deleteDirectory(p)
+fs.createFolderIfNeeded(p)
 
 build.build({ 
   assert = true,
