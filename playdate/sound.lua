@@ -129,7 +129,7 @@ function sampleplayer.meta:setRate(rate)
 end
 
 function sampleplayer.meta:getRate()
-  self.data:getPitch()
+  return self.data:getPitch()
 end
 
 function sampleplayer.meta:setRateMod(signal)
@@ -197,7 +197,7 @@ function fileplayer.meta:setRate(rate)
 end
 
 function fileplayer.meta:getRate(rate)
-  self.data:getPitch()
+  return self.data:getPitch()
 end
 
 function fileplayer.meta:setRateMod(signal)
