@@ -48,6 +48,20 @@ function tests.CanReadLine()
   file:close()
 end
 
+function tests.CanWrite()
+  local path = "write.txt"
+  local data = "test"
+  local file, msg = playdate.file.open(path, playdate.file.kFileWrite)
+  local success, msg = file:write(data)
+  pbAssert.IsTrue(success)
+  file:flush()
+  file:close()
+
+  local file = playdate.file.open(path, playdate.file.kFileRead)
+  local line = file:readline()
+  pbAssert.AreEqual(line, data)
+end
+
 function tests.ReadReturnsNilAtEOF()
   local file = playdate.file.open("data/text.txt", playdate.file.kFileRead)
   local line
