@@ -99,7 +99,11 @@ function playdate.update()
     end
   end
   
+  local now = playdate.getTime()
+  local timeStr = now.year.."/"..now.month.."/"..now.day.." "..now.hour..":"..now.minute.."."..now.second
+
   logMessage("----------------- TEST SUMMARY -------------------")
+  logMessage("Completed at "..timeStr)
   logMessage(totalTests.." run")
   logMessage(totalTestsPassed.." passed")
   logMessage((totalTests - totalTestsPassed).." failed")
