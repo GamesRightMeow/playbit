@@ -26,7 +26,12 @@ function logMessage(msg)
 end
 
 local function writeLogs()
-  local file = playdate.file.open("log.txt", playdate.file.kFileWrite)
+!if PLAYDATE then
+  local fileName = "playdate_log.txt"
+!else
+  local fileName = "love_log.txt"
+!end
+  local file = playdate.file.open(fileName, playdate.file.kFileWrite)
   for i=1, #logs do
     file:write(logs[i])
   end
@@ -99,14 +104,15 @@ function playdate.update()
   logMessage(totalTestsPassed.." passed")
   logMessage((totalTests - totalTestsPassed).." failed")
   logMessage("--------------------------------------------------")
+  writeLogs()
 
 !if LOVE2D then
   print("Expected images saved to: "..love.filesystem.getWorkingDirectory().."/"..EXPECTED_IMAGE_PATH)
   print("Actual images saved to: "..love.filesystem.getSaveDirectory())
-  print("Playdate logs saved to: <PLAYDATE_SDK>/Disk/Data/com.gamesrightmeow.playbit-tests/log.txt")
+  print("Playdate logs saved to: <PLAYDATE_SDK>/Disk/Data/com.gamesrightmeow.playbit-tests/playdate_log.txt")
+  print("Love2d logs saved to: <LOVE2D_SAVE_DIRECTORY>/_tests_love2d/love_log.txt")
   love.event.quit()
 !else
-  writeLogs()
   playdate.simulator.exit()
 !end
 end

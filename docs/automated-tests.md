@@ -18,7 +18,7 @@ You can manually run tests by following the steps below. You can also use these 
 2. Build the test project for Love2d by running `love2d-build-tests.lua`. This will create a `_tests_love2d` folder at the project root.
 3. Compile the `_tests_pdx` folder by using `pdc _tests_pdx _tests.pdx`
 4. Run the compiled PDX in the Playdate Simulator using `PlaydateSimulator _tests.pdx` or by manually loading it into the simulator.
-5. When the tests finish running on Playdate, the simulator will close and you should have screenshots in `tests/src/images/expected/` and test results in `<PLAYDATE_SDK>/Disk/Data/com.gamesrightmeow.playbit-tests/log.txt`.
+5. When the tests finish running on Playdate, the simulator will close and you should have screenshots in `tests/src/images/expected/` and test results in `<PLAYDATE_SDK>/Disk/Data/com.gamesrightmeow.playbit-tests/playdate_log.txt`.
 6. Run the Love2d game using `love _tests_love2d`.
 7. When the tests finish running in Love2d, the application will close and log test results to console.
 
