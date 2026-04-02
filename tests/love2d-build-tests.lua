@@ -20,6 +20,8 @@ build.build({
     -- project
     { "fonts/", "fonts" },
     { "tests/src/images/", "images/" },
+    { "tests/src/sounds/", "sounds/" },
+    { "tests/src/data/", "data/" },
     { "tests/src/main.lua", "main.lua" },
     { "tests/src/pbassert.lua", "pbassert.lua" },
     { "tests/src/suites", "suites/" },

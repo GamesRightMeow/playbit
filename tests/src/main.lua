@@ -4,6 +4,8 @@ import("CoreLibs/string")
 import("CoreLibs/object")
 import("CoreLibs/animation")
 import("CoreLibs/crank")
+import("CoreLibs/timer")
+import("CoreLibs/easing")
 
 import("playbit/graphics")
 
