@@ -32,8 +32,7 @@ playdate.graphics.setColor(playdate.graphics.kColorBlack)
 
 math.randomseed(os.time())
 
-local font = playdate.graphics.font.new("fonts/Phozon/Phozon")
-playdate.graphics.setFont(font)
+playbit.graphics.fallbackFont = playdate.graphics.font.new("fonts/Phozon/Phozon")
 
 function love.draw()
   -- must be changed at start of frame when canvas is not active
@@ -80,7 +79,8 @@ function love.draw()
   end
 
   -- love requires that this is set every loop
-  love.graphics.setFont(playbit.graphics.activeFont.data)
+  local font = playbit.graphics.activeFont or playbit.graphics.fallbackFont
+  love.graphics.setFont(font.data)
 
   -- push main transform for draw offset
   love.graphics.push()

@@ -1,0 +1,392 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "! run tests",
+      "type": "shell",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "playdate: build and run tests",
+        "love2d: build and run tests",
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        // lua preprocess errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.+) @ <meta>:(\\d+): (.*)$",
+            "line": 2,
+            "severity": 1,
+            "message": 3
+          },
+        },
+        // lua compiler errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*): (.*):(\\d+): (.*)$",
+            "file": 2,
+            "line": 3,
+            "column": 5,
+            "severity": 1,
+            "message": 4
+          },
+        }
+      ]
+    },
+    {
+      "label": "love2d: build and run tests",
+      "type": "shell",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "love2d: build tests",
+        "love2d: run tests",
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        // lua preprocess errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.+) @ <meta>:(\\d+): (.*)$",
+            "line": 2,
+            "severity": 1,
+            "message": 3
+          },
+        },
+        // lua compiler errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*): (.*):(\\d+): (.*)$",
+            "file": 2,
+            "line": 3,
+            "column": 5,
+            "severity": 1,
+            "message": 4
+          },
+        }
+      ]
+    },
+    {
+      "label": "love2d: run tests",
+      "type": "shell",
+      "command": "love _tests_love2d",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": true
+      },
+      "problemMatcher": [
+        // lua preprocess errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.+) @ <meta>:(\\d+): (.*)$",
+            "line": 2,
+            "severity": 1,
+            "message": 3
+          },
+        },
+        // lua compiler errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*): (.*):(\\d+): (.*)$",
+            "file": 2,
+            "line": 3,
+            "column": 5,
+            "severity": 1,
+            "message": 4
+          },
+        }
+      ]
+    },
+    {
+      "label": "love2d: build tests",
+      "type": "shell",
+      "command": "lua tests/love2d-build-tests.lua",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        // lua preprocess errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.+) @ <meta>:(\\d+): (.*)$",
+            "line": 2,
+            "severity": 1,
+            "message": 3
+          },
+        },
+        // lua compiler errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*): (.*):(\\d+): (.*)$",
+            "file": 2,
+            "line": 3,
+            "column": 5,
+            "severity": 1,
+            "message": 4
+          },
+        }
+      ]
+    },
+    {
+      "label": "playdate: build and run tests",
+      "type": "shell",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "playdate: build tests",
+        "playdate: compile",
+        "playdate: run",
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        // lua preprocess errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.+) @ <meta>:(\\d+): (.*)$",
+            "line": 2,
+            "severity": 1,
+            "message": 3
+          },
+        },
+        // lua compiler errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*): (.*):(\\d+): (.*)$",
+            "file": 2,
+            "line": 3,
+            "column": 5,
+            "severity": 1,
+            "message": 4
+          },
+        }
+      ]
+    },
+    {
+      "label": "playdate: build tests",
+      "type": "shell",
+      "command": "lua tests/playdate-build-tests.lua",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        // lua preprocess errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.+) @ <meta>:(\\d+): (.*)$",
+            "line": 2,
+            "severity": 1,
+            "message": 3
+          },
+        },
+        // lua compiler errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*): (.*):(\\d+): (.*)$",
+            "file": 2,
+            "line": 3,
+            "column": 5,
+            "severity": 1,
+            "message": 4
+          },
+        }
+      ]
+    },
+    {
+      "label": "playdate: compile",
+      "type": "shell",
+      "command": "rmdir tests.pdx /s /q & pdc _tests_pdx _tests.pdx",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        // lua preprocess errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.+) @ <meta>:(\\d+): (.*)$",
+            "line": 2,
+            "severity": 1,
+            "message": 3
+          },
+        },
+        // lua compiler errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*): (.*):(\\d+): (.*)$",
+            "file": 2,
+            "line": 3,
+            "column": 5,
+            "severity": 1,
+            "message": 4
+          },
+        }
+      ]
+    },
+    {
+      "label": "playdate: run",
+      "type": "shell",
+      "command": "PlaydateSimulator _tests.pdx",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": [
+        // lua preprocess errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.+) @ <meta>:(\\d+): (.*)$",
+            "line": 2,
+            "severity": 1,
+            "message": 3
+          },
+        },
+        // lua compiler errors
+        {
+          "owner": "lua",
+          "fileLocation": [
+            "relative",
+            "${workspaceFolder}"
+          ],
+          "pattern": {
+            "regexp": "^(.*): (.*):(\\d+): (.*)$",
+            "file": 2,
+            "line": 3,
+            "column": 5,
+            "severity": 1,
+            "message": 4
+          },
+        }
+      ]
+    }
+  ]
+}

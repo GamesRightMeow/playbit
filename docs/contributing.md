@@ -85,8 +85,19 @@ To help reviewers, share the type of feedback you need. For example, do you need
 
 If your pull request consists of changes to multiple files, provide guidance to reviewers about the order in which to review the files. Recommend where to start and how to proceed with the review.
 
-## Unit tests
-Coming soon!
+## Run and update automated tests
+Before being accepted, all automated tests must pass when run on Playdate and in Love2d. While the maintainer will run tests on your branch before accepting, you should be running the tests on your end before opening a PR. Additionally, most PRs will require adding (or updating) one or more tests. 
+
+For more information about automated tests in Playbit, see [Automated Tests](automated-tests.md).
+
+## Update the changelog
+Your PR should also update [changelog.md](/changelog.md) to capture what your PR changes. Include at least one bullet under the "unreleased" section. If working from a ticket, please prefix the line with the ticket number. You're also welcome to append your name to the end of the line for credit. Here are some valid examples:
+```markdown
+# Unreleased
+- Fixed a null reference when creating an image table.
+- #1: implemented animation API (@MyUserName).
+- #3: fixed an off by one error.
+```
 
 # Code style
 General rule of thumb: style should be consistent with the Playdate SDK. Especially if you're implementing a Playdate API, the method/variable/signature should match exactly how its defined in the Playdate SDK, regardless of guidelines here.

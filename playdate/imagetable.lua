@@ -111,5 +111,5 @@ function meta:getLength()
 end
 
 function meta:getSize()
-    return self._rows, self._columns
+    return self._columns, self._rows
 end

@@ -16,7 +16,7 @@ module.drawColorIndex = 1
 module.drawColor = module.colorWhite
 module.backgroundColorIndex = 0
 module.backgroundColor = module.colorBlack
-module.activeFont = {}
+module.activeFont = nil
 module.drawMode = "copy"
 module.canvas = love.graphics.newCanvas()
 module.contextStack = {}
@@ -24,6 +24,7 @@ module.contextStack = {}
 module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 module.lastClearColor = module.colorWhite
 module.drawPattern = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+module.fallbackFont = nil
 
 local canvasScale = 1
 local canvasWidth = 400

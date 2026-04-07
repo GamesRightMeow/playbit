@@ -9,10 +9,6 @@ function module.UUID(length)
   return str
 end
 
-function module.getTextSize(str)
-  return playdate.graphics.getTextSize(str)
-end
-
 -- trim7() from http://lua-users.org/wiki/StringTrim
 local match = string.match
 function module.trimWhitespace(str)

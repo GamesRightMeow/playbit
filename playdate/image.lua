@@ -66,7 +66,9 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
     end
   end
   
-  if qx and qy and qw and qh then
+  if type(qx) == "table" then
+    error("[ERR] Passing a Rect table is not yet implemented.")
+  elseif qx and qy and qw and qh then
     local w, h = self:getSize()
     playbit.graphics.quad:setViewport(qx, qy, qw, qh, w, h)
     love.graphics.draw(self.data, playbit.graphics.quad, x, y, sx, sy)

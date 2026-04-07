@@ -30,20 +30,23 @@ function meta:setSize(width, height)
 end
 
 function meta:setTileAtPosition(x, y, index)
-  self._tiles[x][y] = index -- index into the tilemap's imagetable
+  local i = x*y
+  if #self._tiles == 0 then
+    -- sdk quirk that you cant set a tile unless you've already called setTiles
+    return
+  end
+  self._tiles[i] = index -- index into the tilemap's imagetable
 end
 
 function meta:getTileAtPosition(x, y)
   local index = x * y
   if index > #self._tiles then
-    return 0
+    return nil
   end
   return self._tiles[index]
 end
 
 function meta:draw(x, y, sourceRect)
-  @@ASSERT(x == nil, "[ERR] Parameter x is not yet implemented.")
-  @@ASSERT(y == nil, "[ERR] Parameter y is not yet implemented.")
   @@ASSERT(sourceRect == nil, "[ERR] Parameter sourceRect is not yet implemented.")
 
   -- always render pure white so its not tinted
@@ -57,9 +60,9 @@ function meta:draw(x, y, sourceRect)
     local j = i - 1
     local tile = self._tiles[i]
     -- TODO: fix - overwriting the parameter values x, y
-    local x = math.floor(j % self._width) * frameHeight
-    local y = math.floor(j / self._width) * frameWidth
-    love.graphics.draw(self._imagetable._images[tile].data, x, y)
+    local xx = math.floor(j % self._width) * frameHeight
+    local yy = math.floor(j / self._width) * frameWidth
+    love.graphics.draw(self._imagetable._images[tile].data, x + xx, y + yy)
   end
 
   love.graphics.setColor(r, g, b, 1)
