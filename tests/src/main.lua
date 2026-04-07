@@ -54,6 +54,9 @@ local function runTest(testMethod)
   if success then
     return success, nil
   else
+    --[[ TODO: some callstacks don't parse right, so as a work around
+    always log the entire callstack for easier debugging ]]--
+    logMessage(callstack)
     local lines = getLines(callstack)
     -- assume 1st line always has the assertion message
     local firstSpace = string.find(lines[1], " ") + 1
