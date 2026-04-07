@@ -226,6 +226,88 @@ function love.wheelmoved(x, y)
   end
 end
 
+-- playdate itself is the default input handler
+-- https://sdk.play.date/3.0.2/Inside%20Playdate.html#buttonCallbacks
+local inputHandlers = { { handler = playdate } }
+
+module.inputHandlers = { }
+
+function module.inputHandlers.push(handler, masksPreviousHandlers)
+  local entry = { handler = handler, masksPreviousHandlers = masksPreviousHandlers }
+  table.insert(inputHandlers, entry)
+end
+
+function module.inputHandlers.pop()
+  table.remove(inputHandlers)
+end
+
+local inputHandlersEvents = {
+  [JUST_PRESSED] = {
+    up = "upButtonDown",
+    down = "downButtonDown",
+    left = "leftButtonDown",
+    right = "rightButtonDown",
+    a = "AButtonDown",
+    b = "BButtonDown",
+  },
+  [JUST_RELEASED] = {
+    up = "upButtonUp",
+    down = "downButtonUp",
+    left = "leftButtonUp",
+    right = "rightButtonUp",
+    a = "AButtonUp",
+    b = "BButtonUp",
+  },
+  [PRESSED] = {
+    a = "AButtonHeld",
+    b = "BButtonHeld",
+  }
+}
+
+local function postInputHandlersEvent(evt)
+  for i = #inputHandlers, 1, -1 do
+    local entry = inputHandlers[i]
+    local func = entry.handler[evt]
+    if func then
+      func()
+      return
+    elseif entry.masksPreviousHandlers then
+      return
+    end
+  end
+end
+
+local function postInputHandlersCrankedEvent(change, acceleratedChange)
+  for i = #inputHandlers, 1, -1 do
+    local entry = inputHandlers[i]
+    local cranked = entry.handler.cranked
+    if cranked then
+      cranked(change, acceleratedChange)
+    end
+    if entry.masksPreviousHandlers == true then
+      break;
+    end
+  end
+end
+
+local function updateInputHandlers()
+  for k,v in pairs(module._buttonToKey) do
+    local state = inputStates[v]
+    local events = inputHandlersEvents[state]
+    if events then
+      local buttonEvent = events[k]
+      if buttonEvent then
+        postInputHandlersEvent(buttonEvent)
+      end
+    end
+  end
+
+  if lastCrankPos ~= crankPos then
+    local change, acceleratedChange = module.getCrankChange()
+    postInputHandlersCrankedEvent(change, acceleratedChange)
+  end
+end
+
 -- emulate the keys that PD simulator supports
 -- https://sdk.play.date/Inside%20Playdate.html#c-keyPressed
 local supportedCallbackKeys = {
@@ -304,6 +386,9 @@ function love.keyreleased(key)
 end
 
 function module.updateInput()
+  -- update input handlers before advancing JUST_PRESSED and JUST_RELEASED states
+  updateInputHandlers();
+
   -- only update keys that are mapped
   for k,v in pairs(module._buttonToKey) do
     if inputStates[v] == JUST_PRESSED then
