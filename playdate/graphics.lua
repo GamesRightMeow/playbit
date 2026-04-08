@@ -24,6 +24,17 @@ module.kColorWhite = 1
 module.kColorBlack = 0
 -- TODO: clear and XOR support
 
+module.kStrokeCentered = 0
+module.kStrokeInside = 1
+module.kStrokeOutside = 2
+
+module.kLineCapStyleButt = 0
+module.kLineCapStyleSquare = 1
+module.kLineCapStyleRound = 2
+
+module.kPolygonFillNonZero = 0
+module.kPolygonFillEvenOdd = 1
+
 kTextAlignment = {
 	left = 0,
 	right = 1,
@@ -53,6 +64,10 @@ function module.setBackgroundColor(color)
   -- don't actually set love's bg color here since doing so immediately sets the color, and this is not consistent with PD
 end
 
+function module.getBackgroundColor(color)
+  return playbit.graphics.backgroundColorIndex
+end
+
 function module.setColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
   playbit.graphics.drawColorIndex = color
@@ -72,6 +87,10 @@ function module.setColor(color)
   end
 end
 
+function module.getColor()
+  return playbit.graphics.drawColorIndex
+end
+
 function module.setPattern(pattern)
   playbit.graphics.drawPattern = pattern
 
@@ -87,8 +106,12 @@ function module.setPattern(pattern)
       end
     end
   end
-  
+
   playbit.graphics.shader:send("pattern", unpack(pixels))
+end
+
+function module.setDitherPattern(alpha, ditherType)
+  error("[ERR] playdate.graphics.setDitherPattern() is not yet implemented.")
 end
 
 function module.clear(color)
@@ -129,6 +152,10 @@ function module.setImageDrawMode(mode)
   end
 end
 
+function module.getImageDrawMode()
+  return playbit.graphics.drawMode
+end
+
 function module.drawCircleAtPoint(x, y, radius)
   playbit.graphics.shader:send("mode", 8)
 
@@ -147,8 +174,44 @@ function module.fillCircleAtPoint(x, y, radius)
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
+function module.drawEllipseInRect(x, y, width, height, startAngle, endAngle)
+  error("[ERR] playdate.graphics.drawEllipseInRect() is not yet implemented.")
+end
+
+function module.fillEllipseInRect(x, y, width, height, startAngle, endAngle)
+  error("[ERR] playdate.graphics.fillEllipseInRect() is not yet implemented.")
+end
+
+function module.drawPolygon(x1, y1, x2, y2, ...)
+  error("[ERR] playdate.graphics.drawPolygon() is not yet implemented.")
+end
+
+function module.fillPolygon(x1, y1, x2, y2, ...)
+  error("[ERR] playdate.graphics.fillPolygon() is not yet implemented.")
+end
+
+function module.setPolygonFillRule(rule)
+  error("[ERR] playdate.graphics.setPolygonFillRule() is not yet implemented.")
+end
+
+function module.drawTriangle(x1, y1, x2, y2, x3, y3)
+  error("[ERR] playdate.graphics.drawTriangle() is not yet implemented.")
+end
+
+function module.fillTriangle(x1, y1, x2, y2, x3, y3)
+  error("[ERR] playdate.graphics.fillTriangle() is not yet implemented.")
+end
+
 function module.setLineWidth(width)
   love.graphics.setLineWidth(width)
+end
+
+function module.getLineWidth()
+  return love.graphics.getLineWidth()
+end
+
+function module.setLineCapStyle(style)
+  error("[ERR] playdate.graphics.setLineCapStyle() is not yet implemented.")
 end
 
 function module.drawRect(x, y, width, height)
@@ -230,6 +293,84 @@ function module.drawPixel(x, y)
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
+function module.perlin(x, y, z, rep, octaves, persistence)
+  error("[ERR] playdate.graphics.perlin() is not yet implemented.")
+end
+
+function module.perlinArray(count, x, dx, y, dy, z, dz, rep, octaves, persistence)
+  error("[ERR] playdate.graphics.perlinArray() is not yet implemented.")
+end
+
+function module.generateQRCode(stringToEncode, desiredEdgeDimension, callback)
+  error("[ERR] playdate.graphics.generateQRCode() is not yet implemented.")
+end
+
+function module.drawSineWave(startX, startY, endX, endY, startAmplitude, endAmplitude, period, phaseShift)
+  error("[ERR] playdate.graphics.drawSineWave() is not yet implemented.")
+end
+
+function module.setClipRect(x, y, width, height)
+  error("[ERR] playdate.graphics.setClipRect() is not yet implemented.")
+end
+
+function module.getClipRect()
+  error("[ERR] playdate.graphics.getClipRect() is not yet implemented.")
+end
+
+function module.setScreenClipRect(x, y, width, height)
+  error("[ERR] playdate.graphics.setScreenClipRect() is not yet implemented.")
+end
+
+function module.getScreenClipRect()
+  error("[ERR] playdate.graphics.getScreenClipRect() is not yet implemented.")
+end
+
+function module.clearClipRect()
+  error("[ERR] playdate.graphics.clearClipRect() is not yet implemented.")
+end
+
+function module.setStencilImage(image, tile)
+  error("[ERR] playdate.graphics.setStencilImage() is not yet implemented.")
+end
+
+-- setStencilPattern(pattern)
+-- setStencilPattern(level, [ditherType])
+function module.setStencilPattern(row1, row2, row3, row4, row5, row6, row7, row8)
+  error("[ERR] playdate.graphics.setStencilPattern() is not yet implemented.")
+end
+
+function module.clearStencil()
+  error("[ERR] playdate.graphics.clearStencil() is not yet implemented.")
+end
+
+function module.clearStencilImage()
+  error("[ERR] playdate.graphics.clearStencilImage() is not yet implemented.")
+end
+
+function module.setStrokeLocation(location)
+  error("[ERR] playdate.graphics.setStrokeLocation() is not yet implemented.")
+end
+
+function module.getStrokeLocation()
+  error("[ERR] playdate.graphics.getStrokeLocation() is not yet implemented.")
+end
+
+function module.lockFocus(image)
+  error("[ERR] playdate.graphics.lockFocus() is not yet implemented.")
+end
+
+function module.unlockFocus()
+  error("[ERR] playdate.graphics.unlockFocus() is not yet implemented.")
+end
+
+function module.getDisplayImage()
+  error("[ERR] playdate.graphics.getDisplayImage() is not yet implemented.")
+end
+
+function module.getWorkingImage()
+  error("[ERR] playdate.graphics.getWorkingImage() is not yet implemented.")
+end
+
 function module.setFont(font)
   if font == nil then
     -- font cannot be unset with nil
@@ -248,6 +389,22 @@ function module.getSystemFont()
   return playbit.graphics.fallbackFont
 end
 
+function module.setFontFamily(fontFamily)
+  error("[ERR] playdate.graphics.setFontFamily() is not yet implemented.")
+end
+
+function module.setFontTracking(pixels)
+  error("[ERR] playdate.graphics.setFontTracking() is not yet implemented.")
+end
+
+function module.getFontTracking()
+  error("[ERR] playdate.graphics.getFontTracking() is not yet implemented.")
+end
+
+function module.getSystemFont(variant)
+  error("[ERR] playdate.graphics.getSystemFont() is not yet implemented.")
+end
+
 function module.getTextSize(str, fontFamily, leadingAdjustment)
   @@ASSERT(fontFamily == nil, "[ERR] Parameter fontFamily is not yet implemented.")
   @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
@@ -256,7 +413,7 @@ function module.getTextSize(str, fontFamily, leadingAdjustment)
   return font:getTextWidth(str), font:getHeight()
 end
 
--- playdate.graphics.drawTextInRect(str, x, y, width, height, [leadingAdjustment, [truncationString, [alignment, [font]]]]) 
+-- playdate.graphics.drawTextInRect(str, x, y, width, height, [leadingAdjustment, [truncationString, [alignment, [font]]]])
 function module.drawTextInRect(text, x, ...)
   local y, width, height, leadingAdjustment, truncationString, textAlignment, font
   if type(x) == "number" then
@@ -327,7 +484,7 @@ function module.pushContext(image)
   if not image._canvas then
     image._canvas = love.graphics.newCanvas(image:getSize())
   end
-  
+
   -- push context
   table.insert(playbit.graphics.contextStack, image)
 
