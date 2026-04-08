@@ -3,6 +3,7 @@ playdate = module
 
 require("playbit.geometry")
 require("playdate.metadata")
+require("playdate.math")
 require("playdate.sound")
 require("playdate.file")
 require("playdate.datastore")
