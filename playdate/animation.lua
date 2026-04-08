@@ -9,6 +9,23 @@ local meta = {}
 meta.__index = meta
 module.__index = meta
 
+local function updateFrame(self)
+  if not self.pause then
+    local elapsedTime = playdate.getCurrentTimeMilliseconds() - self._startTime
+    self.frame = self.startFrame + math.floor(elapsedTime / self.delay) * self.step
+
+    if self.frame > self.endFrame then
+      if self.shouldLoop then
+        self.frame = self.startFrame
+        self._startTime = playdate.getCurrentTimeMilliseconds()
+      else
+        self.frame = self.endFrame
+        self._valid = false
+      end
+    end
+  end
+end
+
 function module.new(delay, imageTable, shouldLoop)
   local animation = setmetatable({}, meta)
   
@@ -22,16 +39,18 @@ function module.new(delay, imageTable, shouldLoop)
   animation.delay = delay or 100
   animation._imageTable = imageTable
   animation.shouldLoop = shouldLoop
+  animation._valid = true
 
   if imageTable then
-    animation.endFrame = imageTable:getLength()
+    animation.endFrame = #imageTable
   end
 
   return animation
 end
 
 function meta:image()
-  return self._imageTable:getImage(self.frame)
+  updateFrame(self)
+  return self._imageTable[self.frame]
 end
 
 function meta:setImageTable(it)
@@ -39,33 +58,12 @@ function meta:setImageTable(it)
 end
 
 function meta:isValid()
-  if self.shouldLoop then
-    return true
-  end
-
-  if self.frame > self.endFrame then
-    return false
-  end
-
-  return true
+  return self._valid
 end
 
 function meta:draw(x, y, flip)
-  if not self.pause then
-    local elapsedTime = playdate.getCurrentTimeMilliseconds() - self._startTime
-    self.frame = self.startFrame + math.floor(elapsedTime / self.delay) * self.step
-
-    if self.frame > self.endFrame then
-      if self.shouldLoop then
-        self.frame = self.startFrame
-        self._startTime = playdate.getCurrentTimeMilliseconds()
-      else
-        self.frame = self.endFrame
-      end
-    end
-  end
-
-  self._imageTable:drawImage(self.frame, x, y, flip)
+  local image = self:image()
+  image:draw(x, y, flip)
 end
 
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.animation.blinker
