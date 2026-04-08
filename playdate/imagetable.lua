@@ -4,11 +4,20 @@ local module = {}
 playdate.graphics.imagetable = module
 
 local meta = {}
-meta.__index = meta
-module.__index = meta
 
--- TODO: overload the `[]` array index operator to return an image
--- TODO: overload the `#` length operator to return the number of images
+meta.__index = function(table, key)
+  if type(key) == "number" then
+    return table:getImage(key)
+  else
+    return rawget(meta, key)
+  end
+end
+
+meta.__len = function(table)
+  return table.length
+end
+
+module.__index = meta
 
 -- TODO: handle overloaded signature (count, cellsWide, cellSize)
 function module.new(path, cellsWide, cellsSize)
