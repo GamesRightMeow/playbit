@@ -76,12 +76,21 @@ module._buttonToKey = {
   b = "kb_a",
 }
 
-module.kButtonA = "a"
-module.kButtonB = "b"
-module.kButtonUp = "up"
-module.kButtonDown = "down"
-module.kButtonLeft = "left"
-module.kButtonRight = "right"
+module.kButtonA = 32
+module.kButtonB = 16
+module.kButtonUp = 4
+module.kButtonDown = 8
+module.kButtonLeft = 1
+module.kButtonRight = 2
+
+local flagToButton = {
+  [module.kButtonLeft] = "left",
+  [module.kButtonRight] = "right",
+  [module.kButtonUp] = "up",
+  [module.kButtonDown] = "down",
+  [module.kButtonB] = "b",
+  [module.kButtonA] = "a",
+}
 
 local NONE = 0
 local JUST_PRESSED = 1
@@ -91,6 +100,12 @@ local JUST_RELEASED = 3
 local inputStates = {}
 
 function module.buttonIsPressed(button)
+  if type(button) == "number" then
+    button = flagToButton[button]
+  else
+    button = string.lower(button)
+  end
+
   local key = module._buttonToKey[button]
   if not inputStates[key] then
     -- no entry, assume no input
@@ -101,6 +116,12 @@ function module.buttonIsPressed(button)
 end
 
 function module.buttonJustPressed(button)
+  if type(button) == "number" then
+    button = flagToButton[button]
+  else
+    button = string.lower(button)
+  end
+
   local key = module._buttonToKey[button]
   if not inputStates[key] then
     -- no entry, assume no input
@@ -111,6 +132,12 @@ function module.buttonJustPressed(button)
 end
 
 function module.buttonJustReleased(button)
+  if type(button) == "number" then
+    button = flagToButton[button]
+  else
+    button = string.lower(button)
+  end
+
   local key = module._buttonToKey[button]
   if not inputStates[key] then
     -- no entry, assume no input
@@ -120,10 +147,25 @@ function module.buttonJustReleased(button)
   return inputStates[key] == JUST_RELEASED
 end
 
-function module.getButtonState(button)
-  local key = module._buttonToKey[button]
-  local value = inputStates[key]
-  return value == PRESSED, value == PRESSED, value == JUST_RELEASED
+function module.getButtonState()
+  local current, pressed, released = 0, 0, 0
+
+  for mask, button in pairs(flagToButton) do
+    local key = module._buttonToKey[button]
+    local value = inputStates[key]
+
+    if value == PRESSED then
+      current = current + mask
+
+    elseif value == JUST_PRESSED then
+      pressed = pressed + mask
+
+    elseif value == JUST_RELEASED then
+      released = released + mask
+    end
+  end
+
+  return current, pressed, released
 end
 
 function module.isCrankDocked()
