@@ -59,6 +59,7 @@ function tests.CanWrite()
 
   local file = playdate.file.open(path, playdate.file.kFileRead)
   local line = file:readline()
+  file:close()
   pbAssert.AreEqual(line, data)
 end
 
