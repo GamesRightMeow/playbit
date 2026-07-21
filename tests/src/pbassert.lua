@@ -56,7 +56,10 @@ function pbAssert.IsImageSimilar(path, maxDifference)
   love.filesystem.createDirectory("images/actual")
   actualData:encode("png", "images/actual/"..path..".png")
   love.graphics.setCanvas(playbit.graphics.canvas)
-  return success
+  
+  if success == false then
+    error("Expected images to differ at most "..maxDifference.." but it was "..difference)
+  end
 !else
   local image = playdate.graphics.getWorkingImage()
   playdate.simulator.writeToFile(image, EXPECTED_IMAGE_PATH..path..".png")

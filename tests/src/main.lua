@@ -13,9 +13,13 @@ import("pbassert")
 
 EXPECTED_IMAGE_PATH = "tests/src/images/expected/" 
 
--- playdate saves images in B&W so we need playbit to render in B&W too
 !if LOVE2D then
+-- playdate saves images in B&W so we need playbit to render in B&W too
 playbit.graphics.setColors({1,1,1,1}, {0,0,0,1})
+!else
+-- we can't use the normal default font so set it to phozon
+local defaultFont = playdate.graphics.font.new("fonts/Phozon/Phozon")
+playdate.graphics.setFont(defaultFont)
 !end
 
 local logs = {}
