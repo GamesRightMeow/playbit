@@ -71,10 +71,6 @@ function meta:copy()
   return module.new(self.m11, self.m12, self.m21, self.m22, self.tx, self.ty)
 end
 
-function meta:unpack()
-  return self.m11, self.m12, self.m21, self.m22, self.tx, self.ty
-end
-
 function meta:invert()
   local a, b   = self.m11, self.m12
   local c, d   = self.m21, self.m22
