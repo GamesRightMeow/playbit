@@ -57,7 +57,7 @@ function module.setColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
   playbit.graphics.drawColorIndex = color
   -- when drawing without a pattern, we must flip the pattern mask for white/black because of the way the shader draws patterns
-  if color == 1 then
+  if color == 0 then
     local c = playbit.graphics.colorWhite
     playbit.graphics.drawColor = c
     -- reset pattern, as per PD behavior

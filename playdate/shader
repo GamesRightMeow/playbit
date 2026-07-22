@@ -148,10 +148,10 @@ vec4 effect(vec4 color, Image tex, vec2 tex_coords, vec2 screen_coords)
       }
       else
       {
-        return white;
+        return black;
       }
     } else {
-      return black;
+      return white;
     }
   }
   else                                    // ---------- "copy" (default)
