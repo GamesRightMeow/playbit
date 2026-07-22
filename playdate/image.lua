@@ -71,7 +71,7 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
   elseif qx and qy and qw and qh then
     local w, h = self:getSize()
     playbit.graphics.quad:setViewport(qx, qy, qw, qh, w, h)
-    love.graphics.draw(self.data, playbit.graphics.quad, x, y, sx, sy)
+    love.graphics.draw(self.data, playbit.graphics.quad, x, y, 0, sx, sy)
   else
     love.graphics.draw(self.data, x, y, 0, sx, sy)
   end
