@@ -30,8 +30,17 @@ function tests.Clear_DoesClear()
   pbAssert.IsImageSimilar("black")
 end
 
-function tests.DrawLine_IsDrawn()
+function tests.DrawLine_IsDrawn_Diagonal()
+  --[[ TODO: love2d's line drawing algo is _slightly_ different
+  then PD's especially when drawing diagonals. To fix we'd probably
+  need to implement a custom line renderer. 
+  https://github.com/GamesRightMeow/playbit/issues/101 ]]--
+  playdate.graphics.setLineWidth(1)
   playdate.graphics.drawLine(0, 0, 400, 240)
+  pbAssert.IsImageSimilar()
+end
+
+function tests.DrawLine_IsDrawn()
   playdate.graphics.setLineWidth(1)
   playdate.graphics.drawLine(0, 50, 400, 50)
   playdate.graphics.setLineWidth(10)
