@@ -14,8 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #62: Implemented `tilemap:getPixelSize()`.
 - #62: Implemented `tilemap:draw()`'s x and y parameters.
 - #40: Implemented `geometry` namespace.
-- Fixed `setPattern()` calls being drawn inverted.
-- Fixed images drawn with a source rect being incorrectly drawn rotated.
+- Implemented `playdate.graphics.getLineWidth()`.
 
 ### Fixed
 - Fixed `playdate.graphics.getFont()` not returning null when not set.
@@ -24,3 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - #62: Fixed `tilemap:setTiles()` not setting tilemap height.
 - #62: Fixed `tilemap:getTileAtPosition()` returning invalid tile.
 - #62: Fixed `tilemap:getTileAtPosition()` not returning `nil` when x or y are out of bounds.
+- #66: Fixed arcs not being drawn correctly.
+- Fixed `setPattern()` calls being drawn inverted.
+- Fixed images drawn with a source rect being incorrectly drawn rotated.
