@@ -225,7 +225,10 @@ function module.drawArc(x, y, radius, startAngle, endAngle)
   startAngle = startAngle - 90
   endAngle = endAngle - 90
 
+  -- use smooth style in this case to better match PD
+  love.graphics.setLineStyle("smooth")
   love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle), 32)
+  love.graphics.setLineStyle("rough")
 
   playbit.graphics.updateContext()
 
