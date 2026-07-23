@@ -56,6 +56,25 @@ function tests.DrawArc_IsDrawn()
   pbAssert.IsImageSimilar()
 end
 
+function tests.DrawArc_IsDrawn_Spiral()
+  local startAngle = 20
+  local endAngle = 80
+  local radius = 120
+  local nrings = 12
+
+  playdate.graphics.setColor(playdate.graphics.kColorBlack);
+  
+  for i=1,nrings-1 do
+    local innerRadius = i * radius/nrings
+    local outerRadius = (i+1) * radius/nrings
+    playdate.graphics.setLineWidth(outerRadius - innerRadius)
+    playdate.graphics.drawArc(200, 120, innerRadius, (nrings - i) * startAngle, (nrings - i) * endAngle)
+  end
+
+  -- arc drawing function isn't exactly the same so giving a large room for difference
+  pbAssert.IsImageSimilar(nil, 0.12)
+end
+
 function tests.DrawPixel_IsDrawn()
   playdate.graphics.clear()
   playdate.graphics.drawPixel(200, 120)
