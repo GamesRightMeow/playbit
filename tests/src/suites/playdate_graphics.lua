@@ -71,6 +71,8 @@ function tests.DrawArc_IsDrawn_Spiral()
     playdate.graphics.drawArc(200, 120, innerRadius, (nrings - i) * startAngle, (nrings - i) * endAngle)
   end
 
+  playdate.graphics.setLineWidth(1)
+
   -- arc drawing function isn't exactly the same so giving a large room for difference
   pbAssert.IsImageSimilar(nil, 0.12)
 end
