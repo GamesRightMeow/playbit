@@ -68,6 +68,7 @@ local isCrankDocked = false
 local crankPos = 0
 local lastCrankPos = 0
 
+-- exposed for playbit.input.setKeyMap()
 module._buttonToKey = {
   up = "kb_up",
   down = "kb_down",
@@ -75,6 +76,16 @@ module._buttonToKey = {
   right = "kb_right",
   a = "kb_s",
   b = "kb_a",
+}
+
+local buttonToIntMask = {
+  left = 1,
+  right = 2,
+  up = 4,
+  down = 8,
+  a = 16,
+  b = 32,
+  menu = 64, -- TODO: unused in playbit but works on PD
 }
 
 module.kButtonA = "a"
@@ -88,7 +99,6 @@ local NONE = 0
 local JUST_PRESSED = 1
 local PRESSED = 2
 local JUST_RELEASED = 3
-
 local inputStates = {}
 
 function module.buttonIsPressed(button)
@@ -121,10 +131,22 @@ function module.buttonJustReleased(button)
   return inputStates[key] == JUST_RELEASED
 end
 
-function module.getButtonState(button)
-  local key = module._buttonToKey[button]
-  local value = inputStates[key]
-  return value == PRESSED, value == PRESSED, value == JUST_RELEASED
+function module.getButtonState()
+  local current = 0
+  local justPressed = 0
+  local justReleased = 0
+  for button,key in pairs(module._buttonToKey) do
+    if inputStates[key] == PRESSED or inputStates[key] == JUST_PRESSED then
+      current = current + buttonToIntMask[button]
+    end
+    if inputStates[key] == JUST_RELEASED then
+      justReleased = justReleased + buttonToIntMask[button]
+    end
+    if inputStates[key] == JUST_PRESSED then
+      justPressed = justPressed + buttonToIntMask[button]
+    end
+  end  
+  return current, justPressed, justReleased
 end
 
 function module.isCrankDocked()
