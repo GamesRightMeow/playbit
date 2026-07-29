@@ -118,7 +118,7 @@ function love.draw()
   love.graphics.setColor(r, g, b, 1)
 
   -- update emulated input
-  playdate.updateInput()
+  playdate._updateInput()
 end
 
 !end

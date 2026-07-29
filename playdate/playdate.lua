@@ -386,7 +386,7 @@ function love.keyreleased(key)
   end
 end
 
-function module.updateInput()
+function module._updateInput()
   -- update input handlers before advancing JUST_PRESSED and JUST_RELEASED states
   updateInputHandlers();
 
