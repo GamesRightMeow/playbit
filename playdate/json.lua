@@ -6,13 +6,21 @@ json = module
 local jsonParser = require("json.json")
 
 function module.decode(json)
-  return jsonParser.decode(json)
+  local ok, resultOrError = pcall(function () return jsonParser.decode(json) end)
+  if ok then
+    return resultOrError
+  else
+    return nil, resultOrError
+  end
 end
 
 -- TODO: handle overloaded signature (file) - where `file` is a playdate.file.file
 function module.decodeFile(path)
-  local contents, size = love.filesystem.read(path)
-  return jsonParser.decode(contents)
+  local contents, sizeOrError = love.filesystem.read(path)
+  if not contents then
+    return nil, sizeOrError
+  end
+  return module.decode(contents)
 end
 
 function module.encode(table)
