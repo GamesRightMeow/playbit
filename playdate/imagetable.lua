@@ -10,48 +10,73 @@ module.__index = meta
 -- TODO: overload the `[]` array index operator to return an image
 -- TODO: overload the `#` length operator to return the number of images
 
+local function splitPath(path)
+  path = path:gsub("[/\\]+$", "")
+
+  local dir, tail = path:match("^(.*[/\\])([^/\\]+)$")
+  if not dir then
+    dir, tail = "", path
+  end
+
+  local name, ext = tail:match("^(.*)%.([^%.]+)$")
+  if name and name ~= "" and tail:sub(1,1) ~= "." then
+    -- ok: "file.png" -> name="file", ext="png"
+    -- ok: "file.tar.gz" -> name="file.tar", ext="gz"
+  else
+    name, ext = tail, nil
+  end
+
+  return dir, name, ext
+end
+
+-- returns actualPath, frameWidth, frameHeight
+local function resolveImagePath(path)
+  local folder, name, ext = splitPath(path)
+  folder = folder or ""
+  ext = ext or ""
+
+  -- if this is partial name then scan the folder
+  if not string.find(name, "-table-", nil, true) then
+    local pattern = name.."-table-"
+    name = nil
+    local files = love.filesystem.getDirectoryItems(folder)
+    for i = 1, #files do
+      local f = files[i]
+      if string.find(f, pattern, nil, true) then
+        local fd, fn, fe = splitPath(f)
+        if fe == "png" then
+          name = fn
+          break
+        end
+      end
+    end
+
+    if not name then return end
+  end
+
+  -- parse frame width and height out of filename
+  local matches = string.gmatch(name, "%-(%d+)")
+  local frameWidth = tonumber(matches())
+  local frameHeight = tonumber(matches())
+
+  return folder .. name .. ".png", frameWidth, frameHeight
+end
+
 -- TODO: handle overloaded signature (count, cellsWide, cellSize)
 function module.new(path, cellsWide, cellsSize)
   @@ASSERT(cellsWide == nil, "[ERR] Parameter cellsWide is not yet implemented.")
   @@ASSERT(cellsSize == nil, "[ERR] Parameter cellsSize is not yet implemented.")
 
+  local actualPath, frameWidth, frameHeight = resolveImagePath(path)
+  if not actualPath then
+    return nil -- todo: error?
+  end
+
   local imagetable = setmetatable({}, meta)
-  local folder = ""
-  local pattern = path.."-table-"
-
-  -- no findLast() so reverse string first
-  local start, ends = string.find(string.reverse(path), "/")
-  if start and ends then
-    folder = string.sub(path, 1, #path - ends)
-    pattern = string.sub(path, #path - ends + 2).."-table-"
-  end
-
-  -- escape dashes
-  pattern = string.gsub(pattern, "%-", "%%%-")
-  -- TODO: escape other magic chars?
-
-  -- TODO: support about a sequence of files (image1.png, image2.png, etc)
-  local actualFilename = ""
-  local files = love.filesystem.getDirectoryItems(folder)
-  for i = 1, #files, 1 do
-    local f = files[i]
-    local s, e = string.find(f, pattern)
-    if s and e then
-      -- file found, remove extension
-      actualFilename = string.sub(f, 1, #f - 4)
-      break
-    end
-  end
-
-  -- parse frame width and height out of filename
-  local matches = string.gmatch(actualFilename, "%-(%d+)")
-  local frameWidth = tonumber(matches())
-  local frameHeight = tonumber(matches())
-  local actualPath = folder.."/"..actualFilename
 
   -- load atlas
-  local atlas = love.image.newImageData(actualPath..".png")
-  
+  local atlas = love.image.newImageData(actualPath)
+
   -- create a separate image for each frame
   local w = atlas:getWidth()
   local h = atlas:getHeight()
