@@ -154,10 +154,11 @@ function module.getButtonState()
     local key = module._buttonToKey[button]
     local value = inputStates[key]
 
-    if value == PRESSED then
+    if value == PRESSED or value == JUST_PRESSED then
       current = current + mask
+    end
 
-    elseif value == JUST_PRESSED then
+    if value == JUST_PRESSED then
       pressed = pressed + mask
 
     elseif value == JUST_RELEASED then
