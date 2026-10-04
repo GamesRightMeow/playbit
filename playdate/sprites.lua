@@ -37,6 +37,7 @@ function module.new(imageOrTilemap)
   sprite._visible = true
   sprite._updatesEnabled = true
   sprite._collisionsEnabled = true
+  sprite._imageDrawMode = playdate.graphics.kDrawModeCopy
 
   sprite:setCenter(0.5, 0.5)
 
@@ -495,7 +496,7 @@ function meta:getTag()
 end
 
 function meta:setImageDrawMode(mode)
-  error("[ERR] playdate.graphics.sprite.setImageDrawMode() is not yet implemented.")
+  self._imageDrawMode = mode
 end
 
 function meta:setImageFlip(flip, flipCollideRect)
@@ -658,7 +659,12 @@ local function drawAll()
       end
 
       if spr._image then
-        playbit.graphics.setDrawMode("image")
+        -- always render pure white so its not tinted
+        local r, g, b = love.graphics.getColor()
+        love.graphics.setColor(1, 1, 1, 1)
+
+        local prevDrawMode = playbit.graphics.drawMode
+        playdate.graphics.setImageDrawMode(spr._imageDrawMode)
 
         local sx = spr.scaleX or 1
         local sy = spr.scaleY or 1
@@ -677,6 +683,10 @@ local function drawAll()
             spr.angle,
             sx, sy,
             spr.width * spr._centerX, spr.height * spr._centerY)
+
+        playdate.graphics.setImageDrawMode(prevDrawMode)
+        love.graphics.setColor(r, g, b, 1)
+        playbit.graphics.updateContext()
 
       elseif spr.draw then
         love.graphics.push()
@@ -700,7 +710,9 @@ end
 
 function module.setBackgroundDrawingCallback(callback)
   local backgroundSprite = module.new()
-  backgroundSprite:setSize(playdate.display.getSize())
+  -- TODO: temporary hardcoded Playdate screen size until playdate.display.getSize() is implemented.
+  -- The background will not cover the screen if the display size is changed (e.g. playdate.display.setScale()).
+  backgroundSprite:setSize(400, 240)
   backgroundSprite:setCenter(0, 0)
   backgroundSprite:setZIndex(-32768)
   backgroundSprite:setIgnoresDrawOffset(true)

@@ -88,11 +88,6 @@ function love.draw()
 
   -- main update
   playdate.update()
-  playdate.graphics.sprite.updateAll()
-  
-  -- Unclear if the drawing of the images of a sprite needs to be called here
-  -- or would happend later through the love.graphics.draw(playdate.graphics._canvas, ... )
-  playdate.graphics.sprite.drawAll()
 
   -- debug draw
   if playdate.debugDraw then
