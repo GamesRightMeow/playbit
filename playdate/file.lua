@@ -47,19 +47,27 @@ function module.open(path, mode)
   openFileCount = openFileCount + 1
 
   mode = mode or module.kFileRead
-
-  local data = love.filesystem.newFile(path)
+  local modeStr = "r"
   if mode == module.kFileRead then
-    data:open("r")
+    modeStr = "r"
   elseif mode == module.kFileWrite then
-    data:open("w")
+    modeStr = "w"
   elseif mode == module.kFileAppend then
-    data:open("a")
+    modeStr = "a"
   end
+  
+  local data = love.filesystem.newFile(path)
+  data:open(modeStr)
   
   local file = setmetatable({}, meta)
   file._data = data
+
+  -- TODO: is there a better way to handle this love2d quirk?
+  --[[ calling lines() causes the file to be unwritable so
+  as a work around, close and reopen the file ]]--
   file._lastLine = data:lines()
+  data:close()
+  data:open(modeStr)
 
   return file
 end
@@ -92,12 +100,12 @@ function meta:read(numberOfBytes)
   return self._data:read(numberOfBytes)
 end
 
-function meta:write(string)
-  error("[ERR] playdate.file:write() is not yet implemented.")
+function meta:write(str)
+  self._data:write(str)
 end
 
 function meta:flush()
-  error("[ERR] playdate.file:flush() is not yet implemented.")
+  self._data:flush()
 end
 
 function meta:seek(offset, whence)
@@ -134,10 +142,6 @@ end
 
 function module.rename(path, newPath)
   error("[ERR] playdate.file.rename() is not yet implemented.")
-end
-
-function module.load(path, env)
-  error("[ERR] playdate.file.load() is not yet implemented.")
 end
 
 function module.run(path, env)

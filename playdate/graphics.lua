@@ -72,7 +72,7 @@ function module.setColor(color)
   @@ASSERT(color == 1 or color == 0, "Only values of 0 (black) or 1 (white) are supported.")
   playbit.graphics.drawColorIndex = color
   -- when drawing without a pattern, we must flip the pattern mask for white/black because of the way the shader draws patterns
-  if color == 1 then
+  if color == 0 then
     local c = playbit.graphics.colorWhite
     playbit.graphics.drawColor = c
     -- reset pattern, as per PD behavior
@@ -264,21 +264,31 @@ function module.drawLine(x1, y1, x2, y2)
 end
 
 function module.drawArc(x, y, radius, startAngle, endAngle)
+
+  local function normalizeAngle(deg)
+      return (deg % 360 + 360) % 360
+  end
+
   playbit.graphics.shader:send("mode", 8)
+
+  -- Bring angles to interval [0, 360)
+  startAngle = normalizeAngle(startAngle)
+  endAngle = normalizeAngle(endAngle)
+
+  -- PD always draws from startAngle to endAngle clockwise.
+  if startAngle >= endAngle then
+    endAngle = endAngle + 360
+  end
 
   -- 0 degrees is 270 when drawing an arc on PD...
   startAngle = startAngle - 90
   endAngle = endAngle - 90
 
-  if startAngle == endAngle then
-    -- if startAngle and endAngle are the same, PD draws a full circle
-    love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle + 360), 16)
-  elseif startAngle > endAngle then
-    -- love2d adjusts for when the startAngle is larger, but PD does not, so we need to compensate
-    love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle + 360), 16)
-  else
-    love.graphics.arc("line", "open", x, y, radius, math.rad(endAngle), math.rad(startAngle), 16)
-  end
+  -- use smooth style in this case to better match PD
+  love.graphics.setLineStyle("smooth")
+  love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle), 32)
+  love.graphics.setLineStyle("rough")
+
   playbit.graphics.updateContext()
 
   module.setImageDrawMode(playbit.graphics.drawMode)
@@ -372,12 +382,21 @@ function module.getWorkingImage()
 end
 
 function module.setFont(font)
+  if font == nil then
+    -- font cannot be unset with nil
+    return
+  end
   playbit.graphics.activeFont = font
-  love.graphics.setFont(font.data)
+  local newFont = font or playbit.graphics.fallbackFont
+  love.graphics.setFont(newFont.data)
 end
 
 function module.getFont()
-  return playbit.graphics.activeFont
+  return playbit.graphics.activeFont or playbit.graphics.fallbackFont
+end
+
+function module.getSystemFont()
+  return playbit.graphics.fallbackFont
 end
 
 function module.setFontFamily(fontFamily)
@@ -392,16 +411,12 @@ function module.getFontTracking()
   error("[ERR] playdate.graphics.getFontTracking() is not yet implemented.")
 end
 
-function module.getSystemFont(variant)
-  error("[ERR] playdate.graphics.getSystemFont() is not yet implemented.")
-end
-
 function module.getTextSize(str, fontFamily, leadingAdjustment)
   @@ASSERT(fontFamily == nil, "[ERR] Parameter fontFamily is not yet implemented.")
   @@ASSERT(leadingAdjustment == nil, "[ERR] Parameter leadingAdjustment is not yet implemented.")
 
-  local font = playbit.graphics.activeFont
-  return font:getWidth(str), font:getHeight()
+  local font = playbit.graphics.activeFont or playbit.graphics.fallbackFont
+  return font:getTextWidth(str), font:getHeight()
 end
 
 -- playdate.graphics.drawTextInRect(str, x, y, width, height, [leadingAdjustment, [truncationString, [alignment, [font]]]])
@@ -414,7 +429,7 @@ function module.drawTextInRect(text, x, ...)
     error("[ERR] Support for the rect parameter is not yet implemented.")
   end
 
-  font = font or playbit.graphics.activeFont
+  font = font or playbit.graphics.activeFont or playbit.graphics.fallbackFont
 
   return font:_drawTextInRect(text, x, y, width, height, leadingAdjustment, truncationString, textAlignment)
 end
@@ -427,7 +442,7 @@ function module.drawText(text, x, y, width, height, fontFamily, leadingAdjustmen
   @@ASSERT(alignment == nil, "[ERR] Parameter alignment is not yet implemented.")
 
   @@ASSERT(text ~= nil, "Text is nil")
-  local font = playbit.graphics.activeFont
+  local font = playbit.graphics.activeFont or playbit.graphics.fallbackFont
   font:drawText(text, x, y, fontFamily, leadingAdjustment)
   playbit.graphics.updateContext()
 end
@@ -442,7 +457,8 @@ function module.getLocalizedText(key, language)
 end
 
 function module.drawTextAligned(text, x, y, alignment, leadingAdjustment)
-  module.getFont():drawTextAligned(text, x, y, alignment, leadingAdjustment)
+  local font = playbit.graphics.activeFont or playbit.graphics.fallbackFont
+  font:drawTextAligned(text, x, y, alignment, leadingAdjustment)
 end
 
 function module.drawLocalizedTextAligned(text, x, y, alignment, language, leadingAdjustment)
