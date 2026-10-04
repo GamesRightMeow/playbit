@@ -16,7 +16,7 @@ module.drawColorIndex = 1
 module.drawColor = module.colorWhite
 module.backgroundColorIndex = 0
 module.backgroundColor = module.colorBlack
-module.activeFont = {}
+module.activeFont = nil
 module.drawMode = "copy"
 module.canvas = love.graphics.newCanvas()
 module.contextStack = {}
@@ -24,6 +24,7 @@ module.contextStack = {}
 module.quad = love.graphics.newQuad(0, 0, 1, 1, 1, 1)
 module.lastClearColor = module.colorWhite
 module.drawPattern = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+module.fallbackFont = nil
 
 local canvasScale = 1
 local canvasWidth = 400
@@ -33,6 +34,7 @@ local canvasY = 0
 local windowWidth = 400
 local windowHeight = 240
 local fullscreen = false
+local fullscreenType = "desktop"
 
 --- Sets the scale of the canvas.
 ---@param scale number
@@ -101,6 +103,20 @@ end
 ---@return boolean
 function module.getFullscreen()
   return fullscreen
+end
+
+--- Sets the fullscreen type either "desktop" (default) or "exclusive".
+--- https://love2d.org/wiki/FullscreenType
+---@param type any
+function module.setFullscreenType(type)
+  fullscreenType = type
+end
+
+--- Returns the current fullscreen type.
+--- @param type any
+--- @return string
+function module.getFullscreenType(type)
+  return fullscreenType
 end
 
 --- Sets the colors used when drawing graphics.

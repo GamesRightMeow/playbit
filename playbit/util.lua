@@ -24,3 +24,23 @@ function module.sign(a)
     return 0
   end
 end
+
+function module.clamp01(x)
+  if x <= 0 then
+    return 0
+  elseif x >= 1 then
+    return 1
+  else
+    return x
+  end
+end
+
+function module.clamp(x, min, max)
+  if x <= min then
+    return min
+  elseif x >= max then
+    return max
+  else
+    return x
+  end
+end
