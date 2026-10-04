@@ -80,7 +80,6 @@ function meta:draw(x, y, sourceRect)
   end
 
   love.graphics.setColor(r, g, b, 1)
-  playbit.graphics.updateContext()
 end
 
 function meta:getTiles()

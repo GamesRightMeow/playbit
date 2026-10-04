@@ -149,19 +149,55 @@ function module.setColors(white, black)
   end
 end
 
+-- Copies the current content of the image into its context canvas.
+function module.beginContextImage(image)
+  if not image._canvas then
+    image._canvas = love.graphics.newCanvas(image:getSize())
+  end
+
+  local canvas = love.graphics.getCanvas()
+  local shader = love.graphics.getShader()
+  local r, g, b, a = love.graphics.getColor()
+  local blendMode, alphaMode = love.graphics.getBlendMode()
+
+  love.graphics.setCanvas(image._canvas)
+  love.graphics.push()
+  love.graphics.origin()
+  love.graphics.setShader()
+  love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.setBlendMode("replace", "premultiplied")
+  love.graphics.draw(image.data, 0, 0)
+  love.graphics.setBlendMode(blendMode, alphaMode)
+  love.graphics.setColor(r, g, b, a)
+  love.graphics.setShader(shader)
+  love.graphics.pop()
+  love.graphics.setCanvas(canvas)
+end
+
+-- Copies what was drawn into the active context canvas back into its image.
+-- Drawing goes into a canvas, so the image itself is only updated when the context
+-- is switched (pushContext/popContext) instead of after every draw call.
 function module.updateContext()
-  if #module.contextStack == 0 then
+  -- contexts pushed without an image keep drawing into the nearest image below them
+  local image = nil
+  for i = #module.contextStack, 1, -1 do
+    image = module.contextStack[i].image
+    if image then
+      break
+    end
+  end
+
+  if not image then
     return
   end
 
-  local activeContext = module.contextStack[#module.contextStack]
-
   -- love2d doesn't allow calling newImageData() when canvas is active
+  local canvas = love.graphics.getCanvas()
   love.graphics.setCanvas()
-  local imageData = activeContext._canvas:newImageData()
-  love.graphics.setCanvas(activeContext._canvas)
+  local imageData = image._canvas:newImageData()
+  love.graphics.setCanvas(canvas)
 
   -- update image
-  activeContext.data:replacePixels(imageData)
+  image.data:replacePixels(imageData)
 end
 !end

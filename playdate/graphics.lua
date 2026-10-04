@@ -108,7 +108,6 @@ function module.clear(color)
       playbit.graphics.lastClearColor = c
     end
   end
-  playbit.graphics.updateContext()
 end
 
 -- "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
@@ -133,7 +132,6 @@ function module.drawCircleAtPoint(x, y, radius)
   playbit.graphics.shader:send("mode", 8)
 
   love.graphics.circle("line", x, y, radius)
-  playbit.graphics.updateContext()
 
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
@@ -142,7 +140,6 @@ function module.fillCircleAtPoint(x, y, radius)
   playbit.graphics.shader:send("mode", 8)
 
   love.graphics.circle("fill", x, y, radius)
-  playbit.graphics.updateContext()
 
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
@@ -160,7 +157,6 @@ function module.drawRect(x, y, width, height)
   playbit.graphics.shader:send("mode", 8)
 
   love.graphics.rectangle("line", x, y, width, height)
-  playbit.graphics.updateContext()
 
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
@@ -169,7 +165,6 @@ function module.fillRect(x, y, width, height)
   playbit.graphics.shader:send("mode", 8)
 
   love.graphics.rectangle("fill", x, y, width, height)
-  playbit.graphics.updateContext()
 
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
@@ -179,7 +174,6 @@ function module.drawRoundRect(x, y, width, height, radius)
   -- playbit.graphics.shader:send("mode", 8)
 
   -- love.graphics.rectangle("line", x, y, width, height, radius, radius, 0)
-  -- playbit.graphics.updateContext()
 
   -- module.setImageDrawMode(playbit.graphics.drawMode)
   error("[ERR] playdate.graphics.drawRoundRect() is not yet implemented.")
@@ -190,7 +184,6 @@ function module.fillRoundRect(x, y, width, height, radius)
   -- playbit.graphics.shader:send("mode", 8)
 
   -- love.graphics.rectangle("fill", x, y, width, height, radius, radius, 0)
-  -- playbit.graphics.updateContext()
 
   -- module.setImageDrawMode(playbit.graphics.drawMode)
   error("[ERR] playdate.graphics.fillRoundRect() is not yet implemented.")
@@ -200,7 +193,6 @@ function module.drawLine(x1, y1, x2, y2)
   playbit.graphics.shader:send("mode", 8)
 
   love.graphics.line(x1, y1, x2, y2)
-  playbit.graphics.updateContext()
 
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
@@ -231,8 +223,6 @@ function module.drawArc(x, y, radius, startAngle, endAngle)
   love.graphics.arc("line", "open", x, y, radius, math.rad(startAngle), math.rad(endAngle), 32)
   love.graphics.setLineStyle("rough")
 
-  playbit.graphics.updateContext()
-
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
 
@@ -240,7 +230,6 @@ function module.drawPixel(x, y)
   playbit.graphics.shader:send("mode", 8)
 
   love.graphics.points(x, y)
-  playbit.graphics.updateContext()
 
   module.setImageDrawMode(playbit.graphics.drawMode)
 end
@@ -296,7 +285,6 @@ function module.drawText(text, x, y, width, height, fontFamily, leadingAdjustmen
   @@ASSERT(text ~= nil, "Text is nil")
   local font = playbit.graphics.activeFont or playbit.graphics.fallbackFont
   font:drawText(text, x, y, fontFamily, leadingAdjustment)
-  playbit.graphics.updateContext()
 end
 
 -- TODO: handle the overloaded signature (key, rect, language, leadingAdjustment)
@@ -335,6 +323,9 @@ function module.checkAlphaCollision(image1, x1, y1, flip1, image2, x2, y2, flip2
 end
 
 function module.pushContext(image)
+  -- copy what was drawn so far into the image of the active context
+  playbit.graphics.updateContext()
+
   -- save current graphics state so it can be restored by popContext()
   local context = {
     image = image,
@@ -352,10 +343,8 @@ function module.pushContext(image)
   table.insert(playbit.graphics.contextStack, context)
 
   if image then
-    -- create canvas if it doesn't exist
-    if not image._canvas then
-      image._canvas = love.graphics.newCanvas(image:getSize())
-    end
+    -- draw into a canvas that starts with the current image content
+    playbit.graphics.beginContextImage(image)
 
     -- update current render target
     love.graphics.setCanvas(image._canvas)
@@ -364,6 +353,9 @@ end
 
 function module.popContext()
   @@ASSERT(#playbit.graphics.contextStack > 0, "No pushed context.")
+
+  -- copy what was drawn into the image before leaving the context
+  playbit.graphics.updateContext()
 
   -- pop context
   local context = table.remove(playbit.graphics.contextStack)
