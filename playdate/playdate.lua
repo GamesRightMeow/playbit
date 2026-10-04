@@ -50,10 +50,6 @@ function module.restart(arg)
   error("[ERR] playdate.restart() is not yet implemented.")
 end
 
-function module.restart()
-  error("[ERR] playdate.restart() is not yet implemented.")
-end
-
 function module.getSystemMenu()
   error("[ERR] playdate.getSystemMenu() is not yet implemented.")
 end
@@ -123,10 +119,6 @@ function module.getSecondsSinceEpoch()
   -- TODO: PD also returns milliseconds to the next second, but time functions in native lua don't have millisecond precision
   local milliseconds = 0
   return os.difftime(nowUtc, playdateEpochUtc), milliseconds
-end
-
-function module.getTime()
-  error("[ERR] playdate.getTime() is not yet implemented.")
 end
 
 function module.getGMTTime()
