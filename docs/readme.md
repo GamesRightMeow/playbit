@@ -60,6 +60,8 @@ Documentation can be found in the [docs](../docs/) folder. If you're new, it's r
 
 If you want to jump straight in, create a new repository using the [Playbit template](https://github.com/GamesRightMeow/playbit-template).
 
+If you want to make a contribution, please read the [contributor guide](contributing.md) first.
+
 ## Get help
 If you want to report a bug, request documentation, or ask for feature: [open an issue](https://github.com/GamesRightMeow/playbit/issues).
 
@@ -67,3 +69,8 @@ If you want to ask a question, get help, or start a general discussion topic, yo
   - [Start a new Github discussion](https://github.com/GamesRightMeow/playbit/discussions)
   - [Join official Discord server](https://discord.gg/PSt3aCcBtk)
   - Join the [Playbit thread](https://discord.com/channels/675983554655551509/1161743444255965354) in the [Playdate Squad Discord](https://discord.gg/VDqzTmtHR7)
+
+## AI Disclosure
+Starting after [the 0.1.0 release](https://github.com/GamesRightMeow/playbit/releases/tag/0.1.0), this repository contains AI-generated code.
+
+For information on making contributions with AI, see [contributor guide's section on AI use](contributing.md#ai-use).

@@ -128,3 +128,12 @@ General rule of thumb: style should be consistent with the Playdate SDK. Especia
 - All Playdate shims should be placed in the [Playdate folder](/playdate/).
 - Any Playbit additional scripts should be placed in the [Playbit folder](/playbit/).
 - Documentation should be placed in the [Docs folder](/docs/).
+
+## AI Use
+By submitting contributions to this project, contributors acknowledge that:
+
+- AI generated code and documentation are permitted
+- AI generated images are NOT permitted
+- They are responsible for ensuring their contributions meet project standards
+- They cannot decline fixes or changes by claiming they don't understand what the AI produced
+- They are responsible for ensuring their submissions comply with applicable licenses and don't infringe third-party rights
