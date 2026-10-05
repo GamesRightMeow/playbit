@@ -14,10 +14,16 @@ function module.new(widthOrPath, height, bgcolor)
   if height then
     -- creating empty image with dimensions
     local imageData = love.image.newImageData(widthOrPath, height)
-    img.data = love.graphics.newImage(imageData)  
+    img.data = love.graphics.newImage(imageData)
   else
     -- creating image from file
-    img.data = love.graphics.newImage(widthOrPath..".png")  
+    if love.filesystem.getInfo(widthOrPath..".png") then
+      img.data = love.graphics.newImage(widthOrPath..".png")
+    elseif love.filesystem.getInfo(widthOrPath) then
+      img.data = love.graphics.newImage(widthOrPath)
+    else
+      return nil
+    end
   end
 
   return img
@@ -65,7 +71,7 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
       y = y + h
     end
   end
-  
+
   if type(qx) == "table" then
     error("[ERR] Passing a Rect table is not yet implemented.")
   elseif qx and qy and qw and qh then
