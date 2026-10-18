@@ -1,4 +1,6 @@
 !if LOVE2D then
+-- must be first, playbit and playdate modules rely on these functions too
+require("playbit.compat")
 require("playbit.graphics")
 
 --[[ since there is no CoreLibs/playdate, this file should always 
