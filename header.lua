@@ -86,6 +86,9 @@ function love.draw()
   love.graphics.push()
   love.graphics.translate(playbit.graphics.drawOffset.x, playbit.graphics.drawOffset.y)
 
+  -- input handlers before the main update
+  playdate._updateInputHandlers()
+
   -- main update
   playdate.update()
 

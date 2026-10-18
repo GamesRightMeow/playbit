@@ -408,10 +408,11 @@ function love.keyreleased(key)
   end
 end
 
-function module._updateInput()
-  -- update input handlers before advancing JUST_PRESSED and JUST_RELEASED states
-  updateInputHandlers();
+function module._updateInputHandlers()
+  updateInputHandlers()
+end
 
+function module._updateInput()
   -- only update keys that are mapped
   for k,v in pairs(module._buttonToKey) do
     if inputStates[v] == JUST_PRESSED then
