@@ -8,12 +8,16 @@ meta.__index = meta
 module.__index = meta
 
 function module.new(widthOrPath, height, bgcolor)
-  @@ASSERT(bgcolor == nil, "[ERR] Parameter bgcolor is not yet implemented.")
   local img = setmetatable({}, meta)
 
   if height then
     -- creating empty image with dimensions
     local imageData = love.image.newImageData(widthOrPath, height)
+    -- like on playdate, the image stays transparent unless filled with white or black
+    if bgcolor == playdate.graphics.kColorWhite or bgcolor == playdate.graphics.kColorBlack then
+      local c = bgcolor == playdate.graphics.kColorWhite and 1 or 0
+      imageData:mapPixel(function() return c, c, c, 1 end)
+    end
     img.data = love.graphics.newImage(imageData)  
   else
     -- creating image from file
