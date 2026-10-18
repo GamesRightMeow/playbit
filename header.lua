@@ -8,14 +8,42 @@ require("playdate.playdate")
 matter as all games are going to need to import graphics to draw stuff ]]--
 require("playdate.graphics")
 
+-- directories of the files being imported, the last one is the file currently executing
+local importDirs = { "" }
+
+local function normalizePath(path)
+  local parts = {}
+  for part in string.gmatch(path, "[^/]+") do
+    if part == ".." then
+      table.remove(parts)
+    elseif part ~= "." then
+      table.insert(parts, part)
+    end
+  end
+  return table.concat(parts, "/")
+end
+
+-- like on playdate, paths are relative to the importing file first and to the project root second
+local function resolveImportPath(path)
+  path = string.gsub(path, "%.lua$", "")
+  local relativePath = normalizePath(importDirs[#importDirs]..path)
+  if love.filesystem.getInfo(relativePath..".lua") then
+    return relativePath
+  end
+  return normalizePath(path)
+end
+
 function import(path)
   if string.match(path, "^CoreLibs/") then
     path = string.gsub(path, "/", ".")
     path = string.gsub(path, "CoreLibs", "playdate")
     return require(path)
   end
-  path = string.gsub(path, "/", ".")
-  return require(path)
+  path = resolveImportPath(path)
+  table.insert(importDirs, string.match(path, "^(.*/)") or "")
+  local result = require((string.gsub(path, "/", ".")))
+  table.remove(importDirs)
+  return result
 end
 
 local firstFrame = true
