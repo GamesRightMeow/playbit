@@ -2,12 +2,12 @@
 
 Playdate's `.fnt` format is not compatible with Love2D's `.fnt` format out of the box. Playdate uses [a custom format designed for use with Caps](https://sdk.play.date/1.9.3/Inside%20Playdate.html#_text), where as Love2D's uses the standard [BMFont](https://www.angelcode.com/products/bmfont/doc/file_format.html) format.
 
-Playbit automatically handles _most_ of this conversion for you. However there are a few things that can't be automatically detected, so you'll need to add additional keys to your fonts' `.fnt` files.
+Playbit automatically handles this conversion for you, including the size of the font's image which is read from its `-table-` png. If needed, the size can be overridden by adding additional keys to your fonts' `.fnt` files.
 
 Available keys:
 
-- `playbit_width`: Required. The width of your font's image (not the glyph).
-- `playbit_height`: Required. The height of your font's image (again, not the glyph).
+- `playbit_width`: Optional. The width of your font's image (not the glyph).
+- `playbit_height`: Optional. The height of your font's image (again, not the glyph).
 
 For example, the SDK-provide font `Asheville-Mono-Light-24-px.fnt` starts like this:
 

@@ -67,6 +67,12 @@ function parseLine(line, inputData, lineNum)
     return
   end
 
+  -- newer Caps fonts embed their image, it is not used since the -table- image is loaded instead
+  if string.find(line, "^datalen=") or string.find(line, "^data=")
+    or string.find(line, "^width=") or string.find(line, "^height=") then
+    return
+  end
+
   local start, ends = string.find(line, "tracking=")
   if (start and ends) then
     inputData.tracking = string.sub(line, ends+1)
@@ -146,6 +152,25 @@ function getGlyphSize(path)
   return width, height
 end
 
+-- width and height are stored as big-endian 32-bit integers in the IHDR chunk right after the png signature
+function getPngSize(path)
+  local file = io.open(path, "rb")
+  if not file then
+    return 0, 0
+  end
+  local header = file:read(24)
+  file:close()
+  if not header or #header < 24 or string.sub(header, 2, 4) ~= "PNG" then
+    return 0, 0
+  end
+
+  local function readUInt32(offset)
+    local b1, b2, b3, b4 = string.byte(header, offset, offset + 3)
+    return ((b1 * 256 + b2) * 256 + b3) * 256 + b4
+  end
+  return readUInt32(17), readUInt32(21)
+end
+
 function getAtlasPath(input)
   local platform = fs.getPlatform()
   if platform == fs.WINDOWS then
@@ -192,7 +217,11 @@ function convert(inputFntPath, outputFntPath)
     lineNum = lineNum + 1
   end
 
-  -- Lua does not have any native way to read image size, so instead playbit requires font files to add custom keys to specify the font texture dimensions
+  -- playbit_width and playbit_height keys are optional, the size is read from the png otherwise
+  if input.texWidth == 0 or input.texHeight == 0 then
+    input.texWidth, input.texHeight = getPngSize(input.atlasPath)
+  end
+
   if input.texWidth == 0 then
     error("Font '"..input.name..".fnt' does not contain the playbit_width key!")
   end
