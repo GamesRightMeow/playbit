@@ -1,6 +1,6 @@
 -- docs: https://sdk.play.date/2.6.2/Inside%20Playdate.html#C-graphics.animator
 
-require("easing")
+require("playdate.easing")
 
 playdate.graphics = playdate.graphics or {}
 
