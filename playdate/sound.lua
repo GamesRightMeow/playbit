@@ -42,8 +42,12 @@ sampleplayer.meta.__index = sampleplayer.meta
 
 -- TODO: handle overloaded signature (sample) - sample is a playdate.sound.sample
 function sampleplayer.new(path)
+  local ok, source = pcall(love.audio.newSource, path..".wav", "static")
+  if not ok then
+    return nil, source
+  end
   local sample = setmetatable({}, sampleplayer.meta)
-  sample.data = love.audio.newSource(path..".wav", "static")
+  sample.data = source
   -- TODO: force audio to 44100 at build time https://github.com/GamesRightMeow/playbit/issues/35
   return sample
 end
@@ -145,8 +149,12 @@ fileplayer.meta.__index = fileplayer.meta
 function fileplayer.new(path, bufferSize)
   -- TODO: is there a way to use bufferSize to control Love2D chunks?
   @@ASSERT(bufferSize == nil, "[ERR] Parameter bufferSize is not yet implemented.")
+  local ok, source = pcall(love.audio.newSource, path..".wav", "stream")
+  if not ok then
+    return nil, source
+  end
   local sample = setmetatable({}, fileplayer.meta)
-  sample.data = love.audio.newSource(path..".wav", "stream")
+  sample.data = source
   return sample
 end
 

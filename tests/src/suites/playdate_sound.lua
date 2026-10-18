@@ -10,6 +10,12 @@ function tests.SamplePlayerIsCreated()
   pbAssert.IsNotNil(player)
 end
 
+function tests.SamplePlayer_MissingFile_ReturnsNilAndError()
+  local player, err = playdate.sound.sampleplayer.new("sounds/missing")
+  pbAssert.IsNil(player)
+  pbAssert.IsNotNil(err)
+end
+
 function tests.SamplePlayerCanStop()
   local player = playdate.sound.sampleplayer.new("sounds/playbit-startup")
   player:play()
