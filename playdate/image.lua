@@ -39,10 +39,18 @@ function module.imageSizeAtPath(path)
   error("[ERR] playdate.graphics.image.imageSizeAtPath() is not yet implemented.")
 end
 
--- TODO: handle overloaded signatures:
--- (x, y, flip, sourceRect)
--- (p, flip, sourceRect)
+-- overloaded signatures:
+-- (x, y, [flip, [sourceRect]])
+-- (p, [flip, [sourceRect]])
 function meta:draw(x, y, flip, qx, qy, qw, qh)
+  if type(x) == "table" and x._type == "point" then
+    x, y, flip, qx, qy, qw, qh = x.x, x.y, y, flip, qx, qy, qw
+  end
+
+  if flip and type(qx) == "table" and qx._type == "rect" then
+    qx, qy, qw, qh = qx.x, qx.y, qx.width, qx.height
+  end
+
   -- always render pure white so its not tinted
   local r, g, b = love.graphics.getColor()
   love.graphics.setColor(1, 1, 1, 1)
@@ -66,9 +74,7 @@ function meta:draw(x, y, flip, qx, qy, qw, qh)
     end
   end
   
-  if type(qx) == "table" then
-    error("[ERR] Passing a Rect table is not yet implemented.")
-  elseif qx and qy and qw and qh then
+  if qx and qy and qw and qh then
     local w, h = self:getSize()
     playbit.graphics.quad:setViewport(qx, qy, qw, qh, w, h)
     love.graphics.draw(self.data, playbit.graphics.quad, x, y, 0, sx, sy)
